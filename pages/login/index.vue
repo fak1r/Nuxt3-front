@@ -13,6 +13,7 @@
       <button @click="clearAccess">clearAccess</button>
 
       <NuxtLink to="/">Main page</NuxtLink>
+      <NuxtLink to="/admin">Admin Pannel</NuxtLink>
     </div>
   </div>
 </template>
@@ -26,12 +27,13 @@ const authStore = useAuthStore()
 const email = ref('')
 const password = ref('')
 
-const handleLogin = async () => {
-  const success = await authStore.login(email.value, password.value)
-  console.log('🔹 Response Data:', success)
-  //authStore.login(email.value, password.value)
+async function handleLogin() {
+  const result = await authStore.login(email.value, password.value)
+  console.log('🔹 Response Data:', result)
+  if (result) {
+    navigateTo('/')
+  }
 }
-
 async function handleAdmin() {
   const res = await $axios.get('/admin')
   console.log('res', res)

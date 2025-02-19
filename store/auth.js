@@ -3,7 +3,6 @@ import { ref } from 'vue'
 import { useNuxtApp } from '#app'
 
 export const useAuthStore = defineStore('auth', () => {
-  const { $axios } = useNuxtApp()
   const accessToken = ref(null)
   const refreshToken = ref(null)
   const user = ref(null)
@@ -25,6 +24,8 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function login(email, password) {
     try {
+      const { $axios } = useNuxtApp()
+
       const { data } = await $axios.post(`/login`, {
         email,
         password,
