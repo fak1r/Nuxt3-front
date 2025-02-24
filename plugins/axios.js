@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { useAuthStore } from '@/store/auth'
 
-export default defineNuxtPlugin((nuxtApp) => {
+export default defineNuxtPlugin(() => {
   const config = useRuntimeConfig()
 
   const apiBaseUrl = config.public.apiBaseUrl

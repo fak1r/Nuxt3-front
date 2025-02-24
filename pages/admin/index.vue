@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Админка</h1>
+    <h1 class="admin">Админка</h1>
     <p>Добро пожаловать, {{ authStore.user?.email }}</p>
   </div>
 </template>

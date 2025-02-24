@@ -1,7 +1,16 @@
+:root {
+  --border: #e2e8f0;
+  --input-border: #b6bfc9;
+  --input-border-hover: #8f9cb0;
+}
+
 html {
   margin: 0;
 }
 body {
   margin: 0;
-  background-color: #f8f8f4;
+  background-color: #f8fafc;
+  font-family: inherit;
+  color: #334155;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }

@@ -6,6 +6,7 @@
         <NuxtLink to="/">Главная</NuxtLink>
         <NuxtLink to="/login">Войти</NuxtLink>
         <NuxtLink v-if="email" to="/admin">Админка</NuxtLink>
+        <button @click="pingDB">Ping DB</button>
       </nav>
     </div>
   </header>
@@ -24,13 +25,21 @@ authStore.$subscribe(
   },
   { detached: true },
 )
+
+function pingDB() {
+  const { $axios } = useNuxtApp()
+  $axios.get('/ping_db').then((res) => console.log(res))
+}
 </script>
 
 <style scoped lang="scss">
 .header {
+  position: fixed;
   width: 100%;
   height: 64px;
-  background-color: #edede6;
+  background-color: rgba(253, 254, 254, 0.5);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   padding: 16px;
@@ -45,9 +54,6 @@ authStore.$subscribe(
   nav {
     display: flex;
     gap: 16px;
-    a {
-      color: black;
-    }
   }
 }
 </style>

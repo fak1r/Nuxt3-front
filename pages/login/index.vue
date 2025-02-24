@@ -5,15 +5,13 @@
         <h1>Login</h1>
       </div>
 
-      <input v-model="email" type="email" placeholder="Email" />
-      <input v-model="password" type="password" placeholder="Пароль" />
+      <TheInput v-model="email" type="email" placeholder="Email" />
+      <TheInput v-model="password" type="password" placeholder="Пароль" />
+
+      <TheButton variant="Primary">Вход</TheButton>
+      <TheButton variant="Secondary">Регистрация</TheButton>
       <button @click="handleLogin">Войти</button>
       <button @click="handleAdmin">Админ</button>
-      <button @click="clearRefresh">clearRefresh</button>
-      <button @click="clearAccess">clearAccess</button>
-
-      <NuxtLink to="/">Main page</NuxtLink>
-      <NuxtLink to="/admin">Admin Pannel</NuxtLink>
     </div>
   </div>
 </template>
@@ -21,6 +19,9 @@
 <script setup>
 import { ref } from 'vue'
 import { useAuthStore } from '@/store/auth'
+import TheInput from '~/components/UI/TheInput.vue'
+import TheButton from '~/components/UI/TheButton.vue'
+
 const { $axios } = useNuxtApp()
 
 const authStore = useAuthStore()
@@ -38,17 +39,6 @@ async function handleAdmin() {
   const res = await $axios.get('/admin')
   console.log('res', res)
 }
-
-function clearRefresh() {
-  console.log('authStore.refreshToken', authStore.refreshToken)
-  authStore.refreshToken = null
-  console.log('authStore.refreshToken', authStore.refreshToken)
-}
-function clearAccess() {
-  console.log('authStore.accessToken', authStore.accessToken)
-  authStore.accessToken = null
-  console.log('authStore.accessToken', authStore.accessToken)
-}
 </script>
 
 <style scoped>
@@ -56,10 +46,12 @@ function clearAccess() {
   display: flex;
   justify-content: center;
   align-items: center;
+  padding-top: 20px;
 }
 
 .login {
-  border: 1px solid #000;
+  background-color: white;
+  border: 1px solid var(--border);
   padding: 20px;
   display: flex;
   flex-direction: column;
