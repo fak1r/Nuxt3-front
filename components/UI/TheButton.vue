@@ -14,7 +14,7 @@
       v-for="ripple in ripples"
       :key="ripple.id"
       class="btn__ripple"
-      :style="{ top: ripple.y + 'px', left: ripple.x + 'px' }"
+      :style="{ top: ripple.y + 'px', left: ripple.x + 'px', background: rippleColorStyle }"
       @animationend="removeRipple"
     />
   </button>
@@ -30,16 +30,18 @@ const isHovered = ref(false)
 
 const buttonVariants = {
   Primary: {
-    background: '#64748b',
-    hover: '#4b5a72',
-    border: 'none',
+    background: 'var(--primary-btn)',
+    hover: 'var(--primary-btn-hover)',
+    border: '1px solid transparent',
     color: '#fff',
+    ripple: 'rgba(255, 255, 255, 0.4)',
   },
   Secondary: {
     background: 'transparent',
     hover: 'rgba(100, 116, 139, 0.15)',
-    border: '1px solid #64748b',
-    color: '#64748b',
+    border: '1px solid var(--primary-btn)',
+    color: 'var(--primary-btn)',
+    ripple: 'rgba(0, 0, 0, 0.15)',
   },
 }
 
@@ -49,6 +51,10 @@ const buttonStyles = computed(() => {
     border: buttonVariants[props.variant].border,
     color: buttonVariants[props.variant].color,
   }
+})
+
+const rippleColorStyle = computed(() => {
+  return buttonVariants[props.variant].ripple
 })
 
 function handleClick(event: MouseEvent) {
@@ -79,11 +85,10 @@ function removeRipple() {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 20px;
+  padding: 9px 20px;
   font-size: 16px;
   font-weight: 500;
   border-radius: 6px;
-  color: #fff;
   cursor: pointer;
   overflow: hidden;
   transition: background 0.2s ease;
@@ -93,7 +98,6 @@ function removeRipple() {
     position: absolute;
     width: 100px;
     height: 100px;
-    background: rgba(255, 255, 255, 0.4);
     border-radius: 50%;
     transform: scale(0);
     animation: ripple-animation 0.6s linear;

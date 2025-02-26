@@ -44,6 +44,7 @@ function pingDB() {
   align-items: center;
   padding: 16px;
   box-sizing: border-box;
+  z-index: 9999;
 
   &__body {
     width: 100%;

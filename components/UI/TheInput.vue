@@ -1,7 +1,15 @@
 <template>
   <div class="input-wrap">
-    <label :class="{ active: isActive }">{{ placeholder }}</label>
-    <input :value="modelValue" :type="customType" class="input" @focus="onFocus" @blur="onBlur" @input="onInput" />
+    <label :for="inputId" :class="{ active: isActive }">{{ placeholder }}</label>
+    <input
+      :id="inputId"
+      :value="modelValue"
+      :type="customType"
+      class="input"
+      @focus="onFocus"
+      @blur="onBlur"
+      @input="onInput"
+    />
     <span v-if="isPassword" class="input__icon" @click="togglePasswordVisibility">
       <SvgIcons v-if="isPasswordVisible" icon="eye-open" />
       <SvgIcons v-else icon="eye-close" />
@@ -16,6 +24,7 @@ const props = defineProps<{
   modelValue: string
   placeholder: string
   type: 'text' | 'email' | 'password'
+  name: string
 }>()
 
 const emit = defineEmits(['update:modelValue'])
@@ -26,6 +35,7 @@ const isPasswordVisible = ref(false)
 const isActive = computed(() => props.modelValue.length > 0 || isFocused.value)
 const isPassword = computed(() => props.type === 'password')
 const customType = computed(() => (isPasswordVisible.value ? 'text' : props.type))
+const inputId = computed(() => `input-${props.name}`)
 
 function onInput(event: Event) {
   const target = event.target as HTMLInputElement
