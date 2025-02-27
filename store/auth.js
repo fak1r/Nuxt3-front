@@ -41,5 +41,22 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  return { accessToken, refreshToken, user, setTokens, setUser, logout, login }
+  async function register(name, email, password) {
+    try {
+      const { $axios } = useNuxtApp()
+
+      await $axios.post(`/register`, {
+        name,
+        email,
+        password,
+      })
+
+      return await login(email, password)
+    } catch (error) {
+      console.error('Ошибка регистрации:', error.response?.data?.detail || error.message)
+      return false
+    }
+  }
+
+  return { accessToken, refreshToken, user, setTokens, setUser, logout, login, register }
 })

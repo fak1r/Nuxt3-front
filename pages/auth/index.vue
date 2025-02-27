@@ -1,21 +1,49 @@
 <template>
-  <div class="login-wrap">
+  <div class="auth-wrap">
     <transition :name="animDirection">
-      <form :key="formType" class="login" @submit.prevent="onSubmitClick">
-        <div class="login__title">
+      <form :key="formType" class="auth" @submit.prevent="onSubmitClick">
+        <div class="auth__title">
           <h1>{{ formTitle }}</h1>
         </div>
 
-        <TheInput v-model="email" type="email" name="email" placeholder="Email" />
-        <TheInput v-model="password" type="password" name="password" placeholder="Пароль" />
+        <div class="auth__inputs">
+          <template v-if="formType === 'register'">
+            <TheInput
+              v-model="name"
+              type="text"
+              name="name"
+              placeholder="Имя"
+              :error="errors.name"
+              @focus="clearError('name')"
+            />
+          </template>
+
+          <TheInput
+            v-model="email"
+            type="email"
+            name="email"
+            placeholder="Email"
+            :error="errors.email"
+            @focus="clearError('email')"
+          />
+
+          <TheInput
+            v-model="password"
+            type="password"
+            name="password"
+            placeholder="Пароль"
+            :error="errors.password"
+            @focus="clearError('password')"
+          />
+        </div>
 
         <TheButton variant="Primary" type="submit">{{ formTitle }}</TheButton>
 
-        <div class="login__info">
+        <div class="auth__info">
           {{ formText }}&nbsp;
-          <span class="login__link" @click="onChangeFormTypeClick">
+          <button class="auth__link" type="button" @click="onChangeFormTypeClick">
             {{ formLink }}
-          </span>
+          </button>
         </div>
       </form>
     </transition>
@@ -28,11 +56,11 @@ import { useAuthStore } from '@/store/auth'
 import TheInput from '~/components/UI/TheInput.vue'
 import TheButton from '~/components/UI/TheButton.vue'
 
-const { $axios } = useNuxtApp()
-
 const authStore = useAuthStore()
 const email = ref('')
 const password = ref('')
+const name = ref('')
+const errors = ref({})
 const formType = ref('login')
 const animDirection = ref('slide-left')
 
@@ -53,49 +81,67 @@ const formTitle = computed(() => formVariants[formType.value].title)
 const formText = computed(() => formVariants[formType.value].text)
 const formLink = computed(() => formVariants[formType.value].link)
 
+const isEmailValid = computed(() => /\S+@\S+\.\S+/.test(email.value))
+const isPasswordValid = computed(() => password.value.length >= 6)
+const isNameValid = computed(() => name.value.length > 1)
+
+function validateForm() {
+  errors.value = {}
+  if (!isEmailValid.value) errors.value.email = 'Некорректный email'
+  if (!isPasswordValid.value) errors.value.password = 'Пароль должен быть минимум 6 символов'
+  if (!isNameValid.value) errors.value.name = 'Имя должно содержать больше 1 символа'
+
+  return Object.keys(errors.value).length === 0
+}
+
 function onChangeFormTypeClick() {
   animDirection.value = formType.value === 'login' ? 'slide-left' : 'slide-right'
   formType.value = formType.value === 'login' ? 'register' : 'login'
   email.value = ''
   password.value = ''
+  errors.value = {}
+}
+
+function clearError(field) {
+  Reflect.deleteProperty(errors.value, field)
 }
 
 async function onSubmitClick() {
+  if (!validateForm()) return
+
   let result
   if (formType.value === 'login') {
     result = await authStore.login(email.value, password.value)
   } else {
-    //
+    result = await authStore.register(name.value, email.value, password.value)
   }
-  console.log('🔹 Response Data:', result)
+
   if (result) {
     navigateTo('/')
   }
 }
-
-async function handleAdmin() {
-  const res = await $axios.get('/admin')
-  console.log('res', res)
-}
 </script>
 
 <style scoped lang="scss">
-.login-wrap {
+.auth-wrap {
   display: flex;
   justify-content: center;
   align-items: center;
   padding-top: 20px;
   overflow: hidden;
+  height: fit-content;
 }
 
-.login {
+.auth {
   background-color: white;
   border: 1px solid var(--border);
   padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 26px;
   width: 400px;
+  height: fit-content;
+  border-radius: 6px;
 
   &__info {
     display: flex;
@@ -106,7 +152,19 @@ async function handleAdmin() {
     cursor: pointer;
     color: blue;
     text-decoration: underline;
-    text-underline-offset: 3px;
+    text-underline-offset: 4px;
+    border: none;
+    background: none;
+    font: inherit;
+    padding: 0;
+
+    &:focus-visible {
+      outline: 2px solid var(--input-border-hover);
+    }
+  }
+
+  h1 {
+    margin: 0;
   }
 }
 

@@ -1,11 +1,13 @@
 <template>
   <button
-    class="btn"
     type="button"
     :style="buttonStyles"
+    class="btn"
     @click="handleClick"
-    @mouseover="isHovered = true"
-    @mouseleave="isHovered = false"
+    @focus="handleFocus"
+    @blur="handleBlur"
+    @mouseover="handleMouseOver"
+    @mouseleave="handleMouseLeave"
   >
     <span>
       <slot />
@@ -27,6 +29,7 @@ const props = defineProps<{
 
 const ripples = ref<{ id: number; x: number; y: number }[]>([])
 const isHovered = ref(false)
+const isFocused = ref(false)
 
 const buttonVariants = {
   Primary: {
@@ -45,35 +48,65 @@ const buttonVariants = {
   },
 }
 
+const buttonVariant = buttonVariants[props.variant]
+
 const buttonStyles = computed(() => {
+  const isActive = isHovered.value || isFocused.value
   return {
-    background: isHovered.value ? buttonVariants[props.variant].hover : buttonVariants[props.variant].background,
-    border: buttonVariants[props.variant].border,
-    color: buttonVariants[props.variant].color,
+    background: isActive ? buttonVariant.hover : buttonVariant.background,
+    border: buttonVariant.border,
+    color: buttonVariant.color,
   }
 })
 
 const rippleColorStyle = computed(() => {
-  return buttonVariants[props.variant].ripple
+  return buttonVariant.ripple
 })
 
-function handleClick(event: MouseEvent) {
+function handleClick(event: MouseEvent | PointerEvent) {
   const button = event.currentTarget as HTMLButtonElement
   const rect = button.getBoundingClientRect()
-
   ripples.value = []
+  let x, y
+  const isMouseClick = (event as PointerEvent).pointerType === 'mouse'
 
+  if (isMouseClick) {
+    x = event.clientX - rect.left
+    y = event.clientY - rect.top
+  } else {
+    x = rect.width / 2
+    y = rect.height / 2
+  }
   const ripple = {
     id: Date.now(),
-    x: event.clientX - rect.left,
-    y: event.clientY - rect.top,
+    x,
+    y,
   }
-
   ripples.value.push(ripple)
 }
 
 function removeRipple() {
   ripples.value = []
+}
+
+function handleFocus() {
+  isFocused.value = true
+}
+
+function handleBlur() {
+  isFocused.value = false
+}
+
+function handleMouseOver() {
+  isHovered.value = true
+}
+
+function handleMouseLeave(event: MouseEvent) {
+  const button = event.currentTarget as HTMLButtonElement
+  if (isFocused.value) {
+    button.blur()
+  }
+  isHovered.value = false
 }
 </script>
 

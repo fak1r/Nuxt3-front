@@ -4,7 +4,7 @@
       <div class="header__logo">Logo</div>
       <nav>
         <NuxtLink to="/">Главная</NuxtLink>
-        <NuxtLink to="/login">Войти</NuxtLink>
+        <NuxtLink to="/auth">Войти</NuxtLink>
         <NuxtLink v-if="email" to="/admin">Админка</NuxtLink>
         <button @click="pingDB">Ping DB</button>
       </nav>
