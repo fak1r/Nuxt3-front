@@ -4,9 +4,10 @@
       <div class="header__logo">Logo</div>
       <nav>
         <NuxtLink to="/">Главная</NuxtLink>
-        <NuxtLink to="/auth">Войти</NuxtLink>
+        <NuxtLink v-if="!email" to="/auth">Вход</NuxtLink>
         <NuxtLink v-if="email" to="/admin">Админка</NuxtLink>
         <button @click="pingDB">Ping DB</button>
+        <button v-if="email" @click="handleLogout">Logout</button>
       </nav>
     </div>
   </header>
@@ -26,9 +27,18 @@ authStore.$subscribe(
   { detached: true },
 )
 
+onMounted(() => {
+  email.value = authStore.user?.email
+})
+
 function pingDB() {
   const { $axios } = useNuxtApp()
   $axios.get('/ping_db').then((res) => console.log(res))
+}
+
+function handleLogout() {
+  authStore.logout()
+  navigateTo('/')
 }
 </script>
 

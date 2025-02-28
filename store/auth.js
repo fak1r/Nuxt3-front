@@ -4,35 +4,44 @@ import { useNuxtApp } from '#app'
 
 export const useAuthStore = defineStore('auth', () => {
   const accessToken = ref(null)
-  const refreshToken = ref(null)
   const user = ref(null)
 
-  function setTokens(access, refresh) {
+  function setTokens(access) {
     accessToken.value = access
-    refreshToken.value = refresh
   }
 
-  function setUser(email) {
-    user.value = { email }
+  function setUser(userData) {
+    user.value = { ...userData }
   }
 
-  function logout() {
-    accessToken.value = null
-    refreshToken.value = null
-    user.value = null
+  async function logout() {
+    try {
+      const { $axios } = useNuxtApp()
+      await $axios.post(`/logout`, {}, { withCredentials: true })
+
+      accessToken.value = null
+      user.value = null
+      localStorage.removeItem('isAuthenticated')
+    } catch (error) {
+      console.error('Ошибка при выходе:', error.message)
+    }
   }
 
   async function login(email, password) {
     try {
       const { $axios } = useNuxtApp()
+      const { data } = await $axios.post(
+        `/login`,
+        {
+          email,
+          password,
+        },
+        { withCredentials: true },
+      )
 
-      const { data } = await $axios.post(`/login`, {
-        email,
-        password,
-      })
-
-      setTokens(data.access_token, data.refresh_token)
-      setUser(email)
+      setTokens(data.access_token)
+      setUser(data.user)
+      localStorage.setItem('isAuthenticated', 'true')
 
       return true
     } catch (error) {
@@ -44,7 +53,6 @@ export const useAuthStore = defineStore('auth', () => {
   async function register(name, email, password) {
     try {
       const { $axios } = useNuxtApp()
-
       await $axios.post(`/register`, {
         name,
         email,
@@ -58,5 +66,35 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  return { accessToken, refreshToken, user, setTokens, setUser, logout, login, register }
+  async function refresh() {
+    try {
+      if (!(localStorage.getItem('isAuthenticated') === 'true')) {
+        console.log('return refrash')
+        return
+      }
+
+      const config = useRuntimeConfig()
+      const apiBaseUrl = config.public.apiBaseUrl
+      const response = await fetch(`${apiBaseUrl}/refresh`, {
+        method: 'POST',
+        credentials: 'include',
+      })
+
+      if (!response.ok) {
+        throw new Error('Ошибка обновления токена')
+      }
+
+      const data = await response.json()
+
+      localStorage.setItem('isAuthenticated', 'true')
+      setTokens(data.access_token)
+      setUser(data.user)
+    } catch (error) {
+      console.error('Ошибка обновления токена:', error.message)
+      localStorage.removeItem('isAuthenticated')
+      logout()
+    }
+  }
+
+  return { accessToken, user, setTokens, setUser, logout, login, register, refresh }
 })

@@ -7,7 +7,7 @@
         </div>
 
         <div class="auth__inputs">
-          <template v-if="formType === 'register'">
+          <template v-if="isFormTypeRegister">
             <TheInput
               v-model="name"
               type="text"
@@ -84,13 +84,13 @@ const formLink = computed(() => formVariants[formType.value].link)
 const isEmailValid = computed(() => /\S+@\S+\.\S+/.test(email.value))
 const isPasswordValid = computed(() => password.value.length >= 6)
 const isNameValid = computed(() => name.value.length > 1)
+const isFormTypeRegister = computed(() => formType.value === 'register')
 
 function validateForm() {
   errors.value = {}
   if (!isEmailValid.value) errors.value.email = 'Некорректный email'
   if (!isPasswordValid.value) errors.value.password = 'Пароль должен быть минимум 6 символов'
-  if (!isNameValid.value) errors.value.name = 'Имя должно содержать больше 1 символа'
-
+  if (isFormTypeRegister.value && !isNameValid.value) errors.value.name = 'Имя должно содержать больше 1 символа'
   return Object.keys(errors.value).length === 0
 }
 
@@ -110,10 +110,10 @@ async function onSubmitClick() {
   if (!validateForm()) return
 
   let result
-  if (formType.value === 'login') {
-    result = await authStore.login(email.value, password.value)
-  } else {
+  if (isFormTypeRegister.value) {
     result = await authStore.register(name.value, email.value, password.value)
+  } else {
+    result = await authStore.login(email.value, password.value)
   }
 
   if (result) {
@@ -126,10 +126,10 @@ async function onSubmitClick() {
 .auth-wrap {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: top;
   padding-top: 20px;
   overflow: hidden;
-  height: fit-content;
+  height: 400px;
 }
 
 .auth {

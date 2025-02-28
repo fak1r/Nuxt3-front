@@ -3,11 +3,11 @@ import { useAuthStore } from '@/store/auth'
 
 export default defineNuxtPlugin(() => {
   const config = useRuntimeConfig()
-
   const apiBaseUrl = config.public.apiBaseUrl
 
   const instance = axios.create({
     baseURL: apiBaseUrl,
+    withCredentials: true,
   })
 
   instance.interceptors.request.use((config) => {
@@ -22,18 +22,13 @@ export default defineNuxtPlugin(() => {
     (response) => response,
     async (error) => {
       const authStore = useAuthStore()
-      if (error.response?.status === 401 && authStore.refreshToken) {
+      if (error.response?.status === 401) {
         try {
-          const { data } = await instance.post(
-            '/refresh',
-            new URLSearchParams({ refresh_token: authStore.refreshToken }),
-          )
-          authStore.setTokens(data.access_token, data.refresh_token)
+          await authStore.refresh()
+          error.config.headers.Authorization = `Bearer ${authStore.accessToken}`
 
-          error.config.headers.Authorization = `Bearer ${data.access_token}`
           return instance(error.config)
-        } catch (refreshError) {
-          console.error('Ошибка обновления токена:', refreshError.response?.data?.detail || refreshError.message)
+        } catch {
           authStore.logout()
         }
       }
