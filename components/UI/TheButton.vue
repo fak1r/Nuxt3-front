@@ -23,9 +23,16 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
-  variant: 'Primary' | 'Secondary'
-}>()
+const props = withDefaults(
+  defineProps<{
+    variant?: 'Primary' | 'Secondary'
+    size?: 'sm' | 'md' | 'lg'
+  }>(),
+  {
+    variant: 'Primary',
+    size: 'lg',
+  },
+)
 
 const ripples = ref<{ id: number; x: number; y: number }[]>([])
 const isHovered = ref(false)
@@ -47,20 +54,27 @@ const buttonVariants = {
     ripple: 'rgba(0, 0, 0, 0.15)',
   },
 }
+const buttonSizes = {
+  sm: '3px 12px',
+  md: '6px 16px',
+  lg: '9px 20px',
+}
 
-const buttonVariant = buttonVariants[props.variant]
+const buttonVariant = computed(() => buttonVariants[props.variant])
+const buttonSize = computed(() => buttonSizes[props.size])
 
 const buttonStyles = computed(() => {
   const isActive = isHovered.value || isFocused.value
   return {
-    background: isActive ? buttonVariant.hover : buttonVariant.background,
-    border: buttonVariant.border,
-    color: buttonVariant.color,
+    background: isActive ? buttonVariant.value.hover : buttonVariant.value.background,
+    border: buttonVariant.value.border,
+    color: buttonVariant.value.color,
+    padding: buttonSize.value,
   }
 })
 
 const rippleColorStyle = computed(() => {
-  return buttonVariant.ripple
+  return buttonVariant.value.ripple
 })
 
 function handleClick(event: MouseEvent | PointerEvent) {

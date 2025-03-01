@@ -1,16 +1,21 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { useNuxtApp } from '#app'
+import type { User } from '~/types/auth.types'
 
 export const useAuthStore = defineStore('auth', () => {
-  const accessToken = ref(null)
-  const user = ref(null)
+  const accessToken = ref<string | null>(null)
+  const user = ref<User | null>(null)
+  const isClient = import.meta.client
+  const hasRefreshToken = computed(() => {
+    return isClient ? localStorage.getItem('isAuthenticated') === 'true' : false
+  })
 
-  function setTokens(access) {
+  function setTokens(access: string) {
     accessToken.value = access
   }
 
-  function setUser(userData) {
+  function setUser(userData: User) {
     user.value = { ...userData }
   }
 
@@ -22,12 +27,12 @@ export const useAuthStore = defineStore('auth', () => {
       accessToken.value = null
       user.value = null
       localStorage.removeItem('isAuthenticated')
-    } catch (error) {
+    } catch (error: any) {
       console.error('Ошибка при выходе:', error.message)
     }
   }
 
-  async function login(email, password) {
+  async function login(email: string, password: string) {
     try {
       const { $axios } = useNuxtApp()
       const { data } = await $axios.post(
@@ -44,13 +49,13 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.setItem('isAuthenticated', 'true')
 
       return true
-    } catch (error) {
+    } catch (error: any) {
       console.error('Ошибка авторизации:', error.response?.data?.detail || error.message)
       return false
     }
   }
 
-  async function register(name, email, password) {
+  async function register(name: string, email: string, password: string) {
     try {
       const { $axios } = useNuxtApp()
       await $axios.post(`/register`, {
@@ -60,7 +65,7 @@ export const useAuthStore = defineStore('auth', () => {
       })
 
       return await login(email, password)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Ошибка регистрации:', error.response?.data?.detail || error.message)
       return false
     }
@@ -68,8 +73,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function refresh() {
     try {
-      if (!(localStorage.getItem('isAuthenticated') === 'true')) {
-        console.log('return refrash')
+      if (!hasRefreshToken.value) {
         return
       }
 
@@ -89,12 +93,12 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.setItem('isAuthenticated', 'true')
       setTokens(data.access_token)
       setUser(data.user)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Ошибка обновления токена:', error.message)
       localStorage.removeItem('isAuthenticated')
       logout()
     }
   }
 
-  return { accessToken, user, setTokens, setUser, logout, login, register, refresh }
+  return { accessToken, user, hasRefreshToken, setTokens, setUser, logout, login, register, refresh }
 })

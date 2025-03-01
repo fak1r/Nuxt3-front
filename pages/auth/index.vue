@@ -50,21 +50,22 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
-import { useAuthStore } from '@/store/auth'
+import { useAuthStore } from '~/store/auth'
 import TheInput from '~/components/UI/TheInput.vue'
 import TheButton from '~/components/UI/TheButton.vue'
+import type { FormType, FormVariants, FormErrors } from '~/types/auth.types'
 
 const authStore = useAuthStore()
 const email = ref('')
 const password = ref('')
 const name = ref('')
-const errors = ref({})
-const formType = ref('login')
+const errors = ref<FormErrors>({})
+const formType = ref<FormType>('login')
 const animDirection = ref('slide-left')
 
-const formVariants = {
+const formVariants: FormVariants = {
   login: {
     title: 'Вход',
     text: 'Нет аккаунта?',
@@ -86,6 +87,12 @@ const isPasswordValid = computed(() => password.value.length >= 6)
 const isNameValid = computed(() => name.value.length > 1)
 const isFormTypeRegister = computed(() => formType.value === 'register')
 
+onBeforeMount(() => {
+  if (authStore.accessToken) {
+    navigateTo('/')
+  }
+})
+
 function validateForm() {
   errors.value = {}
   if (!isEmailValid.value) errors.value.email = 'Некорректный email'
@@ -102,7 +109,7 @@ function onChangeFormTypeClick() {
   errors.value = {}
 }
 
-function clearError(field) {
+function clearError(field: keyof FormErrors) {
   Reflect.deleteProperty(errors.value, field)
 }
 

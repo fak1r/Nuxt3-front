@@ -4,31 +4,35 @@
       <div class="header__logo">Logo</div>
       <nav>
         <NuxtLink to="/">Главная</NuxtLink>
-        <NuxtLink v-if="!email" to="/auth">Вход</NuxtLink>
-        <NuxtLink v-if="email" to="/admin">Админка</NuxtLink>
-        <button @click="pingDB">Ping DB</button>
-        <button v-if="email" @click="handleLogout">Logout</button>
+        <NuxtLink v-if="!hasUser" to="/auth">Вход</NuxtLink>
+        <NuxtLink v-if="isAdmin" to="/admin">Админка</NuxtLink>
+        <button v-if="isAdmin" @click="pingDB">Ping DB</button>
+        <TheButton v-if="hasUser" variant="Secondary" size="sm" @click="handleLogout">{{ user?.name }} Выход</TheButton>
       </nav>
     </div>
   </header>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useAuthStore } from '@/store/auth'
+import type { User } from '~/types/auth.types'
+import TheButton from '~/components/UI/TheButton.vue'
 
 const authStore = useAuthStore()
 
-const email = ref('')
+const user = ref({} as User | null)
+const hasUser = computed(() => !!user.value?.email)
+const isAdmin = computed(() => !!user.value?.is_admin)
 
 authStore.$subscribe(
   () => {
-    email.value = authStore.user?.email
+    user.value = authStore.user
   },
   { detached: true },
 )
 
 onMounted(() => {
-  email.value = authStore.user?.email
+  user.value = authStore.user
 })
 
 function pingDB() {
