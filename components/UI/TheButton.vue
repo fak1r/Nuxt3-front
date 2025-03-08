@@ -23,16 +23,15 @@
 </template>
 
 <script setup lang="ts">
-const props = withDefaults(
-  defineProps<{
-    variant?: 'Primary' | 'Secondary'
-    size?: 'sm' | 'md' | 'lg'
-  }>(),
-  {
-    variant: 'Primary',
-    size: 'lg',
-  },
-)
+interface Props {
+  variant?: 'Primary' | 'Secondary'
+  size?: 'sm' | 'md' | 'lg'
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  variant: 'Primary',
+  size: 'lg',
+})
 
 const ripples = ref<{ id: number; x: number; y: number }[]>([])
 const isHovered = ref(false)

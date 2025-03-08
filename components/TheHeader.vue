@@ -1,28 +1,42 @@
 <template>
-  <header class="header">
-    <div class="header__body">
-      <div class="header__logo">Logo</div>
-      <nav>
-        <NuxtLink to="/">Главная</NuxtLink>
-        <NuxtLink v-if="!hasUser" to="/auth">Вход</NuxtLink>
-        <NuxtLink v-if="isAdmin" to="/admin">Админка</NuxtLink>
-        <button v-if="isAdmin" @click="pingDB">Ping DB</button>
-        <TheButton v-if="hasUser" variant="Secondary" size="sm" @click="handleLogout">{{ user?.name }} Выход</TheButton>
-      </nav>
-    </div>
-  </header>
+  <nav aria-label="Основная навигация">
+    <NuxtLink to="/">
+      <SvgIcons icon="logo" />
+    </NuxtLink>
+    <!-- <NuxtLink to="/">Главная</NuxtLink>
+    <NuxtLink to="/products">Товары</NuxtLink>
+    <NuxtLink v-if="!hasUser" to="/auth">Вход</NuxtLink>
+    <NuxtLink v-if="isAdmin" to="/admin">Админка</NuxtLink>
+    <button v-if="isAdmin" @click="pingDB">Ping DB</button>
+    <TheButton v-if="hasUser" variant="Secondary" size="sm" @click="handleLogout">{{ user?.name }} Выход</TheButton> -->
+
+    <NuxtLink class="catalog" to="/catalog">
+      <SvgIcons icon="catalog" />
+      <span>Каталог</span>
+    </NuxtLink>
+    <form class="search-form" role="search">
+      <TheSearch v-model="search" />
+    </form>
+    <NuxtLink to="/cart">
+      <SvgIcons icon="cart" />
+    </NuxtLink>
+    <NuxtLink to="/profile">
+      <SvgIcons icon="profile" />
+    </NuxtLink>
+  </nav>
 </template>
 
 <script setup lang="ts">
 import { useAuthStore } from '@/store/auth'
 import type { User } from '~/types/auth.types'
-import TheButton from '~/components/UI/TheButton.vue'
+import TheSearch from '~/components/UI/TheSearch.vue'
 
 const authStore = useAuthStore()
 
 const user = ref({} as User | null)
 const hasUser = computed(() => !!user.value?.email)
 const isAdmin = computed(() => !!user.value?.is_admin)
+const search = ref('')
 
 authStore.$subscribe(
   () => {
@@ -42,33 +56,34 @@ function pingDB() {
 
 function handleLogout() {
   authStore.logout()
-  navigateTo('/')
 }
 </script>
 
 <style scoped lang="scss">
-.header {
-  position: fixed;
-  width: 100%;
-  height: 64px;
-  background-color: rgba(253, 254, 254, 0.5);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--border);
+nav {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  padding: 16px;
-  box-sizing: border-box;
-  z-index: 9999;
+  gap: 8px;
 
-  &__body {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
+  & > :first-child {
+    margin-right: 200px;
   }
 
-  nav {
+  a {
     display: flex;
-    gap: 16px;
+    gap: 4px;
+    text-decoration: none;
+  }
+
+  form {
+    width: 100%;
+  }
+
+  .catalog {
+    background-color: var(--border);
+    border-radius: 8px;
+    padding: 4px 8px;
   }
 }
 </style>

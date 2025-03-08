@@ -5,6 +5,8 @@
   --primary-btn: #64748b;
   --primary-btn-hover: #4b5a72;
   --primary-btn-ripple: rgba(255, 255, 255, 0.4);
+  --max-page-width: 1096px;
+  --general-text-color: #334155;
 }
 
 html {
@@ -14,6 +16,6 @@ body {
   margin: 0;
   background-color: #f8fafc;
   font-family: inherit;
-  color: #334155;
+  color: var(--general-text-color);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }

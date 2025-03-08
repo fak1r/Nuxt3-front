@@ -1,32 +1,30 @@
 <template>
-  <div class="input" :class="{ 'input--error': hasError }">
-    <label :for="inputId" :class="{ active: isActive }">{{ placeholder }}</label>
+  <div class="input">
+    <!-- <label for="input-search">Поиск</label> -->
+    <SvgIcons icon="search" :color="isIconHovered ? 'var(--primary-btn)' : 'var(--input-border-hover)'" />
     <input
-      :id="inputId"
+      id="input-search"
       :value="modelValue"
-      :type="customType"
+      type="text"
+      placeholder="Поиск"
       @focus="onInputFocus"
       @blur="onInputBlur"
       @input="onInput"
     />
     <span
-      v-if="isPassword"
+      v-if="isIconXVisible"
       tabindex="0"
       class="input__icon"
-      @click="togglePasswordVisibility"
-      @keydown.enter.prevent="togglePasswordVisibility"
-      @keydown.space.prevent="togglePasswordVisibility"
+      @click="onClear"
+      @keydown.enter.prevent="onClear"
+      @keydown.space.prevent="onClear"
       @mouseover="setIconHoverState(true)"
       @mouseleave="setIconHoverState(false)"
       @focus="setIconHoverState(true)"
       @blur="setIconHoverState(false)"
     >
-      <SvgIcons
-        :icon="isPasswordVisible ? 'eye-open' : 'eye-close'"
-        :color="isIconHovered ? 'var(--primary-btn)' : 'var(--input-border-hover)'"
-      />
+      <SvgIcons icon="x" :color="isIconHovered ? 'var(--primary-btn)' : 'var(--input-border-hover)'" />
     </span>
-    <p v-if="error" class="input__error-text">{{ error }}</p>
   </div>
 </template>
 
@@ -35,30 +33,16 @@ import SvgIcons from '~/components/Svg/SvgIcons.vue'
 
 interface Props {
   modelValue: string
-  placeholder: string
-  type: 'text' | 'email' | 'password'
-  name: string
-  error?: string
 }
 
 const props = defineProps<Props>()
 
-interface Emits {
-  (e: 'update:modelValue', value: string): void
-  (e: 'focus'): void
-}
-
-const emit = defineEmits<Emits>()
+const emit = defineEmits(['update:modelValue', 'focus'])
 
 const isInputFocused = ref(false)
-const isPasswordVisible = ref(false)
 const isIconHovered = ref(false)
 
-const isActive = computed(() => !!props.modelValue || isInputFocused.value)
-const isPassword = computed(() => props.type === 'password')
-const customType = computed(() => (isPasswordVisible.value ? 'text' : props.type))
-const inputId = computed(() => `input-${props.name}`)
-const hasError = computed(() => !!props.error)
+const isIconXVisible = computed(() => !!props.modelValue)
 
 function onInput(event: Event) {
   const target = event.target as HTMLInputElement
@@ -74,12 +58,12 @@ function onInputBlur() {
   isInputFocused.value = !!props.modelValue
 }
 
-function togglePasswordVisibility() {
-  isPasswordVisible.value = !isPasswordVisible.value
-}
-
 function setIconHoverState(isHovered: boolean) {
   isIconHovered.value = isHovered
+}
+
+function onClear() {
+  emit('update:modelValue', '')
 }
 </script>
 
@@ -105,21 +89,6 @@ function setIconHoverState(isHovered: boolean) {
 
   &:focus-within {
     border: 1px solid black;
-  }
-
-  &--error {
-    border: 1px solid red;
-    border-radius: 6px;
-  }
-
-  &__error-text {
-    color: red;
-    font-size: 14px;
-    position: absolute;
-    bottom: -22px;
-    white-space: nowrap;
-    left: 0;
-    margin: 0;
   }
 
   &__icon {
