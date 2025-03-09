@@ -7,23 +7,19 @@
       :value="modelValue"
       type="text"
       placeholder="Поиск"
-      @focus="onInputFocus"
-      @blur="onInputBlur"
-      @input="onInput"
+      @focus="focusInput"
+      @blur="blurInput"
+      @input="updateInput"
     />
     <span
       v-if="isIconXVisible"
       tabindex="0"
       class="input__icon"
-      @click="onClear"
-      @keydown.enter.prevent="onClear"
-      @keydown.space.prevent="onClear"
-      @mouseover="setIconHoverState(true)"
-      @mouseleave="setIconHoverState(false)"
-      @focus="setIconHoverState(true)"
-      @blur="setIconHoverState(false)"
+      @click="clearInput"
+      @keydown.enter.prevent="clearInput"
+      @keydown.space.prevent="clearInput"
     >
-      <SvgIcons icon="x" :color="isIconHovered ? 'var(--primary-btn)' : 'var(--input-border-hover)'" />
+      ✕
     </span>
   </div>
 </template>
@@ -44,25 +40,21 @@ const isIconHovered = ref(false)
 
 const isIconXVisible = computed(() => !!props.modelValue)
 
-function onInput(event: Event) {
+function updateInput(event: Event) {
   const target = event.target as HTMLInputElement
   emit('update:modelValue', target.value)
 }
 
-function onInputFocus() {
+function focusInput() {
   isInputFocused.value = true
   emit('focus')
 }
 
-function onInputBlur() {
+function blurInput() {
   isInputFocused.value = !!props.modelValue
 }
 
-function setIconHoverState(isHovered: boolean) {
-  isIconHovered.value = isHovered
-}
-
-function onClear() {
+function clearInput() {
   emit('update:modelValue', '')
 }
 </script>
@@ -78,13 +70,10 @@ function onClear() {
   box-shadow: 0 1px 2px 0 rgba(18, 18, 23, 0.05);
   position: relative;
   margin-bottom: 26px;
+  background: var(--header-background);
 
   &:last-child {
     margin-bottom: 0;
-  }
-
-  &:hover:not(.input--error) {
-    border: 1px solid var(--input-border-hover);
   }
 
   &:focus-within {
@@ -99,6 +88,11 @@ function onClear() {
     transform: translateY(-50%);
     cursor: pointer;
 
+    &:hover,
+    &:focus {
+      color: black;
+    }
+
     &:focus-visible {
       outline: 2px solid var(--input-border-hover);
     }
@@ -111,28 +105,6 @@ function onClear() {
     background: transparent;
     font-size: 16px;
     height: fit-content;
-  }
-
-  label {
-    display: flex;
-    align-items: center;
-    position: absolute;
-    left: 8px;
-    top: 50%;
-    transform: translateY(-55%);
-    font-size: 16px;
-    transition: all 0.3s ease;
-    pointer-events: none;
-    background-color: white;
-    transition-timing-function: ease;
-    max-height: 10px;
-    &.active {
-      top: 0;
-      left: 8px;
-      font-size: 12px;
-      padding: 0 2px;
-      transform: translateY(-50%);
-    }
   }
 }
 </style>

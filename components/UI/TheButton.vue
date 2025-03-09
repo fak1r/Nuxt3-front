@@ -125,20 +125,13 @@ function handleMouseLeave(event: MouseEvent) {
 
 <style scoped lang="scss">
 .btn {
-  border: none;
-  outline: none;
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   padding: 9px 20px;
   font-size: 16px;
-  font-weight: 500;
   border-radius: 6px;
-  cursor: pointer;
   overflow: hidden;
   transition: background 0.2s ease;
   font-weight: bold;
+  width: 100%;
 
   &__ripple {
     position: absolute;

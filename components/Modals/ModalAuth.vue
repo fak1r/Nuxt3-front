@@ -1,12 +1,14 @@
 <template>
-  <div class="auth-wrap">
+  <div class="overlay" @click.self="closeModal">
     <transition :name="animDirection">
       <form :key="formType" class="auth" @submit.prevent="onSubmitClick">
+        <button class="auth__close" aria-label="Закрыть" type="button" @click="closeModal">✕</button>
+
         <div class="auth__title">
           <h1>{{ formTitle }}</h1>
         </div>
 
-        <div class="auth__inputs">
+        <div class="auth__body">
           <template v-if="isFormTypeRegister">
             <TheInput
               v-model="name"
@@ -35,9 +37,9 @@
             :error="errors.password"
             @focus="clearError('password')"
           />
-        </div>
 
-        <TheButton variant="Primary" type="submit">{{ formTitle }}</TheButton>
+          <TheButton variant="Primary" type="submit">{{ formTitle }}</TheButton>
+        </div>
 
         <div class="auth__info">
           {{ formText }}&nbsp;
@@ -56,6 +58,12 @@ import { useAuthStore } from '~/store/auth'
 import TheInput from '~/components/UI/TheInput.vue'
 import TheButton from '~/components/UI/TheButton.vue'
 import type { FormType, FormVariants, FormErrors } from '~/types/auth.types'
+
+interface Emits {
+  (e: 'close-modal'): void
+}
+
+const emit = defineEmits<Emits>()
 
 const authStore = useAuthStore()
 const email = ref('')
@@ -127,28 +135,46 @@ async function onSubmitClick() {
     navigateTo('/')
   }
 }
+
+function closeModal() {
+  emit('close-modal')
+}
 </script>
 
 <style scoped lang="scss">
-.auth-wrap {
+.auth {
   display: flex;
   justify-content: center;
-  align-items: top;
-  padding-top: 20px;
+  flex-direction: column;
   overflow: hidden;
-  height: 400px;
-}
-
-.auth {
-  background-color: white;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  z-index: 1001;
+  position: relative;
+  background-color: var(--general-background-color);
   border: 1px solid var(--border);
   padding: 20px;
   display: flex;
-  flex-direction: column;
   gap: 26px;
   width: 400px;
   height: fit-content;
   border-radius: 6px;
+
+  &__close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 20px;
+    color: var(--primary-btn-hover);
+
+    &:hover,
+    &:focus {
+      color: black;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--input-border-hover);
+    }
+  }
 
   &__info {
     display: flex;
@@ -168,10 +194,6 @@ async function onSubmitClick() {
     &:focus-visible {
       outline: 2px solid var(--input-border-hover);
     }
-  }
-
-  h1 {
-    margin: 0;
   }
 }
 

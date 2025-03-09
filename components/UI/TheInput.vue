@@ -1,13 +1,13 @@
 <template>
-  <div class="input" :class="{ 'input--error': hasError }">
+  <div class="input" :class="{ error: hasError }">
     <label :for="inputId" :class="{ active: isActive }">{{ placeholder }}</label>
     <input
       :id="inputId"
       :value="modelValue"
       :type="customType"
-      @focus="onInputFocus"
-      @blur="onInputBlur"
-      @input="onInput"
+      @focus="focusInput"
+      @blur="blurInput"
+      @input="updateInput"
     />
     <span
       v-if="isPassword"
@@ -60,17 +60,19 @@ const customType = computed(() => (isPasswordVisible.value ? 'text' : props.type
 const inputId = computed(() => `input-${props.name}`)
 const hasError = computed(() => !!props.error)
 
-function onInput(event: Event) {
+function updateInput(event: Event) {
   const target = event.target as HTMLInputElement
   emit('update:modelValue', target.value)
 }
 
-function onInputFocus() {
+function focusInput() {
   isInputFocused.value = true
-  emit('focus')
+  if (props.error) {
+    emit('focus')
+  }
 }
 
-function onInputBlur() {
+function blurInput() {
   isInputFocused.value = !!props.modelValue
 }
 
@@ -95,11 +97,7 @@ function setIconHoverState(isHovered: boolean) {
   position: relative;
   margin-bottom: 26px;
 
-  &:last-child {
-    margin-bottom: 0;
-  }
-
-  &:hover:not(.input--error) {
+  &:hover {
     border: 1px solid var(--input-border-hover);
   }
 
@@ -107,9 +105,8 @@ function setIconHoverState(isHovered: boolean) {
     border: 1px solid black;
   }
 
-  &--error {
-    border: 1px solid red;
-    border-radius: 6px;
+  &.error {
+    border: 1px solid red !important;
   }
 
   &__error-text {
@@ -136,12 +133,7 @@ function setIconHoverState(isHovered: boolean) {
   }
 
   input {
-    width: 100%;
-    border: none;
-    outline: none;
-    background: transparent;
     font-size: 16px;
-    height: fit-content;
   }
 
   label {
@@ -157,6 +149,7 @@ function setIconHoverState(isHovered: boolean) {
     background-color: white;
     transition-timing-function: ease;
     max-height: 10px;
+
     &.active {
       top: 0;
       left: 8px;

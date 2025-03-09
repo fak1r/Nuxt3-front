@@ -7,15 +7,71 @@
   --primary-btn-ripple: rgba(255, 255, 255, 0.4);
   --max-page-width: 1096px;
   --general-text-color: #334155;
+  --general-background-color: #f8fafc;
+  --header-background: rgba(253, 254, 254, 0.5);
 }
 
 html {
   margin: 0;
 }
+
 body {
   margin: 0;
-  background-color: #f8fafc;
+  background-color: var(--general-background-color);
   font-family: inherit;
   color: var(--general-text-color);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+button {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  box-sizing: border-box;
+  position: relative;
+}
+
+ul,
+ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  all: unset;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+}
+
+input,
+textarea {
+  all: unset;
+  width: 100%;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin: 0;
+  padding: 0;
+  font-weight: inherit;
+  //font-size: inherit;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }

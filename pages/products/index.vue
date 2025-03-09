@@ -104,7 +104,6 @@ function fetchFilteredProducts() {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 16px;
-    list-style: none;
     padding: 20px;
   }
 }
