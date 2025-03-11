@@ -1,10 +1,10 @@
 <template>
-  <nav aria-label="Основная навигация">
-    <NuxtLink to="/">
+  <nav class="nav" aria-label="Основная навигация">
+    <NuxtLink to="/" active-class="active">
       <SvgIcons icon="logo" />
     </NuxtLink>
 
-    <button class="catalog" aria-label="Каталог" @click="openCatalogModal">
+    <button class="nav__item nav__catalog" aria-label="Каталог" @click="openCatalogModal">
       <SvgIcons icon="catalog" />
       <span>Каталог</span>
     </button>
@@ -13,17 +13,17 @@
       <TheSearch v-model="search" />
     </form>
 
-    <NuxtLink to="/cart">
+    <NuxtLink to="/cart" class="nav__item" active-class="active">
       <SvgIcons icon="cart" />
       <span>Корзина</span>
     </NuxtLink>
 
-    <button v-if="!hasUser" aria-label="Войти в аккаунт" @click="openAuthModal">
+    <button v-if="!hasUser" class="nav__item" aria-label="Войти в аккаунт" @click="openAuthModal">
       <SvgIcons icon="profile" />
       <span>Войти</span>
     </button>
 
-    <NuxtLink v-else to="/profile">
+    <NuxtLink v-else to="/profile" class="nav__item" active-class="active">
       <SvgIcons icon="profile" />
       <span>Профиль</span>
     </NuxtLink>
@@ -32,7 +32,6 @@
 
 <script setup lang="ts">
 import { useAuthStore } from '@/store/auth'
-import type { User } from '~/types/auth.types'
 import TheSearch from '~/components/UI/TheSearch.vue'
 
 interface Emits {
@@ -43,20 +42,9 @@ const emit = defineEmits<Emits>()
 
 const authStore = useAuthStore()
 
-const user = ref({} as User | null)
+const user = computed(() => authStore.user)
 const hasUser = computed(() => !!user.value?.email)
 const search = ref('')
-
-authStore.$subscribe(
-  () => {
-    user.value = authStore.user
-  },
-  { detached: true },
-)
-
-onMounted(() => {
-  user.value = authStore.user
-})
 
 function openAuthModal() {
   emit('open-auth-modal')
@@ -68,7 +56,7 @@ function openCatalogModal() {
 </script>
 
 <style scoped lang="scss">
-nav {
+.nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -86,13 +74,31 @@ nav {
     @include phone {
       display: none;
     }
+
+    &.active {
+      color: var(--menu-items-color-active);
+    }
+  }
+
+  &__item {
+    color: var(--menu-items-color);
+    transition: color 0.3s ease-in-out;
+
+    svg {
+      color: inherit;
+      transition: color 0s ease-in-out;
+    }
+
+    &:hover {
+      color: var(--menu-items-color-hover) !important;
+    }
   }
 
   form {
     width: 100%;
   }
 
-  .catalog {
+  &__catalog {
     background-color: var(--border);
     border-radius: 8px;
     padding: 4px 8px;
@@ -106,6 +112,10 @@ nav {
   }
 
   button {
+    svg {
+      margin-bottom: -4px;
+    }
+
     @include phone {
       display: none;
     }

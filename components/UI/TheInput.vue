@@ -121,11 +121,6 @@ function setIconHoverState(isHovered: boolean) {
     top: 50%;
     height: 24px;
     transform: translateY(-50%);
-    cursor: pointer;
-
-    &:focus-visible {
-      outline: 2px solid var(--input-border-hover);
-    }
   }
 
   input {

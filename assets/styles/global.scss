@@ -9,7 +9,10 @@
   --general-text-color: #334155;
   --general-background-color: #f8fafc;
   --header-background: rgba(253, 254, 254, 0.5);
-  --default-icon-color: #434343;
+  --default-icon-color: #0e2d5c;
+  --menu-items-color: #21496c;
+  --menu-items-color-hover: #366c9c;
+  --menu-items-color-active: black;
 }
 
 html {
@@ -32,6 +35,11 @@ button {
   cursor: pointer;
   box-sizing: border-box;
   position: relative;
+  color: inherit;
+
+  &:focus-visible {
+    outline: 2px solid var(--input-border-hover);
+  }
 }
 
 ul,
@@ -46,6 +54,11 @@ a {
   cursor: pointer;
   text-decoration: none;
   color: inherit;
+  display: inline-block;
+
+  &:focus-visible {
+    outline: 2px solid var(--input-border-hover);
+  }
 }
 
 input,

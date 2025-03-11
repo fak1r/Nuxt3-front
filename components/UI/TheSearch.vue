@@ -84,10 +84,6 @@ function clearInput() {
     &:focus {
       color: black;
     }
-
-    &:focus-visible {
-      outline: 2px solid var(--input-border-hover);
-    }
   }
 
   input {

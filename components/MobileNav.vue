@@ -1,15 +1,16 @@
 <template>
-  <nav class="mobile-nav" aria-label="Мобильная навигация">
+  <nav class="mobile-nav" aria-label="Мобильная навигация" role="menu">
     <ul>
-      <li v-for="item in navItems" :key="item.to">
+      <li v-for="item in navItems" :key="item.to" role="menuItem">
         <template v-if="item.type === 'link'">
-          <NuxtLink :to="item.to" active-class="active">
+          <NuxtLink :to="item.to" class="mobile-nav__item" active-class="active">
             <SvgIcons :icon="item.icon" />
             <span>{{ item.label }}</span>
           </NuxtLink>
         </template>
+
         <template v-else>
-          <button @click="openAuthModal">
+          <button type="button" class="mobile-nav__item" @click="openAuthModal">
             <SvgIcons :icon="item.icon" />
             <span>{{ item.label }}</span>
           </button>
@@ -22,7 +23,6 @@
 <script setup lang="ts">
 import SvgIcons from '~/components/Svg/SvgIcons.vue'
 import { useAuthStore } from '@/store/auth'
-import type { User } from '~/types/auth.types'
 
 interface Emits {
   (e: 'open-auth-modal'): void
@@ -32,7 +32,7 @@ const emit = defineEmits<Emits>()
 
 const authStore = useAuthStore()
 
-const user = ref({} as User | null)
+const user = computed(() => authStore.user)
 const hasUser = computed(() => !!user.value?.email)
 
 const navItems = computed(() => [
@@ -43,17 +43,6 @@ const navItems = computed(() => [
     ? { to: '/profile', label: 'Профиль', icon: 'profile', type: 'link' }
     : { to: '#', label: 'Войти', icon: 'profile', type: 'button' },
 ])
-
-authStore.$subscribe(
-  () => {
-    user.value = authStore.user
-  },
-  { detached: true },
-)
-
-onMounted(() => {
-  user.value = authStore.user
-})
 
 function openAuthModal() {
   emit('open-auth-modal')
@@ -79,20 +68,39 @@ function openAuthModal() {
     display: flex;
   }
 
-  ul {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
+  &__item {
+    color: var(--menu-items-color);
+    transition: color 0.3s ease-in-out;
+
+    svg {
+      color: inherit;
+      transition: color 0s ease-in-out;
+    }
+
+    &:hover {
+      color: var(--menu-items-color-hover);
+    }
   }
 
   a {
     display: flex;
     flex-direction: column;
     align-items: center;
-    color: var(--general-text-color);
 
-    .active {
-      color: green;
+    &.active {
+      color: var(--menu-items-color-active);
+    }
+  }
+
+  ul {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+
+    button {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
   }
 }

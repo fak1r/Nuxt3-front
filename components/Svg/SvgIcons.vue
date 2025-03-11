@@ -132,7 +132,7 @@ defineProps<Props>()
 
 <style scoped lang="scss">
 .icon {
-  color: var(--default-icon-color);
+  //color: var(--default-icon-color);
   transition: all 0.3s ease;
   flex-shrink: 0;
   fill: currentColor;

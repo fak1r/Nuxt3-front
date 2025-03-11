@@ -169,10 +169,6 @@ function closeModal() {
     &:focus {
       color: black;
     }
-
-    &:focus-visible {
-      outline: 2px solid var(--input-border-hover);
-    }
   }
 
   &__info {
@@ -181,18 +177,9 @@ function closeModal() {
   }
 
   &__link {
-    cursor: pointer;
     color: blue;
     text-decoration: underline;
     text-underline-offset: 4px;
-    border: none;
-    background: none;
-    font: inherit;
-    padding: 0;
-
-    &:focus-visible {
-      outline: 2px solid var(--input-border-hover);
-    }
   }
 }
 
