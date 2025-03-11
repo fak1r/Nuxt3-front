@@ -28,10 +28,7 @@ interface Props {
   size?: 'sm' | 'md' | 'lg'
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  variant: 'Primary',
-  size: 'lg',
-})
+const { variant = 'Primary', size = 'lg' } = defineProps<Props>()
 
 const ripples = ref<{ id: number; x: number; y: number }[]>([])
 const isHovered = ref(false)
@@ -59,8 +56,8 @@ const buttonSizes = {
   lg: '9px 20px',
 }
 
-const buttonVariant = computed(() => buttonVariants[props.variant])
-const buttonSize = computed(() => buttonSizes[props.size])
+const buttonVariant = computed(() => buttonVariants[variant])
+const buttonSize = computed(() => buttonSizes[size])
 
 const buttonStyles = computed(() => {
   const isActive = isHovered.value || isFocused.value

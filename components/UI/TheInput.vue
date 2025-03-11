@@ -9,23 +9,19 @@
       @blur="blurInput"
       @input="updateInput"
     />
-    <span
+    <button
       v-if="isPassword"
-      tabindex="0"
       class="input__icon"
-      @click="togglePasswordVisibility"
-      @keydown.enter.prevent="togglePasswordVisibility"
-      @keydown.space.prevent="togglePasswordVisibility"
+      :aria-label="isPasswordVisible ? 'Скрыть пароль' : 'Показать пароль'"
+      type="button"
       @mouseover="setIconHoverState(true)"
       @mouseleave="setIconHoverState(false)"
       @focus="setIconHoverState(true)"
       @blur="setIconHoverState(false)"
+      @click="togglePasswordVisibility"
     >
-      <SvgIcons
-        :icon="isPasswordVisible ? 'eye-open' : 'eye-close'"
-        :color="isIconHovered ? 'var(--primary-btn)' : 'var(--input-border-hover)'"
-      />
-    </span>
+      <SvgIcons :icon="isPasswordVisible ? 'eye-open' : 'eye-close'" :color="isIconHovered ? 'dark-gray' : 'gray'" />
+    </button>
     <p v-if="error" class="input__error-text">{{ error }}</p>
   </div>
 </template>

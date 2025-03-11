@@ -2,30 +2,27 @@
   <nav aria-label="Основная навигация">
     <NuxtLink to="/">
       <SvgIcons icon="logo" />
-      <!-- <TheIcon color="green" size="XL" icon="eye-open" /> -->
     </NuxtLink>
-    <!-- <NuxtLink to="/">Главная</NuxtLink>
-    <NuxtLink to="/products">Товары</NuxtLink>
-    <NuxtLink v-if="!hasUser" to="/auth">Вход</NuxtLink>
-    <NuxtLink v-if="isAdmin" to="/admin">Админка</NuxtLink>
-    <button v-if="isAdmin" @click="pingDB">Ping DB</button>
-    <TheButton v-if="hasUser" variant="Secondary" size="sm" @click="handleLogout">{{ user?.name }} Выход</TheButton> -->
 
     <button class="catalog" aria-label="Каталог" @click="openCatalogModal">
       <SvgIcons icon="catalog" />
       <span>Каталог</span>
     </button>
+
     <form class="search-form" role="search">
       <TheSearch v-model="search" />
     </form>
+
     <NuxtLink to="/cart">
       <SvgIcons icon="cart" />
       <span>Корзина</span>
     </NuxtLink>
+
     <button v-if="!hasUser" aria-label="Войти в аккаунт" @click="openAuthModal">
       <SvgIcons icon="profile" />
       <span>Войти</span>
     </button>
+
     <NuxtLink v-else to="/profile">
       <SvgIcons icon="profile" />
       <span>Профиль</span>
@@ -37,7 +34,6 @@
 import { useAuthStore } from '@/store/auth'
 import type { User } from '~/types/auth.types'
 import TheSearch from '~/components/UI/TheSearch.vue'
-import TheIcon from '~/components/UI/TheIcon.vue'
 
 interface Emits {
   (e: 'open-auth-modal' | 'open-catalog-modal'): void

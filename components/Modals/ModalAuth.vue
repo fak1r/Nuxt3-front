@@ -53,7 +53,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import { useAuthStore } from '~/store/auth'
 import TheInput from '~/components/UI/TheInput.vue'
 import TheButton from '~/components/UI/TheButton.vue'

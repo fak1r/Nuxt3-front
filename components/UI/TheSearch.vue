@@ -1,6 +1,5 @@
 <template>
   <div class="input">
-    <!-- <label for="input-search">Поиск</label> -->
     <SvgIcons icon="search" :color="isIconHovered ? 'var(--primary-btn)' : 'var(--input-border-hover)'" />
     <input
       id="input-search"
@@ -11,16 +10,9 @@
       @blur="blurInput"
       @input="updateInput"
     />
-    <span
-      v-if="isIconXVisible"
-      tabindex="0"
-      class="input__icon"
-      @click="clearInput"
-      @keydown.enter.prevent="clearInput"
-      @keydown.space.prevent="clearInput"
-    >
+    <button v-if="isIconXVisible" class="input__clear" aria-label="Очистить" type="button" @click="clearInput">
       ✕
-    </span>
+    </button>
   </div>
 </template>
 
@@ -80,13 +72,13 @@ function clearInput() {
     border: 1px solid black;
   }
 
-  &__icon {
+  &__clear {
     position: absolute;
     right: 8px;
     top: 50%;
     height: 24px;
     transform: translateY(-50%);
-    cursor: pointer;
+    color: var(--primary-btn-hover);
 
     &:hover,
     &:focus {
