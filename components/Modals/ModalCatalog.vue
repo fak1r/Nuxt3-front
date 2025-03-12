@@ -1,24 +1,57 @@
 <template>
-  <div class="overlay overlay--mt" @click.self="closeModal">
-    <div class="catalog">CATALOG MODAL</div>
-  </div>
+  <dialog class="overlay overlay--mt" @click.self="closeModal">
+    <div class="catalog">
+      <aside class="catalog__side--left">
+        <div
+          v-for="category in categories"
+          :key="category"
+          class="catalog__item"
+          :class="{ 'catalog__item--active': selectedCategory === category }"
+          @mouseover="setCategory(category)"
+        >
+          {{ category }}
+        </div>
+      </aside>
+
+      <section class="catalog__side--right">
+        <div v-for="producer in data[selectedCategory]" :key="producer" class="catalog__item">
+          {{ producer }}
+        </div>
+      </section>
+    </div>
+  </dialog>
 </template>
 
 <script setup lang="ts">
-interface Emits {
-  (e: 'close-modal'): void
+import { useModalStore } from '~/store/modal'
+
+const modalStore = useModalStore()
+
+const data = {
+  Ламинат: ['CLASSEN', 'MILANO ITALIA'],
+  Паркет: ['BOSCH', 'SCHNEIDER'],
 }
 
-const emit = defineEmits<Emits>()
+type Category = keyof typeof data
+
+const selectedCategory = ref<Category>(Object.keys(data)[0] as Category)
+
+const categories = computed(() => Object.keys(data) as Category[])
+
+function setCategory(category: Category) {
+  selectedCategory.value = category
+}
 
 function closeModal() {
-  emit('close-modal')
+  modalStore.close()
 }
 </script>
 
 <style scoped lang="scss">
-.overlay--mt {
-  margin-top: var(--header-height);
+.overlay {
+  &--mt {
+    margin-top: var(--header-height);
+  }
 }
 .catalog {
   position: fixed;
@@ -39,6 +72,30 @@ function closeModal() {
   background-color: var(--general-background-color);
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
+
+  &__item {
+    font-size: 18px;
+
+    &--active {
+      background-color: var(--border);
+    }
+  }
+
+  &__side {
+    display: flex;
+    flex-direction: column;
+
+    &--left {
+      width: 30%;
+      padding: 12px 4px 12px 12px;
+      border-right: 1px solid var(--input-border);
+    }
+
+    &--right {
+      width: 70%;
+      padding: 12px 4px 12px 24px;
+    }
+  }
 
   &__close {
     position: absolute;

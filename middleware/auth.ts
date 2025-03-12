@@ -5,6 +5,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const authStore = useAuthStore()
   const modalStore = useModalStore()
 
+  modalStore.close()
+
   if (to.path.startsWith('/admin')) {
     if (!authStore.user?.is_admin) return navigateTo('/')
 
@@ -19,6 +21,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
     } catch {
       return navigateTo('/')
     }
+  }
+
+  if (to.path === '/profile' && !authStore.accessToken) {
+    return navigateTo('/')
   }
 
   if (!authStore.accessToken && authStore.hasRefreshToken) {

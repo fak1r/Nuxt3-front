@@ -50,6 +50,10 @@ import { useProductsStore } from '@/store/products'
 import { useCategoriesStore } from '@/store/categories'
 import ProductCard from '@/components/ProductCard.vue'
 
+definePageMeta({
+  middleware: 'auth',
+})
+
 const productsStore = useProductsStore()
 const categoriesStore = useCategoriesStore()
 

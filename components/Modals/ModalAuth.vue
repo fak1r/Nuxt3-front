@@ -1,7 +1,7 @@
 <template>
-  <div class="overlay" @click.self="closeModal">
+  <dialog class="overlay" @click.self="closeModal">
     <transition :name="animDirection">
-      <form :key="formType" class="auth" @submit.prevent="onSubmitClick">
+      <form :key="formType" class="auth" @submit.prevent="submitForm">
         <button class="auth__close" aria-label="Закрыть" type="button" @click="closeModal">✕</button>
 
         <div class="auth__title">
@@ -43,28 +43,25 @@
 
         <div class="auth__info">
           {{ formText }}&nbsp;
-          <button class="auth__link" type="button" @click="onChangeFormTypeClick">
+          <button class="auth__link" type="button" @click="changeFormType">
             {{ formLink }}
           </button>
         </div>
       </form>
     </transition>
-  </div>
+  </dialog>
 </template>
 
 <script setup lang="ts">
 import { useAuthStore } from '~/store/auth'
+import { useModalStore } from '~/store/modal'
 import TheInput from '~/components/UI/TheInput.vue'
 import TheButton from '~/components/UI/TheButton.vue'
 import type { FormType, FormVariants, FormErrors } from '~/types/auth.types'
 
-interface Emits {
-  (e: 'close-modal'): void
-}
-
-const emit = defineEmits<Emits>()
-
 const authStore = useAuthStore()
+const modalStore = useModalStore()
+
 const email = ref('')
 const password = ref('')
 const name = ref('')
@@ -108,7 +105,7 @@ function validateForm() {
   return Object.keys(errors.value).length === 0
 }
 
-function onChangeFormTypeClick() {
+function changeFormType() {
   animDirection.value = formType.value === 'login' ? 'slide-left' : 'slide-right'
   formType.value = formType.value === 'login' ? 'register' : 'login'
   email.value = ''
@@ -120,7 +117,7 @@ function clearError(field: keyof FormErrors) {
   Reflect.deleteProperty(errors.value, field)
 }
 
-async function onSubmitClick() {
+async function submitForm() {
   if (!validateForm()) return
 
   let result
@@ -131,12 +128,12 @@ async function onSubmitClick() {
   }
 
   if (result) {
-    navigateTo('/')
+    closeModal()
   }
 }
 
 function closeModal() {
-  emit('close-modal')
+  modalStore.close()
 }
 </script>
 

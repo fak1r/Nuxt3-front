@@ -4,7 +4,10 @@
   </div>
 </template>
 
-<style scoped lang="scss">
-.main-page-wrap {
-}
-</style>
+<script setup lang="ts">
+definePageMeta({
+  middleware: 'auth',
+})
+</script>
+
+<style scoped lang="scss"></style>

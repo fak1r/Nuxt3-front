@@ -2,11 +2,7 @@
   <div>
     <header>
       <div class="header-container">
-        <TheHeader
-          @open-auth-modal="openAuthModal"
-          @open-catalog-modal="openCatalogModal"
-          @close-catalog-modal="closeModal"
-        />
+        <TheHeader />
       </div>
     </header>
     <div class="main-container">
@@ -15,10 +11,10 @@
       </div>
     </div>
     <div class="mobile-nav-container">
-      <MobileNav @open-auth-modal="openAuthModal" />
+      <MobileNav />
     </div>
-    <ModalAuth v-if="modalStore.isAuthVisible" @close-modal="closeModal" />
-    <ModalCatalog v-if="modalStore.isCatalogVisible" @close-modal="closeModal" />
+    <ModalAuth v-if="modalStore.isAuthVisible" />
+    <ModalCatalog v-if="modalStore.isCatalogVisible" />
   </div>
 </template>
 
@@ -30,18 +26,6 @@ import ModalCatalog from '~/components/Modals/ModalCatalog.vue'
 import { useModalStore } from '~/store/modal'
 
 const modalStore = useModalStore()
-
-function openAuthModal() {
-  modalStore.open('auth')
-}
-
-function openCatalogModal() {
-  modalStore.open('catalog')
-}
-
-function closeModal() {
-  modalStore.close()
-}
 </script>
 
 <style scoped lang="scss">

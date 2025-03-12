@@ -1,6 +1,6 @@
 <template>
   <nav class="nav" aria-label="Основная навигация">
-    <NuxtLink to="/" active-class="active">
+    <NuxtLink to="/" class="nav__item" active-class="active">
       <SvgIcons icon="logo" />
     </NuxtLink>
 
@@ -27,7 +27,7 @@
     <button
       v-if="!hasUser"
       v-bind="activeStyle('auth')"
-      class="nav__item"
+      class="nav__item nav__profile-btn"
       aria-label="Войти в аккаунт"
       @click="openAuthModal"
     >
@@ -43,15 +43,9 @@
 </template>
 
 <script setup lang="ts">
-import { useAuthStore } from '@/store/auth'
-import TheSearch from '~/components/UI/TheSearch.vue'
+import { useAuthStore } from '~/store/auth'
 import { useModalStore } from '~/store/modal'
-
-interface Emits {
-  (e: 'open-auth-modal' | 'open-catalog-modal' | 'close-catalog-modal'): void
-}
-
-const emit = defineEmits<Emits>()
+import TheSearch from '~/components/UI/TheSearch.vue'
 
 const modalStore = useModalStore()
 const authStore = useAuthStore()
@@ -61,11 +55,12 @@ const hasUser = computed(() => !!user.value?.email)
 const search = ref('')
 
 function openAuthModal() {
-  emit('open-auth-modal')
+  modalStore.open('auth')
 }
 
 function toggleCatalogModal() {
-  emit(modalStore.isCatalogVisible ? 'close-catalog-modal' : 'open-catalog-modal')
+  if (modalStore.isCatalogVisible) modalStore.close()
+  else modalStore.open('catalog')
 }
 
 function activeStyle(name: 'catalog' | 'auth') {
@@ -135,11 +130,13 @@ function activeStyle(name: 'catalog' | 'auth') {
     }
   }
 
-  button {
+  &__profile-btn {
     svg {
       margin-bottom: -4px;
     }
+  }
 
+  button {
     @include phone {
       display: none;
     }

@@ -25,12 +25,6 @@ import SvgIcons from '~/components/Svg/SvgIcons.vue'
 import { useAuthStore } from '@/store/auth'
 import { useModalStore } from '~/store/modal'
 
-interface Emits {
-  (e: 'open-auth-modal'): void
-}
-
-const emit = defineEmits<Emits>()
-
 const modalStore = useModalStore()
 const authStore = useAuthStore()
 
@@ -48,7 +42,7 @@ const navItems = computed(() => [
 ])
 
 function openAuthModal() {
-  emit('open-auth-modal')
+  modalStore.open('auth')
 }
 </script>
 
