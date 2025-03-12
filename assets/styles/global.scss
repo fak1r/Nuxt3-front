@@ -5,7 +5,6 @@
   --primary-btn: #64748b;
   --primary-btn-hover: #4b5a72;
   --primary-btn-ripple: rgba(255, 255, 255, 0.4);
-  --max-page-width: 1096px;
   --general-text-color: #334155;
   --general-background-color: #f8fafc;
   --header-background: rgba(253, 254, 254, 0.5);
@@ -13,6 +12,8 @@
   --menu-items-color: #21496c;
   --menu-items-color-hover: #366c9c;
   --menu-items-color-active: black;
+  --max-page-width: 1096px;
+  --header-height: 64px;
 }
 
 html {
@@ -83,7 +84,7 @@ p {
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background-color: rgba(34, 34, 34, 0.26);
   display: flex;
   justify-content: center;
   align-items: center;

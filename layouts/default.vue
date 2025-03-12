@@ -2,7 +2,11 @@
   <div>
     <header>
       <div class="header-container">
-        <TheHeader @open-auth-modal="openAuthModal" @open-catalog-modal="openCatalogModal" />
+        <TheHeader
+          @open-auth-modal="openAuthModal"
+          @open-catalog-modal="openCatalogModal"
+          @close-catalog-modal="closeModal"
+        />
       </div>
     </header>
     <div class="main-container">
@@ -42,7 +46,7 @@ function closeModal() {
 
 <style scoped lang="scss">
 header {
-  height: 64px;
+  height: var(--header-height);
   background-color: var(--header-background);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border);

@@ -4,8 +4,14 @@
       <SvgIcons icon="logo" />
     </NuxtLink>
 
-    <button class="nav__item nav__catalog" aria-label="Каталог" @click="openCatalogModal">
-      <SvgIcons icon="catalog" />
+    <button
+      class="nav__item nav__catalog"
+      v-bind="activeStyle('catalog')"
+      aria-label="Каталог"
+      @click="toggleCatalogModal"
+    >
+      <span v-if="modalStore.isCatalogVisible" class="nav__catalog-icon">✕</span>
+      <SvgIcons v-else class="nav__catalog-icon" icon="catalog" />
       <span>Каталог</span>
     </button>
 
@@ -18,7 +24,13 @@
       <span>Корзина</span>
     </NuxtLink>
 
-    <button v-if="!hasUser" class="nav__item" aria-label="Войти в аккаунт" @click="openAuthModal">
+    <button
+      v-if="!hasUser"
+      v-bind="activeStyle('auth')"
+      class="nav__item"
+      aria-label="Войти в аккаунт"
+      @click="openAuthModal"
+    >
       <SvgIcons icon="profile" />
       <span>Войти</span>
     </button>
@@ -33,13 +45,15 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/store/auth'
 import TheSearch from '~/components/UI/TheSearch.vue'
+import { useModalStore } from '~/store/modal'
 
 interface Emits {
-  (e: 'open-auth-modal' | 'open-catalog-modal'): void
+  (e: 'open-auth-modal' | 'open-catalog-modal' | 'close-catalog-modal'): void
 }
 
 const emit = defineEmits<Emits>()
 
+const modalStore = useModalStore()
 const authStore = useAuthStore()
 
 const user = computed(() => authStore.user)
@@ -50,8 +64,14 @@ function openAuthModal() {
   emit('open-auth-modal')
 }
 
-function openCatalogModal() {
-  emit('open-catalog-modal')
+function toggleCatalogModal() {
+  emit(modalStore.isCatalogVisible ? 'close-catalog-modal' : 'open-catalog-modal')
+}
+
+function activeStyle(name: 'catalog' | 'auth') {
+  return {
+    style: { color: (name === 'catalog' ? modalStore.isCatalogVisible : modalStore.isAuthVisible) ? 'black' : '' },
+  }
 }
 </script>
 
@@ -108,6 +128,10 @@ function openCatalogModal() {
 
     @include phone {
       display: none;
+    }
+
+    &-icon {
+      width: 24px;
     }
   }
 

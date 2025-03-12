@@ -10,7 +10,7 @@
         </template>
 
         <template v-else>
-          <button type="button" class="mobile-nav__item" @click="openAuthModal">
+          <button type="button" v-bind="authBtnStyle" class="mobile-nav__item" @click="openAuthModal">
             <SvgIcons :icon="item.icon" />
             <span>{{ item.label }}</span>
           </button>
@@ -23,6 +23,7 @@
 <script setup lang="ts">
 import SvgIcons from '~/components/Svg/SvgIcons.vue'
 import { useAuthStore } from '@/store/auth'
+import { useModalStore } from '~/store/modal'
 
 interface Emits {
   (e: 'open-auth-modal'): void
@@ -30,10 +31,12 @@ interface Emits {
 
 const emit = defineEmits<Emits>()
 
+const modalStore = useModalStore()
 const authStore = useAuthStore()
 
 const user = computed(() => authStore.user)
 const hasUser = computed(() => !!user.value?.email)
+const authBtnStyle = computed(() => ({ style: { color: modalStore.isAuthVisible ? 'black' : '' } }))
 
 const navItems = computed(() => [
   { to: '/', label: 'Главная', icon: 'home', type: 'link' },
