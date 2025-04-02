@@ -31,6 +31,26 @@ const activeIndex = ref(0)
 const currentImage = computed(() => product.images[activeIndex.value]?.image_url || '/img/no-image.png')
 const hasImgs = computed(() => product.images.length > 1)
 
+onMounted(() => {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      const entry = entries[0]
+      if (entry.isIntersecting) {
+        preloadImages()
+        observer.disconnect()
+      }
+    },
+    {
+      rootMargin: '100px',
+      threshold: 0.1,
+    },
+  )
+
+  if (imageContainer.value) {
+    observer.observe(imageContainer.value)
+  }
+})
+
 function handleMouseMove(event: MouseEvent) {
   if (!imageContainer.value || !product.images.length) return
 
@@ -42,6 +62,21 @@ function handleMouseMove(event: MouseEvent) {
 
 function resetImage() {
   activeIndex.value = 0
+}
+
+function preloadImages() {
+  for (const img of product.images) {
+    const preloadImg = document.createElement('img')
+    preloadImg.src = img.image_url as string
+    preloadImg.style.display = 'none'
+    preloadImg.alt = 'Предзагрузка'
+    document.body.appendChild(preloadImg)
+
+    setTimeout(() => {
+      preloadImg.remove()
+      console.log('remove')
+    }, 3000)
+  }
 }
 </script>
 
