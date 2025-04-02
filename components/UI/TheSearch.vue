@@ -23,14 +23,14 @@ interface Props {
   modelValue: string
 }
 
-const props = defineProps<Props>()
+const { modelValue } = defineProps<Props>()
 
 const emit = defineEmits(['update:modelValue', 'focus'])
 
 const isInputFocused = ref(false)
 const isIconHovered = ref(false)
 
-const isIconXVisible = computed(() => !!props.modelValue)
+const isIconXVisible = computed(() => !!modelValue)
 
 function updateInput(event: Event) {
   const target = event.target as HTMLInputElement
@@ -43,7 +43,7 @@ function focusInput() {
 }
 
 function blurInput() {
-  isInputFocused.value = !!props.modelValue
+  isInputFocused.value = !!modelValue
 }
 
 function clearInput() {

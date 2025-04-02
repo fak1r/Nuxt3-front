@@ -12,8 +12,16 @@
   --menu-items-color: #21496c;
   --menu-items-color-hover: #366c9c;
   --menu-items-color-active: black;
-  --max-page-width: 1096px;
+  --max-page-width: 1384px;
+  --main-padding: 16px;
   --header-height: 64px;
+  --card-gap: 24px;
+  --min-card-width: 240px;
+  --cards-in-row: 5;
+
+  @include phone {
+    --main-padding: 8px;
+  }
 }
 
 html {

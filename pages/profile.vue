@@ -9,12 +9,14 @@
       <SvgIcons icon="logout" />
       <span>Выйти из аккаунта</span>
     </button>
+    <TheButton>Админка </TheButton>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useAuthStore } from '~/store/auth'
 import SvgIcons from '~/components/Svg/SvgIcons.vue'
+import TheButton from '~/components/UI/TheButton.vue'
 
 definePageMeta({
   middleware: 'auth',

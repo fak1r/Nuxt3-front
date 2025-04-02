@@ -4,18 +4,26 @@
       <aside class="catalog__side--left">
         <div
           v-for="category in categories"
-          :key="category"
+          :key="category.id"
           class="catalog__item"
-          :class="{ 'catalog__item--active': selectedCategory === category }"
-          @mouseover="setCategory(category)"
+          :class="{ 'catalog__item--active': selectedCategoryId === category.id }"
+          @click="goToCategory(category.id)"
+          @mouseover="setCategory(category.id)"
         >
-          {{ category }}
+          {{ category.name }}
         </div>
       </aside>
 
       <section class="catalog__side--right">
-        <div v-for="producer in data[selectedCategory]" :key="producer" class="catalog__item">
-          {{ producer }}
+        <div
+          v-for="producer in currentProducers"
+          :key="producer.id"
+          class="catalog__item"
+          :class="{ 'catalog__item--active': producer.id === selectedProducerId }"
+          @click="goToProducer(producer.id)"
+          @mouseover="setProducer(producer.id)"
+        >
+          {{ producer.name }}
         </div>
       </section>
     </div>
@@ -24,22 +32,37 @@
 
 <script setup lang="ts">
 import { useModalStore } from '~/store/modal'
+import { useCategoriesStore } from '@/store/categories'
 
+const categoriesStore = useCategoriesStore()
 const modalStore = useModalStore()
 
-const data = {
-  Ламинат: ['CLASSEN', 'MILANO ITALIA'],
-  Паркет: ['BOSCH', 'SCHNEIDER'],
+const categories = categoriesStore.categories
+const producers = categoriesStore.producers
+
+type Category = keyof typeof categories
+
+const selectedCategoryId = ref<Category>(Object.keys(categories)[0] as Category)
+const selectedProducerId = ref(0)
+
+const currentProducers = computed(() => {
+  return producers.filter((p) => p.category_id === selectedCategoryId.value).map(({ name, id }) => ({ name, id }))
+})
+
+function setCategory(id: number) {
+  selectedCategoryId.value = id
 }
 
-type Category = keyof typeof data
+function setProducer(id: number) {
+  selectedProducerId.value = id
+}
 
-const selectedCategory = ref<Category>(Object.keys(data)[0] as Category)
+function goToCategory(id: number) {
+  navigateTo(`/categories/${id}`)
+}
 
-const categories = computed(() => Object.keys(data) as Category[])
-
-function setCategory(category: Category) {
-  selectedCategory.value = category
+function goToProducer(id: number) {
+  navigateTo(`/producers/${id}`)
 }
 
 function closeModal() {
@@ -75,6 +98,7 @@ function closeModal() {
 
   &__item {
     font-size: 18px;
+    cursor: pointer;
 
     &--active {
       background-color: var(--border);

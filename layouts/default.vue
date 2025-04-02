@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="site">
     <header>
       <div class="header-container">
         <TheHeader />
@@ -24,11 +24,20 @@ import MobileNav from '~/components/MobileNav.vue'
 import ModalAuth from '~/components/Modals/ModalAuth.vue'
 import ModalCatalog from '~/components/Modals/ModalCatalog.vue'
 import { useModalStore } from '~/store/modal'
+import { useCategoriesStore } from '@/store/categories'
 
 const modalStore = useModalStore()
+const categoriesStore = useCategoriesStore()
+
+onMounted(async () => {
+  await categoriesStore.init()
+})
 </script>
 
 <style scoped lang="scss">
+.site {
+  margin-top: var(--header-height);
+}
 header {
   height: var(--header-height);
   background-color: var(--header-background);
@@ -37,9 +46,12 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: var(--main-padding);
   box-sizing: border-box;
   z-index: 900;
+  position: fixed;
+  width: 100%;
+  top: 0;
 
   @include phone {
     background-color: var(--border);
@@ -55,6 +67,7 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: var(--main-padding);
 
   &__body {
     max-width: var(--max-page-width);
@@ -66,5 +79,6 @@ header {
   height: 64px;
   position: fixed;
   bottom: 0;
+  padding: var(--main-padding);
 }
 </style>

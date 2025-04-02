@@ -34,7 +34,7 @@ const authBtnStyle = computed(() => ({ style: { color: modalStore.isAuthVisible 
 
 const navItems = computed(() => [
   { to: '/', label: 'Главная', icon: 'home', type: 'link' },
-  { to: '/catalog', label: 'Каталог', icon: 'catalog', type: 'link' },
+  { to: '/categories', label: 'Каталог', icon: 'catalog', type: 'link' },
   { to: '/cart', label: 'Корзина', icon: 'cart', type: 'link' },
   hasUser.value
     ? { to: '/profile', label: 'Профиль', icon: 'profile', type: 'link' }

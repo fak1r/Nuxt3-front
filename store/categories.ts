@@ -4,43 +4,56 @@ import { useNuxtApp } from '#app'
 
 export const useCategoriesStore = defineStore('categories', () => {
   const categories = ref<{ id: number; name: string }[]>([])
-  const subcategories = ref<{ id: number; name: string; category_id: number }[]>([])
+  const producers = ref<{ id: number; name: string; category_id: number }[]>([])
+  const productLines = ref<{ id: number; name: string; category_id: number }[]>([])
   const loaded = ref(false)
 
   const { $axios } = useNuxtApp()
 
   async function fetchCategories() {
     try {
-      const { data } = await $axios.get('/categories')
-      categories.value = [{ id: null, name: 'Все категории' }, ...data]
+      const { data } = await $axios.get('products/categories')
+      categories.value = data
     } catch (error) {
       console.error('Ошибка загрузки категорий', error)
     }
   }
 
-  async function fetchSubcategories() {
+  async function fetchProducers() {
     try {
-      const { data } = await $axios.get('/subcategories')
-      subcategories.value = data
+      const { data } = await $axios.get('products/producers')
+      producers.value = data
+    } catch (error) {
+      console.error('Ошибка загрузки производителей', error)
+    }
+  }
+
+  async function fetchProductLines() {
+    try {
+      const { data } = await $axios.get('products/product_lines')
+      productLines.value = data
       loaded.value = true
     } catch (error) {
-      console.error('Ошибка загрузки подкатегорий', error)
+      console.error('Ошибка загрузки продуктовых линеек', error)
     }
   }
 
   async function init() {
     if (!loaded.value) {
       await fetchCategories()
-      await fetchSubcategories()
+      await fetchProducers()
+      await fetchProductLines()
     }
   }
 
   return {
     categories,
-    subcategories,
+    producers,
+    productLines,
     loaded,
     fetchCategories,
-    fetchSubcategories,
+    fetchProducers,
+    fetchProductLines,
     init,
   }
 })

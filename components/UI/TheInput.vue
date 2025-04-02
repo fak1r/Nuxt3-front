@@ -37,7 +37,7 @@ interface Props {
   error?: string
 }
 
-const props = defineProps<Props>()
+const { modelValue, placeholder, type, name, error } = defineProps<Props>()
 
 interface Emits {
   (e: 'update:modelValue', value: string): void
@@ -50,11 +50,11 @@ const isInputFocused = ref(false)
 const isPasswordVisible = ref(false)
 const isIconHovered = ref(false)
 
-const isActive = computed(() => !!props.modelValue || isInputFocused.value)
-const isPassword = computed(() => props.type === 'password')
-const customType = computed(() => (isPasswordVisible.value ? 'text' : props.type))
-const inputId = computed(() => `input-${props.name}`)
-const hasError = computed(() => !!props.error)
+const isActive = computed(() => !!modelValue || isInputFocused.value)
+const isPassword = computed(() => type === 'password')
+const customType = computed(() => (isPasswordVisible.value ? 'text' : type))
+const inputId = computed(() => `input-${name}`)
+const hasError = computed(() => !!error)
 
 function updateInput(event: Event) {
   const target = event.target as HTMLInputElement
@@ -63,13 +63,13 @@ function updateInput(event: Event) {
 
 function focusInput() {
   isInputFocused.value = true
-  if (props.error) {
+  if (error) {
     emit('focus')
   }
 }
 
 function blurInput() {
-  isInputFocused.value = !!props.modelValue
+  isInputFocused.value = !!modelValue
 }
 
 function togglePasswordVisibility() {

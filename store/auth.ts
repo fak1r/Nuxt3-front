@@ -22,7 +22,7 @@ export const useAuthStore = defineStore('auth', () => {
   async function logout() {
     try {
       const { $axios } = useNuxtApp()
-      await $axios.post(`/logout`, {}, { withCredentials: true })
+      await $axios.post(`/auth/logout`, {}, { withCredentials: true })
 
       accessToken.value = null
       user.value = null
@@ -36,7 +36,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const { $axios } = useNuxtApp()
       const { data } = await $axios.post(
-        `/login`,
+        `/auth/login`,
         {
           email,
           password,
@@ -58,7 +58,7 @@ export const useAuthStore = defineStore('auth', () => {
   async function register(name: string, email: string, password: string) {
     try {
       const { $axios } = useNuxtApp()
-      await $axios.post(`/register`, {
+      await $axios.post(`/auth/register`, {
         name,
         email,
         password,
@@ -79,7 +79,7 @@ export const useAuthStore = defineStore('auth', () => {
 
       const config = useRuntimeConfig()
       const apiBaseUrl = config.public.apiBaseUrl
-      const response = await fetch(`${apiBaseUrl}/refresh`, {
+      const response = await fetch(`${apiBaseUrl}/auth/refresh`, {
         method: 'POST',
         credentials: 'include',
       })

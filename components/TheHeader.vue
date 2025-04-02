@@ -120,6 +120,7 @@ function activeStyle(name: 'catalog' | 'auth') {
     display: flex;
     align-items: center;
     gap: 4px;
+    border: 1px solid var(--input-border);
 
     @include phone {
       display: none;
