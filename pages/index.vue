@@ -8,6 +8,7 @@
 <script setup lang="ts">
 import { useProductsStore } from '~/store/products'
 import ProductList from '~/components/Products/ProductList.vue'
+import type { Product } from '~/types/products.types'
 
 definePageMeta({
   middleware: 'auth',
@@ -16,7 +17,8 @@ definePageMeta({
 const productsStore = useProductsStore()
 const { fetchProducts } = productsStore
 
-const { data: products } = await useAsyncData('favorite-products', () => fetchProducts({ favorite: true }))
+const { data } = await useAsyncData<Product[]>('favorite-products', () => fetchProducts({ favorite: true }))
+const products = data.value || []
 </script>
 
 <style scoped lang="scss">

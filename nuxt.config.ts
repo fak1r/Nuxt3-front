@@ -9,8 +9,7 @@ export default defineNuxtConfig({
       apiBaseUrl: process.env.API_BASE_URL,
     },
   },
-  css: ['@/assets/styles/global.scss'],
-
+  css: ['@/assets/styles/global.scss', 'swiper/css'],
   vite: {
     css: {
       preprocessorOptions: {

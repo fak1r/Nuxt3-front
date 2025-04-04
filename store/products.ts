@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { useNuxtApp } from '#app'
+import { normalizeProducts } from '~/utils/normalize-products'
 
 export const useProductsStore = defineStore('products', () => {
   const favoriteProducts = ref([])
@@ -13,9 +14,11 @@ export const useProductsStore = defineStore('products', () => {
       const query = new URLSearchParams(filters).toString()
       const { data } = await $axios.get(`/products?${query}`)
       // favoriteProducts.value = data - кэширование избранных товаров с главной
-      return data
+      const normalized = normalizeProducts(data)
+      return normalized
     } catch (error) {
       console.error('Ошибка загрузки товаров', error)
+      return []
     } finally {
       loading.value = false
     }

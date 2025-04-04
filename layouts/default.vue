@@ -68,6 +68,7 @@ header {
   align-items: center;
   justify-content: center;
   padding: var(--main-padding);
+  margin-bottom: 49px;
 
   &__body {
     max-width: var(--max-page-width);
