@@ -1,11 +1,11 @@
 <template>
   <article class="product-card">
-    <div v-if="isMobile">
+    <template v-if="isMobile">
       <ProductImageMobile :product="product" />
-    </div>
-    <div v-else>
+    </template>
+    <template v-else>
       <ProductImageDesktop :product="product" />
-    </div>
+    </template>
     <p class="product-card__price">{{ product.price }} ₽</p>
     <h3 class="product-card__name">{{ product.name }}</h3>
   </article>

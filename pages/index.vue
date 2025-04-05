@@ -23,6 +23,14 @@ const products = data.value || []
 
 <style scoped lang="scss">
 .main-page {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
+  padding: var(--main-padding);
+  box-sizing: border-box;
+
   &__title {
     margin-bottom: 16px;
     text-align: center;

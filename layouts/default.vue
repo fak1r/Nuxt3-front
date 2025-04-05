@@ -1,6 +1,6 @@
 <template>
   <div class="site">
-    <header>
+    <header class="header" :class="{ 'header--hidden': isHeaderHidden }">
       <div class="header-container">
         <TheHeader />
       </div>
@@ -19,6 +19,7 @@
 </template>
 
 <script setup>
+import throttle from 'lodash/throttle'
 import TheHeader from '~/components/TheHeader.vue'
 import MobileNav from '~/components/MobileNav.vue'
 import ModalAuth from '~/components/Modals/ModalAuth.vue'
@@ -28,17 +29,43 @@ import { useCategoriesStore } from '@/store/categories'
 
 const modalStore = useModalStore()
 const categoriesStore = useCategoriesStore()
+const { isMobile } = useIsMobile()
+
+const isHeaderHidden = ref(false)
+let lastScrollY = 0
+
+function onScroll() {
+  if (!isMobile.value) return
+
+  const currentY = window.scrollY
+
+  if (currentY > lastScrollY && currentY > 100) {
+    isHeaderHidden.value = true
+  } else {
+    isHeaderHidden.value = false
+  }
+
+  lastScrollY = currentY
+}
+
+const handleScroll = throttle(onScroll, 200)
 
 onMounted(async () => {
   await categoriesStore.init()
+  window.addEventListener('scroll', handleScroll, { passive: true })
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', handleScroll)
 })
 </script>
 
 <style scoped lang="scss">
 .site {
   margin-top: var(--header-height);
+  margin-bottom: var(--mobile-menu-height);
 }
-header {
+.header {
   height: var(--header-height);
   background-color: var(--header-background);
   backdrop-filter: blur(10px);
@@ -52,6 +79,11 @@ header {
   position: fixed;
   width: 100%;
   top: 0;
+  transition: transform 0.3s ease-in-out;
+
+  &--hidden {
+    transform: translateY(-100%);
+  }
 
   @include phone {
     background-color: var(--border);
@@ -68,7 +100,6 @@ header {
   align-items: center;
   justify-content: center;
   padding: var(--main-padding);
-  margin-bottom: 49px;
 
   &__body {
     max-width: var(--max-page-width);

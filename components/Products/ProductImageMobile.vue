@@ -1,17 +1,19 @@
 <template>
-  <swiper
-    :modules="[Pagination]"
-    class="product-image-mobile"
-    :pagination="{
-      el: '.custom-pagination',
-      clickable: true,
-    }"
-  >
-    <swiper-slide v-for="(img, index) in product.images" :key="index">
-      <img :src="img.image_url" alt="Фото товара" />
-    </swiper-slide>
-    <div v-if="hasImgs" class="custom-pagination" />
-  </swiper>
+  <div class="image-container">
+    <swiper
+      :modules="[Pagination]"
+      class="product-image-mobile"
+      :pagination="{
+        el: '.custom-pagination',
+        clickable: true,
+      }"
+    >
+      <div class="custom-pagination" :style="{ opacity: hasImgs ? 1 : 0 }" />
+      <swiper-slide v-for="(img, index) in product.images" :key="index">
+        <img :src="img.image_url" alt="Фото товара" />
+      </swiper-slide>
+    </swiper>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -26,12 +28,6 @@ interface Props {
 const { product } = defineProps<Props>()
 
 const hasImgs = computed(() => product.images.length > 1)
-
-onMounted(() => {
-  console.log(hasImgs.value)
-  console.log(product.images)
-})
-
 const swiperRef = ref<any>(null)
 
 onMounted(() => {
@@ -55,6 +51,7 @@ function handleResize() {
     width: 100%;
     height: 230px;
     object-fit: cover;
+    border-radius: 4px;
   }
 
   .custom-pagination {

@@ -72,7 +72,6 @@ function preloadImages() {
 <style scoped lang="scss">
 .image-container {
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 4px;
