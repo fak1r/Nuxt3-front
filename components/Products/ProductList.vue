@@ -20,8 +20,12 @@ defineProps<Props>()
 <style scoped lang="scss">
 .product-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
   gap: 8px;
   width: 100%;
+
+  @include phone {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  }
 }
 </style>

@@ -28,7 +28,6 @@ const products = data.value || []
   flex-direction: column;
   width: 100%;
   align-items: center;
-  padding: var(--main-padding);
   box-sizing: border-box;
 
   &__title {

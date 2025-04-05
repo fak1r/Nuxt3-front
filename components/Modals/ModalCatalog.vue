@@ -58,7 +58,7 @@ function setProducer(id: number) {
 }
 
 function goToCategory(id: number) {
-  navigateTo(`/categories/${id}`)
+  navigateTo(`/catalog/${id}`)
 }
 
 function goToProducer(id: number) {

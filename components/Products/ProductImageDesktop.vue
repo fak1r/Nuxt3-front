@@ -78,10 +78,11 @@ function preloadImages() {
   position: relative;
   border-radius: 4px;
   overflow: hidden;
+  aspect-ratio: 4 / 3;
 
   img {
-    max-width: 100%;
-    height: 230px;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
   }
 
