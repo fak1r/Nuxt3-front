@@ -4,8 +4,5 @@ export type Product = {
   description: string
   price: number
   stock: number
-  images: {
-    id?: number
-    image_url?: string
-  }[]
+  img_mini: string[]
 }

@@ -9,8 +9,8 @@
       }"
     >
       <div class="custom-pagination" :style="{ opacity: hasImgs ? 1 : 0 }" />
-      <swiper-slide v-for="(img, index) in product.images" :key="index">
-        <img :src="img.image_url" alt="Фото товара" />
+      <swiper-slide v-for="(img, index) in product.img_mini" :key="index">
+        <img :src="img" alt="Фото товара" />
       </swiper-slide>
     </swiper>
   </div>
@@ -27,7 +27,7 @@ interface Props {
 
 const { product } = defineProps<Props>()
 
-const hasImgs = computed(() => product.images.length > 1)
+const hasImgs = computed(() => product.img_mini.length > 1)
 const swiperRef = ref<any>(null)
 
 onMounted(() => {

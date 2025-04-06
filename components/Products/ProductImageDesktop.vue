@@ -2,7 +2,7 @@
   <div ref="imageContainer" class="image-container" @mousemove="handleMouseMove" @mouseleave="resetImage">
     <img :src="currentImage" alt="Фото товара" />
     <div v-if="hasImgs" class="image-container__pagination">
-      <span v-for="(_, index) in product.images" :key="index" :class="{ active: index === activeIndex }" />
+      <span v-for="(_, index) in product.img_mini" :key="index" :class="{ active: index === activeIndex }" />
     </div>
   </div>
 </template>
@@ -20,8 +20,8 @@ const { product } = defineProps<Props>()
 const imageContainer = ref<HTMLElement | null>(null)
 const activeIndex = ref(0)
 
-const currentImage = computed(() => product.images[activeIndex.value]?.image_url)
-const hasImgs = computed(() => product.images.length > 1)
+const currentImage = computed(() => product.img_mini[activeIndex.value])
+const hasImgs = computed(() => product.img_mini.length > 1)
 
 onMounted(() => {
   const observer = new IntersectionObserver(
@@ -41,12 +41,12 @@ onMounted(() => {
 })
 
 function handleMouseMove(event: MouseEvent) {
-  if (!imageContainer.value || !product.images.length) return
+  if (!imageContainer.value || !product.img_mini.length) return
 
   const rect = imageContainer.value.getBoundingClientRect()
   const offsetX = event.clientX - rect.left
-  const newIndex = Math.floor((offsetX / rect.width) * product.images.length)
-  activeIndex.value = Math.min(newIndex, product.images.length - 1)
+  const newIndex = Math.floor((offsetX / rect.width) * product.img_mini.length)
+  activeIndex.value = Math.min(newIndex, product.img_mini.length - 1)
   if (activeIndex.value === -1) activeIndex.value = 0
 }
 
@@ -55,9 +55,9 @@ function resetImage() {
 }
 
 function preloadImages() {
-  for (const img of product.images) {
+  for (const img of product.img_mini) {
     const preloadImg = document.createElement('img')
-    preloadImg.src = img.image_url as string
+    preloadImg.src = img
     preloadImg.style.display = 'none'
     preloadImg.alt = 'Предзагрузка'
     document.body.appendChild(preloadImg)
