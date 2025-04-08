@@ -1,6 +1,6 @@
 <template>
   <div ref="imageContainer" class="image-container" @mousemove="handleMouseMove" @mouseleave="resetImage">
-    <img :src="currentImage" alt="Фото товара" />
+    <img :src="currentImage" alt="Фото товара" @error="onImgError" />
     <div v-if="hasImgs" class="image-container__pagination">
       <span v-for="(_, index) in product.img_mini" :key="index" :class="{ active: index === activeIndex }" />
     </div>
@@ -66,6 +66,11 @@ function preloadImages() {
       preloadImg.remove()
     }, 3000)
   }
+}
+
+function onImgError(event: Event) {
+  const target = event.target as HTMLImageElement
+  target.src = '/img/no-image.png'
 }
 </script>
 

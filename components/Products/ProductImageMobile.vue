@@ -10,7 +10,7 @@
     >
       <div class="custom-pagination" :style="{ opacity: hasImgs ? 1 : 0 }" />
       <swiper-slide v-for="(img, index) in product.img_mini" :key="index">
-        <img :src="img" alt="Фото товара" />
+        <img :src="img" alt="Фото товара" @error="onImgError" />
       </swiper-slide>
     </swiper>
   </div>
@@ -40,6 +40,11 @@ onBeforeUnmount(() => {
 
 function handleResize() {
   swiperRef.value?.update()
+}
+
+function onImgError(event: Event) {
+  const target = event.target as HTMLImageElement
+  target.src = '/img/no-image.png'
 }
 </script>
 
