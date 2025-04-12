@@ -27,9 +27,9 @@ const productsStore = useProductsStore()
 const selectedSort = ref('price-asc')
 const products = ref([])
 
-onMounted(async () => {
-  products.value = await productsStore.fetchProducts()
-})
+// onMounted(async () => {
+//   products.value = await productsStore.fetchProducts()
+// })
 
 function fetchFilteredProducts() {
   const [sort_by, order] = selectedSort.value.split('-')

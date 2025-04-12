@@ -1,27 +1,17 @@
 <template>
   <ul class="product-list">
-    <template v-if="isSkeletonVisible">
-      <li v-for="n in 8" :key="n">
-        <ProductCardSkeleton />
-      </li>
-    </template>
-
-    <template v-else>
-      <li v-for="product in products" :key="product.id">
-        <ProductCard :product="product" />
-      </li>
-    </template>
+    <li v-for="product in products" :key="product.id">
+      <ProductCard :product="product" />
+    </li>
   </ul>
 </template>
 
 <script setup lang="ts">
 import ProductCard from '~/components/Products/ProductCard.vue'
-import ProductCardSkeleton from '~/components/Products/ProductCardSkeleton.vue'
 import type { Product } from '~/types/products.types'
 
 interface Props {
   products: Array<Product>
-  isSkeletonVisible: boolean
 }
 
 defineProps<Props>()

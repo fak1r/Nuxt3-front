@@ -52,9 +52,9 @@ onBeforeUnmount(() => {
 })
 
 function preloadImages() {
-  for (const img of product.images) {
+  for (const img of product.img_mini) {
     const preloadImg = document.createElement('img')
-    preloadImg.src = img.image_url as string
+    preloadImg.src = img
     preloadImg.style.display = 'none'
     preloadImg.alt = 'Предзагрузка'
     document.body.appendChild(preloadImg)

@@ -1,7 +1,7 @@
 <template>
   <div class="main-page">
     <h1 class="main-page__title">Популярные товары:</h1>
-    <ProductList :products="products" />
+    <ProductList :products="products" :is-skeleton-visible="!isProductsLoaded" />
   </div>
 </template>
 
@@ -17,7 +17,12 @@ definePageMeta({
 const productsStore = useProductsStore()
 const { fetchProducts } = productsStore
 
-const { data } = await useAsyncData<Product[]>('favorite-products', () => fetchProducts({ favorite: true }))
+const { data, status } = await useAsyncData<Product[]>('favorite-products', () =>
+  fetchProducts({ favorite: true }).then((res) => res.products),
+)
+
+const isProductsLoaded = computed(() => status.value === 'success')
+
 const products = data.value || []
 </script>
 

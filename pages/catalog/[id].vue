@@ -1,35 +1,25 @@
 <template>
-  <div class="categories">
-    <h1 class="categories__title">Категория: {{ categoryName }}</h1>
-    <ProductList :products="products" />
-  </div>
+  <ProductListPage :title="title" :filters="filters" title-prefix="Категория" />
 </template>
 
 <script setup lang="ts">
-import { useProductsStore } from '~/store/products'
 import { useCategoriesStore } from '~/store/categories'
+import ProductListPage from '~/components/Products/ProductListPage.vue'
+import type { ProductFilters } from '~/types/products.types'
 
-import ProductList from '~/components/Products/ProductList.vue'
-
-definePageMeta({
-  middleware: 'auth',
-})
-
-const productsStore = useProductsStore()
-const categoriesStore = useCategoriesStore()
-
-const { fetchProducts } = productsStore
-const { categories } = storeToRefs(categoriesStore)
+definePageMeta({ middleware: 'auth' })
 
 const route = useRoute()
 const categoryId = computed(() => Number(route.params.id))
-const categoryName = computed(() => categories.value.find((c) => c.id === categoryId.value)?.name)
 
-const products = ref([])
-
-onMounted(async function () {
-  products.value = await fetchProducts({ category_id: categoryId.value })
+const filters = ref<ProductFilters>({
+  category_id: categoryId.value,
+  sort_by: 'price',
+  order: 'asc',
 })
+
+const { categories } = storeToRefs(useCategoriesStore())
+const title = computed(() => categories.value.find((c) => c.id === categoryId.value)?.name || '')
 </script>
 
 <style scoped lang="scss">
@@ -37,6 +27,14 @@ onMounted(async function () {
   &__title {
     margin-bottom: 16px;
     text-align: center;
+  }
+
+  &__loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
   }
 }
 </style>

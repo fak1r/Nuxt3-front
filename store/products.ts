@@ -1,28 +1,34 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
 import { useNuxtApp } from '#app'
 import { normalizeProducts } from '~/utils/normalize-products'
+import { toQueryString } from '~/utils/to-query-string'
+import type { ProductFilters } from '~/types/products.types'
 
 export const useProductsStore = defineStore('products', () => {
-  const favoriteProducts = ref([])
-  const loading = ref(false)
+  const productsAreLoading = ref(false)
 
-  async function fetchProducts(filters = {}) {
-    loading.value = true
+  async function fetchProducts(filters: ProductFilters = {}) {
+    productsAreLoading.value = true
     try {
       const { $axios } = useNuxtApp()
-      const query = new URLSearchParams(filters).toString()
+      const query = toQueryString(filters)
       const { data } = await $axios.get(`/products?${query}`)
-      // favoriteProducts.value = data - кэширование избранных товаров с главной
       const normalized = normalizeProducts(data)
-      return normalized
+
+      return {
+        products: normalized,
+        page: filters.page || 1,
+      }
     } catch (error) {
       console.error('Ошибка загрузки товаров', error)
-      return []
+      return {
+        products: [],
+        page: filters.page || 1,
+      }
     } finally {
-      loading.value = false
+      productsAreLoading.value = false
     }
   }
 
-  return { favoriteProducts, fetchProducts, loading }
+  return { fetchProducts, productsAreLoading }
 })

@@ -60,7 +60,7 @@ onBeforeUnmount(() => {
 })
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .site {
   margin-top: var(--header-height);
   margin-bottom: var(--mobile-menu-height);
