@@ -71,7 +71,6 @@ function preloadImages() {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-bottom: 16px;
   cursor: pointer;
 
   &__price {

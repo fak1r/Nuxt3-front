@@ -2,7 +2,7 @@
   <div class="product-page">
     <h1 class="product-page__title">{{ titlePrefix }}: {{ title }}</h1>
 
-    <ProductList :products="products" :is-skeleton-visible="!productsAreLoading && firstLoading" />
+    <ProductList :products="products" :is-skeleton-visible="isSkeletonVisible" />
 
     <div class="product-page__loader">
       <TheLoader v-if="firstLoading" size="xl" />
@@ -29,6 +29,8 @@ const props = defineProps<Props>()
 const { products, loadMoreProducts, productsAreLoading, hasMore, firstLoading } = useInfiniteProducts(
   props.filters as Ref<ProductFilters>,
 )
+
+const isSkeletonVisible = computed(() => firstLoading.value)
 
 onMounted(async () => {
   await loadMoreProducts()

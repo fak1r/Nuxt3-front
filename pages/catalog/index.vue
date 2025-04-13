@@ -9,7 +9,13 @@
             class="catalog__link"
             :aria-label="`Перейти в категорию ${category.name}`"
           >
-            <img :src="imgs[category.id - 1]" :alt="category.name" />
+            <ImgSkeleton v-if="!isImgLoaded(category.id)" />
+            <img
+              v-show="isImgLoaded(category.id)"
+              :src="imgs[category.id - 1]"
+              :alt="category.name"
+              @load="onImageLoad(category.id)"
+            />
             <h2 class="catalog__category">
               {{ category.name }}
             </h2>
@@ -24,10 +30,29 @@
 import { useCategoriesStore } from '~/store/categories'
 import laminatImg from '~/assets/img/laminat.png'
 import ParketImg from '~/assets/img/parket.png'
+import ImgSkeleton from '~/components/Products/ImgSkeleton.vue'
 
 const categoriesStore = useCategoriesStore()
 
 const imgs = [laminatImg, ParketImg]
+
+const loading = ref<boolean[]>([])
+
+watch(
+  () => categoriesStore.categories,
+  (newVal) => {
+    loading.value = new Array(newVal.length).fill(true)
+  },
+  { immediate: true },
+)
+
+function onImageLoad(id: number) {
+  loading.value[id - 1] = false
+}
+
+function isImgLoaded(id: number): boolean {
+  return !loading.value[id - 1]
+}
 </script>
 
 <style scoped lang="scss">
@@ -63,7 +88,6 @@ const imgs = [laminatImg, ParketImg]
       height: 100%;
       object-fit: cover;
       border-radius: 4px;
-      margin-top: 8px;
     }
   }
 

@@ -1,6 +1,17 @@
 <template>
   <div ref="imageContainer" class="image-container" @mousemove="handleMouseMove" @mouseleave="resetImage">
-    <img :src="currentImage" alt="Фото товара" @error="onImgError" />
+    <ImgSkeleton v-if="!isAllImgsLoaded" />
+
+    <img
+      v-for="(img, index) in product.img_mini"
+      v-show="isAllImgsLoaded && index === activeIndex"
+      :key="index"
+      :src="img"
+      :alt="`Фото ${index}`"
+      :class="['image-container__img', { active: index === activeIndex }]"
+      @error="onImgError"
+      @load="onImageLoad"
+    />
     <div v-if="hasImgs" class="image-container__pagination">
       <span v-for="(_, index) in product.img_mini" :key="index" :class="{ active: index === activeIndex }" />
     </div>
@@ -8,8 +19,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
 import type { Product } from '~/types/products.types'
+import ImgSkeleton from '~/components/Products/ImgSkeleton.vue'
 
 interface Props {
   product: Product
@@ -20,25 +31,10 @@ const { product } = defineProps<Props>()
 const imageContainer = ref<HTMLElement | null>(null)
 const activeIndex = ref(0)
 
-const currentImage = computed(() => product.img_mini[activeIndex.value])
 const hasImgs = computed(() => product.img_mini.length > 1)
-
-onMounted(() => {
-  const observer = new IntersectionObserver(
-    (entries) => {
-      const entry = entries[0]
-      if (entry.isIntersecting) {
-        preloadImages()
-        observer.disconnect()
-      }
-    },
-    { rootMargin: '100px', threshold: 0.1 },
-  )
-
-  if (imageContainer.value) {
-    observer.observe(imageContainer.value)
-  }
-})
+const isAllImgsLoaded = ref(false)
+const totalImages = product.img_mini.length
+const imgsLoaded = ref(0)
 
 function handleMouseMove(event: MouseEvent) {
   if (!imageContainer.value || !product.img_mini.length) return
@@ -54,23 +50,16 @@ function resetImage() {
   activeIndex.value = 0
 }
 
-function preloadImages() {
-  for (const img of product.img_mini) {
-    const preloadImg = document.createElement('img')
-    preloadImg.src = img
-    preloadImg.style.display = 'none'
-    preloadImg.alt = 'Предзагрузка'
-    document.body.appendChild(preloadImg)
-
-    setTimeout(() => {
-      preloadImg.remove()
-    }, 3000)
-  }
-}
-
 function onImgError(event: Event) {
   const target = event.target as HTMLImageElement
   target.src = '/img/no-image.png'
+}
+
+function onImageLoad() {
+  imgsLoaded.value++
+  if (imgsLoaded.value === totalImages) {
+    isAllImgsLoaded.value = true
+  }
 }
 </script>
 

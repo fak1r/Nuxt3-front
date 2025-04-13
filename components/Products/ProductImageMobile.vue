@@ -9,8 +9,10 @@
       }"
     >
       <div class="custom-pagination" :style="{ opacity: hasImgs ? 1 : 0 }" />
+
       <swiper-slide v-for="(img, index) in product.img_mini" :key="index">
-        <img :src="img" alt="Фото товара" @error="onImgError" />
+        <ImgSkeleton v-if="!isImgLoaded" />
+        <img v-show="isImgLoaded" :src="img" alt="Фото товара" @error="onImgError" @load="onImageLoad" />
       </swiper-slide>
     </swiper>
   </div>
@@ -20,6 +22,7 @@
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Pagination } from 'swiper/modules'
 import type { Product } from '~/types/products.types'
+import ImgSkeleton from '~/components/Products/ImgSkeleton.vue'
 
 interface Props {
   product: Product
@@ -29,6 +32,7 @@ const { product } = defineProps<Props>()
 
 const hasImgs = computed(() => product.img_mini.length > 1)
 const swiperRef = ref<any>(null)
+const isImgLoaded = ref(false)
 
 onMounted(() => {
   window.addEventListener('resize', handleResize)
@@ -45,6 +49,10 @@ function handleResize() {
 function onImgError(event: Event) {
   const target = event.target as HTMLImageElement
   target.src = '/img/no-image.png'
+}
+
+function onImageLoad() {
+  isImgLoaded.value = true
 }
 </script>
 

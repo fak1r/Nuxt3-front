@@ -16,7 +16,7 @@ export function useInfiniteProducts(filters: Ref<ProductFilters>) {
     if (!hasMore.value) return
 
     const currentFilters = {
-      ...filters.value,
+      ...filters,
       page: page.value,
       per_page: perPage,
     }

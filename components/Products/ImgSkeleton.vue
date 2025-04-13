@@ -1,8 +1,6 @@
 <template>
   <div class="skeleton">
     <div class="skeleton__image" />
-    <div class="skeleton__title" />
-    <div class="skeleton__price" />
   </div>
 </template>
 
@@ -20,25 +18,9 @@
 
   &__image {
     width: 100%;
-    aspect-ratio: 1 / 0.755;
+    aspect-ratio: 1 / 1;
     background-color: var(--skeleton-color);
     border-radius: 8px;
-  }
-
-  &__title {
-    width: 70%;
-    height: 16px;
-    background-color: var(--skeleton-color);
-    border-radius: 4px;
-    margin-top: 12px;
-  }
-
-  &__price {
-    width: 40%;
-    height: 14px;
-    background-color: var(--skeleton-color);
-    border-radius: 4px;
-    margin-top: 8px;
   }
 }
 
