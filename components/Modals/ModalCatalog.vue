@@ -1,31 +1,33 @@
 <template>
   <dialog class="overlay overlay--mt" @click.self="closeModal">
-    <div class="catalog">
-      <aside class="catalog__side--left">
-        <div
-          v-for="category in categories"
-          :key="category.id"
-          class="catalog__item"
-          :class="{ 'catalog__item--active': selectedCategoryId === category.id }"
-          @click="goToCategory(category.id)"
-          @mouseover="setCategory(category.id)"
-        >
-          {{ category.name }}
-        </div>
-      </aside>
+    <div class="catalog-wrap">
+      <div class="catalog">
+        <aside class="catalog__side--left">
+          <div
+            v-for="category in categories"
+            :key="category.id"
+            class="catalog__item"
+            :class="{ 'catalog__item--active': selectedCategoryId === category.id }"
+            @click="goToCategory(category.id)"
+            @mouseover="setCategory(category.id)"
+          >
+            {{ category.name }}
+          </div>
+        </aside>
 
-      <section class="catalog__side--right">
-        <div
-          v-for="producer in currentProducers"
-          :key="producer.id"
-          class="catalog__item"
-          :class="{ 'catalog__item--active': producer.id === selectedProducerId }"
-          @click="goToProducer(producer.id)"
-          @mouseover="setProducer(producer.id)"
-        >
-          {{ producer.name }}
-        </div>
-      </section>
+        <section class="catalog__side--right">
+          <div
+            v-for="producer in currentProducers"
+            :key="producer.id"
+            class="catalog__item"
+            :class="{ 'catalog__item--active': producer.id === selectedProducerId }"
+            @click="goToProducer(producer.id)"
+            @mouseover="setProducer(producer.id)"
+          >
+            {{ producer.name }}
+          </div>
+        </section>
+      </div>
     </div>
   </dialog>
 </template>
@@ -58,11 +60,22 @@ function setProducer(id: number) {
 }
 
 function goToCategory(id: number) {
-  navigateTo(`/catalog/${id}`)
+  const category = categories.find((c) => c.id === id)
+
+  if (category) {
+    navigateTo(`/${category.slug}`)
+    modalStore.close()
+  }
 }
 
 function goToProducer(id: number) {
-  navigateTo(`/producers/${id}`)
+  const producer = producers.find((p) => p.id === id)
+  const category = categories.find((c) => c.id === selectedCategoryId.value)
+
+  if (producer && category) {
+    navigateTo(`/${category.slug}/${producer.slug}`)
+    modalStore.close()
+  }
 }
 
 function closeModal() {
@@ -75,62 +88,75 @@ function closeModal() {
   &--mt {
     margin-top: var(--header-height);
   }
+
+  @include phone {
+    display: none;
+  }
 }
-.catalog {
+.catalog-wrap {
   position: fixed;
   left: 50%;
-  top: var(--header-height);
+  top: calc(var(--header-height) + 6px);
   transform: translateX(-50%);
-  display: flex;
-  justify-content: center;
   overflow: hidden;
-  box-shadow:
-    0 2px 2px 0 #445c821f,
-    -1px 4px 10px 0 #445c821a,
-    0 -2px 10px 0 #445c820d;
   z-index: 1001;
-  width: 100%;
   max-width: var(--max-page-width);
-  height: 80%;
-  background-color: var(--general-background-color);
-  border-bottom-left-radius: 8px;
-  border-bottom-right-radius: 8px;
+  width: 100%;
+  height: 20%;
 
-  &__item {
-    font-size: 18px;
-    cursor: pointer;
-
-    &--active {
-      background-color: var(--border);
-    }
-  }
-
-  &__side {
+  .catalog {
+    width: 50%;
     display: flex;
-    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    box-shadow:
+      0 2px 2px 0 #445c821f,
+      -1px 4px 10px 0 #445c821a,
+      0 -2px 10px 0 #445c820d;
+    background-color: var(--general-background-color);
+    border-radius: 8px;
+    margin-left: 155px;
 
-    &--left {
-      width: 30%;
-      padding: 12px 4px 12px 12px;
-      border-right: 1px solid var(--input-border);
+    @media screen and (max-width: 1400px) {
+      margin-left: 170px;
     }
 
-    &--right {
-      width: 70%;
-      padding: 12px 4px 12px 24px;
+    &__item {
+      font-size: 18px;
+      cursor: pointer;
+
+      &--active {
+        background-color: var(--border);
+      }
     }
-  }
 
-  &__close {
-    position: absolute;
-    top: 10px;
-    right: 20px;
-    font-size: 20px;
-    color: var(--primary-btn-hover);
+    &__side {
+      display: flex;
+      flex-direction: column;
 
-    &:hover,
-    &:focus {
-      color: black;
+      &--left {
+        width: 40%;
+        padding: 12px 4px 12px 12px;
+        border-right: 1px solid var(--input-border);
+      }
+
+      &--right {
+        width: 60%;
+        padding: 12px 4px 12px 24px;
+      }
+    }
+
+    &__close {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      font-size: 20px;
+      color: var(--primary-btn-hover);
+
+      &:hover,
+      &:focus {
+        color: black;
+      }
     }
   }
 }

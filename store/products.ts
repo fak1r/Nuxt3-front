@@ -11,9 +11,20 @@ export const useProductsStore = defineStore('products', () => {
     productsAreLoading.value = true
     try {
       const { $axios } = useNuxtApp()
-      const query = toQueryString(filters)
-      const { data } = await $axios.get(`/products?${query}`)
-      const normalized = normalizeProducts(data)
+      const { category_slug, producer_slug, ...queryFilters } = filters
+
+      let endpoint = '/products'
+
+      if (category_slug) {
+        endpoint += `/${category_slug}`
+        if (producer_slug) {
+          endpoint += `/${producer_slug}`
+        }
+      }
+
+      const query = toQueryString(queryFilters)
+      const { data } = await $axios.get(`${endpoint}?${query}`)
+      const normalized = normalizeProducts(data.items)
 
       return {
         products: normalized,
@@ -30,5 +41,33 @@ export const useProductsStore = defineStore('products', () => {
     }
   }
 
-  return { fetchProducts, productsAreLoading }
+  async function fetchProduct({
+    category_slug,
+    producer_slug,
+    product_slug,
+  }: {
+    category_slug: string
+    producer_slug: string
+    product_slug: string
+  }) {
+    const { $axios } = useNuxtApp()
+
+    try {
+      const { data } = await $axios.get(`/products/${category_slug}/${producer_slug}/${product_slug}`)
+      return data
+    } catch (error) {
+      console.error('Ошибка загрузки товара', error)
+      return null
+    }
+  }
+
+  async function fetchPopularProducts() {
+    const { $axios } = useNuxtApp()
+    const { data } = await $axios.get('/products/popular')
+    const normalized = normalizeProducts(data.items)
+
+    return normalized
+  }
+
+  return { fetchProducts, fetchProduct, fetchPopularProducts, productsAreLoading }
 })

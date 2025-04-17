@@ -4,25 +4,28 @@
 
 <script setup lang="ts">
 import { useCategoriesStore } from '~/store/categories'
-import ProductListPage from '~/components/Products/ProductListPage.vue'
 import type { ProductFilters } from '~/types/products.types'
+import ProductListPage from '~/components/Products/ProductListPage.vue'
 
 definePageMeta({ middleware: 'auth' })
 
 const route = useRoute()
-const producerId = computed(() => Number(route.params.id))
+const categorySlug = route.params.category as string
+const producerSlug = route.params.producer as string
+
 const filters = ref<ProductFilters>({
-  producer_id: producerId.value,
+  category_slug: categorySlug,
+  producer_slug: producerSlug,
   sort_by: 'price',
   order: 'asc',
 })
 
 const { producers } = storeToRefs(useCategoriesStore())
-const title = computed(() => producers.value.find((p) => p.id === producerId.value)?.name || '')
+const title = computed(() => producers.value.find((p) => p.slug === producerSlug)?.name || '')
 </script>
 
 <style scoped lang="scss">
-.producers {
+.categories {
   &__title {
     margin-bottom: 16px;
     text-align: center;

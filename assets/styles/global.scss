@@ -78,6 +78,16 @@ a {
   }
 }
 
+.link-default {
+  color: blue;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
 input,
 textarea {
   all: unset;

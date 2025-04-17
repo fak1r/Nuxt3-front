@@ -4,7 +4,7 @@ import { useProductsStore } from '~/store/products'
 export function useInfiniteProducts(filters: Ref<ProductFilters>) {
   const products = ref<Product[]>([])
   const page = ref(1)
-  const perPage = 20
+  const limit = 20
   const hasMore = ref(true)
   const firstLoading = ref(true)
 
@@ -18,12 +18,12 @@ export function useInfiniteProducts(filters: Ref<ProductFilters>) {
     const currentFilters = {
       ...filters,
       page: page.value,
-      per_page: perPage,
+      limit: limit,
     }
 
     const { products: newProducts = [] } = await fetchProducts(currentFilters)
 
-    if (newProducts.length < perPage) {
+    if (newProducts.length < limit) {
       hasMore.value = false
     }
 

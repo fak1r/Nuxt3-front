@@ -1,18 +1,20 @@
 export interface Product {
   id: number
   name: string
-  description: string
+  slug: string
   price: number
-  stock: number
   img_mini: string[]
+  product_line_id: number
+  self: string
 }
 
 export interface ProductFilters {
-  category_id?: number
-  producer_id?: number
+  category_slug?: string
+  producer_slug?: string
+  product_slug?: string
   favorite?: boolean
   page?: number
-  per_page?: number
+  limit?: number
   sort_by?: string
   order?: string
 }

@@ -1,10 +1,11 @@
 import { defineStore } from 'pinia'
 import { useNuxtApp } from '#app'
+import type { Category, Producer, ProductLine } from '~/types/categories.types'
 
 export const useCategoriesStore = defineStore('categories', () => {
-  const categories = ref<{ id: number; name: string }[]>([])
-  const producers = ref<{ id: number; name: string; category_id: number }[]>([])
-  const productLines = ref<{ id: number; name: string; category_id: number }[]>([])
+  const categories = ref<Category[]>([])
+  const producers = ref<Producer[]>([])
+  const productLines = ref<ProductLine[]>([])
   const loaded = ref(false)
 
   const { $axios } = useNuxtApp()

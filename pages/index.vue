@@ -15,11 +15,10 @@ definePageMeta({
 })
 
 const productsStore = useProductsStore()
-const { fetchProducts } = productsStore
 
-const { data, status } = await useAsyncData<Product[]>('favorite-products', () =>
-  fetchProducts({ favorite: true }).then((res) => res.products),
-)
+const { fetchPopularProducts } = productsStore
+
+const { data, status } = await useAsyncData<Product[]>('favorite-products', () => fetchPopularProducts())
 
 const isProductsLoaded = computed(() => status.value === 'success')
 

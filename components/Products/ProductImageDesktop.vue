@@ -1,7 +1,6 @@
 <template>
   <div ref="imageContainer" class="image-container" @mousemove="handleMouseMove" @mouseleave="resetImage">
     <ImgSkeleton v-if="!isAllImgsLoaded" />
-
     <img
       v-for="(img, index) in product.img_mini"
       v-show="isAllImgsLoaded && index === activeIndex"

@@ -4,11 +4,7 @@
     <div class="catalog__cards">
       <ul class="catalog__list">
         <li v-for="category in categoriesStore.categories" :key="category.id" class="catalog__item">
-          <NuxtLink
-            :to="`/catalog/${category.id}`"
-            class="catalog__link"
-            :aria-label="`Перейти в категорию ${category.name}`"
-          >
+          <NuxtLink :to="category.slug" class="catalog__link" :aria-label="`Перейти в категорию ${category.name}`">
             <ImgSkeleton v-if="!isImgLoaded(category.id)" />
             <img
               v-show="isImgLoaded(category.id)"
@@ -28,30 +24,32 @@
 
 <script setup lang="ts">
 import { useCategoriesStore } from '~/store/categories'
-import laminatImg from '~/assets/img/laminat.png'
+import LaminatImg from '~/assets/img/laminat.png'
 import ParketImg from '~/assets/img/parket.png'
 import ImgSkeleton from '~/components/Products/ImgSkeleton.vue'
 
 const categoriesStore = useCategoriesStore()
+const imgs = [LaminatImg, ParketImg]
 
-const imgs = [laminatImg, ParketImg]
-
-const loading = ref<boolean[]>([])
+const imageLoadingStatus = ref<boolean[]>([])
 
 watch(
   () => categoriesStore.categories,
-  (newVal) => {
-    loading.value = new Array(newVal.length).fill(true)
+  (newCategories) => {
+    imageLoadingStatus.value = newCategories.map(() => true)
   },
   { immediate: true },
 )
 
+onMounted(() => {
+  console.log(categoriesStore.categories)
+})
 function onImageLoad(id: number) {
-  loading.value[id - 1] = false
+  imageLoadingStatus.value[id - 1] = false
 }
 
 function isImgLoaded(id: number): boolean {
-  return !loading.value[id - 1]
+  return !imageLoadingStatus.value[id - 1]
 }
 </script>
 

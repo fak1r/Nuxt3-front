@@ -43,7 +43,7 @@
 
         <div class="auth__info">
           {{ formText }}&nbsp;
-          <button class="auth__link" type="button" @click="changeFormType">
+          <button class="link-default" type="button" @click="changeFormType">
             {{ formLink }}
           </button>
         </div>
@@ -171,12 +171,6 @@ function closeModal() {
   &__info {
     display: flex;
     justify-content: center;
-  }
-
-  &__link {
-    color: blue;
-    text-decoration: underline;
-    text-underline-offset: 4px;
   }
 }
 

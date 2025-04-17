@@ -1,5 +1,5 @@
 <template>
-  <article class="product-card">
+  <article class="product-card" @click="goToProduct">
     <template v-if="isMobile">
       <ProductImageMobile :product="product" />
     </template>
@@ -12,9 +12,9 @@
 </template>
 
 <script setup lang="ts">
+import type { Product } from '~/types/products.types'
 import ProductImageMobile from '~/components/Products/ProductImageMobile.vue'
 import ProductImageDesktop from '~/components/Products/ProductImageDesktop.vue'
-import type { Product } from '~/types/products.types'
 
 interface Props {
   product: Product
@@ -22,47 +22,11 @@ interface Props {
 
 const { product } = defineProps<Props>()
 
+const router = useRouter()
 const { isMobile } = useIsMobile()
 
-const imageContainer = ref<HTMLElement | null>(null)
-let observer: IntersectionObserver | null = null
-
-onMounted(() => {
-  observer = new IntersectionObserver(
-    (entries) => {
-      const entry = entries[0]
-      if (entry.isIntersecting) {
-        preloadImages()
-        observer?.disconnect()
-      }
-    },
-    {
-      rootMargin: '100px',
-      threshold: 0.1,
-    },
-  )
-
-  if (imageContainer.value) {
-    observer.observe(imageContainer.value)
-  }
-})
-
-onBeforeUnmount(() => {
-  observer?.disconnect()
-})
-
-function preloadImages() {
-  for (const img of product.img_mini) {
-    const preloadImg = document.createElement('img')
-    preloadImg.src = img
-    preloadImg.style.display = 'none'
-    preloadImg.alt = 'Предзагрузка'
-    document.body.appendChild(preloadImg)
-
-    setTimeout(() => {
-      preloadImg.remove()
-    }, 3000)
-  }
+function goToProduct() {
+  router.push(product.self)
 }
 </script>
 

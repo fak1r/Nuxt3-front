@@ -61,8 +61,8 @@ function clearInput() {
   transition: 0.3s;
   box-shadow: 0 1px 2px 0 rgba(18, 18, 23, 0.05);
   position: relative;
-  margin-bottom: 26px;
   background: var(--header-background);
+  width: 100%;
 
   &:last-child {
     margin-bottom: 0;

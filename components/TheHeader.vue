@@ -1,6 +1,6 @@
 <template>
   <nav class="nav" aria-label="Основная навигация">
-    <NuxtLink to="/" class="nav__item" active-class="active">
+    <NuxtLink to="/" class="nav__item nav__logo" active-class="active">
       <SvgIcons icon="logo" />
     </NuxtLink>
 
@@ -17,38 +17,51 @@
 
     <form class="search-form" role="search">
       <TheSearch v-model="search" />
+      <NuxtLink v-if="isMobile" to="/contacts" class="nav__item nav__contacts" active-class="active">
+        <SvgIcons icon="geo-square" :size="'md'" />
+        <span>Контакты</span>
+      </NuxtLink>
     </form>
 
-    <NuxtLink to="/cart" class="nav__item" active-class="active">
-      <SvgIcons icon="cart" />
-      <span>Корзина</span>
-    </NuxtLink>
+    <div class="nav__actions">
+      <NuxtLink v-if="!isMobile" to="/contacts" class="nav__item" active-class="active">
+        <SvgIcons icon="geo" />
+        <span>Контакты</span>
+      </NuxtLink>
 
-    <button
-      v-if="!hasUser"
-      v-bind="activeStyle('auth')"
-      class="nav__item nav__profile-btn"
-      aria-label="Войти в аккаунт"
-      @click="openAuthModal"
-    >
-      <SvgIcons icon="profile" />
-      <span>Войти</span>
-    </button>
+      <NuxtLink to="/cart" class="nav__item" active-class="active">
+        <SvgIcons icon="cart" />
+        <span>Корзина</span>
+      </NuxtLink>
 
-    <NuxtLink v-else to="/profile" class="nav__item" active-class="active">
-      <SvgIcons icon="profile" />
-      <span>Профиль</span>
-    </NuxtLink>
+      <button
+        v-if="!hasUser"
+        v-bind="activeStyle('auth')"
+        class="nav__item nav__profile-btn"
+        aria-label="Войти в аккаунт"
+        @click="openAuthModal"
+      >
+        <SvgIcons icon="profile" />
+        <span>Войти</span>
+      </button>
+
+      <NuxtLink v-else to="/profile" class="nav__item" active-class="active">
+        <SvgIcons icon="profile" />
+        <span>Профиль</span>
+      </NuxtLink>
+    </div>
   </nav>
 </template>
 
 <script setup lang="ts">
 import { useAuthStore } from '~/store/auth'
 import { useModalStore } from '~/store/modal'
+import { useIsMobile } from '~/composables/useIsMobile'
 import TheSearch from '~/components/UI/TheSearch.vue'
 
 const modalStore = useModalStore()
 const authStore = useAuthStore()
+const { isMobile } = useIsMobile()
 
 const user = computed(() => authStore.user)
 const hasUser = computed(() => !!user.value?.email)
@@ -77,19 +90,15 @@ function activeStyle(name: 'catalog' | 'auth') {
   align-items: center;
   gap: 8px;
 
-  & > :first-child {
+  &__logo {
     margin-right: 100px;
-  }
-
-  a {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
 
     @include phone {
       display: none;
     }
+  }
 
+  a {
     &.active {
       color: var(--menu-items-color-active);
     }
@@ -99,18 +108,49 @@ function activeStyle(name: 'catalog' | 'auth') {
     color: var(--menu-items-color);
     transition: color 0.3s ease-in-out;
 
+    &:hover {
+      color: var(--menu-items-color-hover) !important;
+    }
+
     svg {
       color: inherit;
       transition: color 0s ease-in-out;
     }
+  }
 
-    &:hover {
-      color: var(--menu-items-color-hover) !important;
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    @include phone {
+      display: none;
+    }
+
+    a {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
     }
   }
 
-  form {
+  .search-form {
+    display: flex;
     width: 100%;
+    gap: 8px;
+  }
+
+  &__contacts {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+
+    span {
+      @include phone {
+        display: none;
+      }
+    }
   }
 
   &__catalog {
@@ -134,12 +174,6 @@ function activeStyle(name: 'catalog' | 'auth') {
   &__profile-btn {
     svg {
       margin-bottom: -4px;
-    }
-  }
-
-  button {
-    @include phone {
-      display: none;
     }
   }
 }

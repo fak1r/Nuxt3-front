@@ -1,4 +1,4 @@
-export function useIsMobile(breakpoint = 768) {
+export function useIsMobile(breakpoint = 767) {
   const isMobile = ref(false)
 
   function update() {
