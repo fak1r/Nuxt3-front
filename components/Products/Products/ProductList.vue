@@ -1,5 +1,6 @@
 <template>
-  <ul class="product-list">
+  <div v-if="!isSkeletonVisible && products.length === 0" class="product-list__not-found">Товары не найдены</div>
+  <ul v-else class="product-list">
     <template v-if="isSkeletonVisible">
       <li v-for="n in 8" :key="n">
         <ProductCardSkeleton />
@@ -15,8 +16,8 @@
 </template>
 
 <script setup lang="ts">
-import ProductCard from '~/components/Products/ProductCard.vue'
-import ProductCardSkeleton from '~/components/Products/ProductCardSkeleton.vue'
+import ProductCard from '~/components/Products/Products/ProductCard.vue'
+import ProductCardSkeleton from '~/components/Products/Products/ProductCardSkeleton.vue'
 import type { Product } from '~/types/products.types'
 
 interface Props {
@@ -36,6 +37,10 @@ defineProps<Props>()
 
   @include phone {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  }
+
+  &__not-found {
+    text-align: center;
   }
 }
 </style>

@@ -1,11 +1,11 @@
 <template>
   <article class="product-view">
-    <!-- <div class="product-view__gallery">
-      <ImageSlider :images="product.img_mini" />
+    <div class="product-view__gallery">
+      <ImageSlider :images="product.images" />
     </div>
 
     <div class="product-view__info">
-      <h1 class="product-view__title">{{ product.name }}</h1>
+      <h1 class="product-view__title">{{ product.full_name }}</h1>
       <p class="product-view__price">{{ product.price }} ₽</p>
 
       <ul class="product-view__details">
@@ -13,14 +13,12 @@
           <strong>{{ key }}:</strong> {{ value }}
         </li>
       </ul>
-    </div> -->
-    {{ product }}
+    </div>
   </article>
 </template>
 
 <script setup lang="ts">
-// import type { ProductResponse } from '~/types/products.types'
-// import ImageSlider from '~/components/Products/Product/ImageSlider.vue'
+import ImageSlider from '~/components/Products/Product/ImageSlider.vue'
 
 interface Props {
   product: any
@@ -38,17 +36,21 @@ defineProps<Props>()
 
   &__gallery {
     width: 100%;
+    max-width: 600px;
   }
 
   &__info {
     display: flex;
     flex-direction: column;
     gap: 16px;
+    background-color: var(--border);
+    padding: 16px;
+    border-radius: 16px;
   }
 
   &__title {
     font-size: 24px;
-    font-weight: 600;
+    font-weight: 500;
   }
 
   &__price {

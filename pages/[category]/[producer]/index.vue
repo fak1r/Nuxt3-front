@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import { useCategoriesStore } from '~/store/categories'
 import type { ProductFilters } from '~/types/products.types'
-import ProductListPage from '~/components/Products/ProductListPage.vue'
+import ProductListPage from '~/components/Products/Products/ProductListPage.vue'
 
 definePageMeta({ middleware: 'auth' })
 

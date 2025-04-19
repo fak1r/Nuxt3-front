@@ -1,13 +1,13 @@
 <template>
   <div class="main-page">
     <h1 class="main-page__title">Популярные товары:</h1>
-    <ProductList :products="products" :is-skeleton-visible="!isProductsLoaded" />
+    <ProductList :products="products" :is-skeleton-visible="!isSkeletonVisible" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { useProductsStore } from '~/store/products'
-import ProductList from '~/components/Products/ProductList.vue'
+import ProductList from '~/components/Products/Products/ProductList.vue'
 import type { Product } from '~/types/products.types'
 
 definePageMeta({
@@ -20,7 +20,7 @@ const { fetchPopularProducts } = productsStore
 
 const { data, status } = await useAsyncData<Product[]>('favorite-products', () => fetchPopularProducts())
 
-const isProductsLoaded = computed(() => status.value === 'success')
+const isSkeletonVisible = computed(() => status.value === 'success' || 'error')
 
 const products = data.value || []
 </script>

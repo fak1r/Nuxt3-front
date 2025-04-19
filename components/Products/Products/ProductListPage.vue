@@ -4,19 +4,21 @@
 
     <ProductList :products="products" :is-skeleton-visible="isSkeletonVisible" />
 
-    <div class="product-page__loader">
-      <TheLoader v-if="firstLoading" size="xl" />
-      <TheLoader v-if="!firstLoading && productsAreLoading && hasMore" size="md" />
+    <div v-if="firstLoading" class="product-page__loader">
+      <TheLoader size="xl" />
+    </div>
+    <div v-if="!firstLoading && productsAreLoading && hasMore" class="product-page__loader">
+      <TheLoader size="md" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { ProductFilters } from '~/types/products.types'
-import ProductList from '~/components/Products/ProductList.vue'
-import TheLoader from '~/components/UI/TheLoader.vue'
 import { useInfiniteProducts } from '~/composables/useInfiniteProducts'
 import { useInfiniteScroll } from '~/composables/useInfiniteScroll'
+import type { ProductFilters } from '~/types/products.types'
+import ProductList from '~/components/Products/Products/ProductList.vue'
+import TheLoader from '~/components/UI/TheLoader.vue'
 
 interface Props {
   title: string

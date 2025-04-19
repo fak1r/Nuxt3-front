@@ -13,8 +13,8 @@
 
 <script setup lang="ts">
 import type { Product } from '~/types/products.types'
-import ProductImageMobile from '~/components/Products/ProductImageMobile.vue'
-import ProductImageDesktop from '~/components/Products/ProductImageDesktop.vue'
+import ProductImageMobile from '~/components/Products/Products/ProductImageMobile.vue'
+import ProductImageDesktop from '~/components/Products/Products/ProductImageDesktop.vue'
 
 interface Props {
   product: Product

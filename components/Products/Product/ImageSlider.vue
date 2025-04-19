@@ -13,7 +13,7 @@
 
       <swiper-slide v-for="(img, index) in images" :key="index">
         <ImgSkeleton v-if="!isImgLoaded" />
-        <img v-show="isImgLoaded" :src="img" alt="Фото товара" @error="onImgError" @load="onImageLoad" />
+        <img v-show="isImgLoaded" :src="img.image_url" alt="Фото товара" @error="onImgError" @load="onImageLoad" />
       </swiper-slide>
     </swiper>
   </div>
@@ -25,7 +25,10 @@ import { Pagination } from 'swiper/modules'
 import ImgSkeleton from '~/components/Products/ImgSkeleton.vue'
 
 interface Props {
-  images: string[]
+  images: {
+    id: number
+    image_url: string
+  }[]
 }
 
 const { images } = defineProps<Props>()
@@ -60,7 +63,6 @@ function handleResize() {
 <style scoped lang="scss">
 .image-slider {
   position: relative;
-  width: 100%;
 
   &__swiper {
     aspect-ratio: 4 / 3;

@@ -16,7 +16,7 @@
 
 <script setup>
 import { useProductsStore } from '@/store/products'
-import ProducList from '~/components/Products/ProductList.vue'
+import ProducList from '~/components/Products/Products/ProductList.vue'
 
 definePageMeta({
   middleware: 'auth',
