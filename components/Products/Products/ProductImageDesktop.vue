@@ -35,6 +35,25 @@ const isAllImgsLoaded = ref(false)
 const totalImages = product.img_mini.length
 const imgsLoaded = ref(0)
 
+onMounted(async () => {
+  await nextTick()
+
+  const images = imageContainer.value?.querySelectorAll('img') || []
+  let loadedCount = 0
+
+  images.forEach((img) => {
+    if (img.complete) {
+      loadedCount++
+    }
+  })
+
+  imgsLoaded.value += loadedCount
+
+  if (imgsLoaded.value >= totalImages) {
+    isAllImgsLoaded.value = true
+  }
+})
+
 function handleMouseMove(event: MouseEvent) {
   if (!imageContainer.value || !product.img_mini.length) return
 
@@ -54,10 +73,13 @@ function onImgError(event: Event) {
   target.src = '/img/no-image.png'
 }
 
-function onImageLoad() {
-  imgsLoaded.value++
-  if (imgsLoaded.value === totalImages) {
-    isAllImgsLoaded.value = true
+function onImageLoad(event: Event) {
+  const target = event.target as HTMLImageElement
+  if (target.complete) {
+    imgsLoaded.value++
+    if (imgsLoaded.value >= totalImages) {
+      isAllImgsLoaded.value = true
+    }
   }
 }
 </script>

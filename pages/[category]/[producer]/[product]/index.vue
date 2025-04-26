@@ -33,8 +33,6 @@ onMounted(async () => {
 
 <style scoped lang="scss">
 .product-page {
-  padding: 32px;
-
   &__loader {
     display: flex;
     justify-content: center;

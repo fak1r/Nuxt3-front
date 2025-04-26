@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /api/
+Disallow: /admin/
+Disallow: /profile/
+Disallow: /cart/
+
+Sitemap: http://5.8.54.84/sitemap.xml

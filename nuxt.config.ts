@@ -1,16 +1,22 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import getSitemapRoutes from './scripts/get-sitemap-routes'
+import appHead from './config/head'
+
 const apiBaseUrl = process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api'
 const siteUrl = process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 
 export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
-  ssr: false,
+  ssr: true,
   site: {
     url: siteUrl || 'http://5.8.54.84',
   },
+  app: {
+    head: appHead,
+  },
   sitemap: {
     hostname: siteUrl || 'http://localhost:3000',
+    name: 'Зам Пол - магазин напольных покрытий',
     gzip: true,
     exclude: ['/admin', '/profile', '/cart'],
     routes: () => getSitemapRoutes(apiBaseUrl),

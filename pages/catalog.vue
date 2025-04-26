@@ -24,12 +24,13 @@
 
 <script setup lang="ts">
 import { useCategoriesStore } from '~/store/categories'
+import LinoleumImg from '~/assets/img/linoleum.png'
 import LaminatImg from '~/assets/img/laminat.png'
 import ParketImg from '~/assets/img/parket.png'
 import ImgSkeleton from '~/components/Products/ImgSkeleton.vue'
 
 const categoriesStore = useCategoriesStore()
-const imgs = [LaminatImg, ParketImg]
+const imgs = [LaminatImg, LinoleumImg, ParketImg]
 
 const imageLoadingStatus = ref<boolean[]>([])
 
@@ -41,9 +42,6 @@ watch(
   { immediate: true },
 )
 
-onMounted(() => {
-  console.log(categoriesStore.categories)
-})
 function onImageLoad(id: number) {
   imageLoadingStatus.value[id - 1] = false
 }

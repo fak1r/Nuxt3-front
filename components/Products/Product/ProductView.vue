@@ -29,23 +29,33 @@ defineProps<Props>()
 
 <style scoped lang="scss">
 .product-view {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 32px;
-  align-items: start;
+  display: flex;
+  gap: 8px;
+
+  @include phone {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
 
   &__gallery {
     width: 100%;
-    max-width: 600px;
+    max-width: 50%;
+
+    @include phone {
+      max-width: 100%;
+    }
   }
 
   &__info {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    background-color: var(--border);
     padding: 16px;
     border-radius: 16px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   &__title {

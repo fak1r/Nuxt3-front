@@ -30,6 +30,7 @@ const products = ref([])
 // onMounted(async () => {
 //   products.value = await productsStore.fetchProducts()
 // })
+// TODO: удалить страницу или сделать all products
 
 function fetchFilteredProducts() {
   const [sort_by, order] = selectedSort.value.split('-')
