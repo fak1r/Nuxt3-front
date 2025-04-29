@@ -7,7 +7,13 @@ const siteUrl = process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 
 export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
-  ssr: true,
+  ssr: false,
+  nitro: {
+    prerender: {
+      routes: ['/laminat', '/parket', '/linoleum'],
+    },
+    compressPublicAssets: true,
+  },
   site: {
     url: siteUrl || 'http://5.8.54.84',
   },

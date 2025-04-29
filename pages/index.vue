@@ -10,10 +10,6 @@ import { useProductsStore } from '~/store/products'
 import ProductList from '~/components/Products/Products/ProductList.vue'
 import type { Product } from '~/types/products.types'
 
-definePageMeta({
-  middleware: 'auth',
-})
-
 const productsStore = useProductsStore()
 
 const { fetchPopularProducts } = productsStore

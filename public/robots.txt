@@ -4,4 +4,4 @@ Disallow: /admin/
 Disallow: /profile/
 Disallow: /cart/
 
-Sitemap: http://5.8.54.84/sitemap.xml
+Sitemap: https://zampol.ru/sitemap.xml

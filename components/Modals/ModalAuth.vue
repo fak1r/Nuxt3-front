@@ -38,7 +38,7 @@
             @focus="clearError('password')"
           />
 
-          <TheButton variant="Primary" type="submit">{{ formTitle }}</TheButton>
+          <TheButton class="auth__btn" variant="Primary" type="submit">{{ formTitle }}</TheButton>
         </div>
 
         <div class="auth__info">
@@ -171,6 +171,10 @@ function closeModal() {
   &__info {
     display: flex;
     justify-content: center;
+  }
+
+  &__btn {
+    width: 100%;
   }
 }
 

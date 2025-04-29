@@ -7,9 +7,9 @@ import { useCategoriesStore } from '~/store/categories'
 import type { ProductFilters } from '~/types/products.types'
 import ProductListPage from '~/components/Products/Products/ProductListPage.vue'
 
-definePageMeta({ middleware: 'auth' })
-
 const route = useRoute()
+const router = useRouter()
+
 const categorySlug = route.params.category as string
 const producerSlug = route.params.producer as string
 
@@ -22,6 +22,20 @@ const filters = ref<ProductFilters>({
 
 const { producers } = storeToRefs(useCategoriesStore())
 const title = computed(() => producers.value.find((p) => p.slug === producerSlug)?.name || '')
+
+watch(
+  producers,
+  (newProducers) => {
+    if (newProducers.length > 0) {
+      const titleExists = newProducers.find((p) => p.slug === producerSlug)
+
+      if (!titleExists) {
+        router.push('/404')
+      }
+    }
+  },
+  { immediate: true },
+)
 </script>
 
 <style scoped lang="scss">

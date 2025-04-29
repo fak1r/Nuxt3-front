@@ -39,7 +39,7 @@ const buttonVariants = {
     background: 'var(--primary-btn)',
     hover: 'var(--primary-btn-hover)',
     border: '1px solid transparent',
-    color: '#fff',
+    color: 'var(--white-color)',
     ripple: 'rgba(255, 255, 255, 0.4)',
   },
   Secondary: {
@@ -128,7 +128,6 @@ function handleMouseLeave(event: MouseEvent) {
   overflow: hidden;
   transition: background 0.2s ease;
   font-weight: bold;
-  width: 100%;
 
   &__ripple {
     position: absolute;
