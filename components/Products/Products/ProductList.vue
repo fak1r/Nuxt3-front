@@ -1,14 +1,14 @@
 <template>
-  <div v-if="!isSkeletonVisible && products.length === 0" class="product-list__not-found">Товары не найдены</div>
+  <div v-if="!isSkeletonVisible && safeProducts.length === 0" class="product-list__not-found">Товары не найдены</div>
   <ul v-else class="product-list">
-    <template v-if="isSkeletonVisible">
+    <template v-if="isSkeletonVisible && safeProducts.length === 0">
       <li v-for="n in 8" :key="n">
         <ProductCardSkeleton />
       </li>
     </template>
 
     <template v-else>
-      <li v-for="product in products" :key="product.id">
+      <li v-for="product in safeProducts" :key="product.id">
         <ProductCard :product="product" />
       </li>
     </template>
@@ -21,11 +21,13 @@ import ProductCardSkeleton from '~/components/Products/Products/ProductCardSkele
 import type { Product } from '~/types/products.types'
 
 interface Props {
-  products: Array<Product>
+  products?: Product[]
   isSkeletonVisible: boolean
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
+
+const safeProducts = computed(() => (Array.isArray(props.products) ? props.products : []))
 </script>
 
 <style scoped lang="scss">

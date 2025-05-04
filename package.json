@@ -9,7 +9,9 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "lint": "eslint --ext .js,.vue .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "generate:routes": "node --loader ts-node/esm scripts/generate-routes.ts",
+    "generate:full": "yarn generate:routes && yarn generate"
   },
   "dependencies": {
     "@pinia/nuxt": "^0.11.0",
@@ -23,11 +25,12 @@
   "devDependencies": {
     "@nuxt/eslint": "^1.1.0",
     "@nuxtjs/sitemap": "^7.2.10",
-    "@types/node": "^22.14.0",
+    "@types/node": "^22.15.3",
     "eslint": "^9.21.0",
     "prettier": "^3.5.1",
     "sass": "^1.85.0",
     "sass-loader": "^16.0.5",
-    "typescript": "^5.7.3"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   }
 }

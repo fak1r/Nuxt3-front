@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { useCategoriesStore } from '~/store/categories'
-import type { ProductFilters } from '~/types/products.types'
+import type { ProductFilters, Product } from '~/types/products.types'
 import ProductListPage from '~/components/Products/Products/ProductListPage.vue'
 
 const route = useRoute()

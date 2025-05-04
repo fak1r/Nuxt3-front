@@ -1,11 +1,12 @@
 <template>
   <article class="product-card" @click="goToProduct">
-    <template v-if="isMobile">
+    <template v-if="showMobileImage">
       <ProductImageMobile :product="product" />
     </template>
     <template v-else>
       <ProductImageDesktop :product="product" />
     </template>
+
     <p class="product-card__price">{{ product.price }} ₽</p>
     <h3 class="product-card__name">{{ product.name }}</h3>
   </article>
@@ -23,7 +24,10 @@ interface Props {
 const { product } = defineProps<Props>()
 
 const router = useRouter()
-const { isMobile } = useIsMobile()
+
+const { isMobile } = import.meta.client ? useIsMobile() : { isMobile: ref(false) }
+
+const showMobileImage = computed(() => isMobile.value === true)
 
 function goToProduct() {
   router.push(product.self)

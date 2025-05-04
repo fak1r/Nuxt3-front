@@ -3,10 +3,10 @@
     <ImgSkeleton v-if="!isAllImgsLoaded" />
     <img
       v-for="(img, index) in product.img_mini"
-      v-show="isAllImgsLoaded && index === activeIndex"
+      v-show="isImgVisible && index === activeIndex"
       :key="index"
       :src="img"
-      :alt="`Фото ${index}`"
+      :alt="`${product.name} – миниатюра ${index + 1}`"
       :class="['image-container__img', { active: index === activeIndex }]"
       @error="onImgError"
       @load="onImageLoad"
@@ -36,23 +36,28 @@ const totalImages = product.img_mini.length
 const imgsLoaded = ref(0)
 
 onMounted(async () => {
-  await nextTick()
+  if (!imageContainer.value) return
+  if (import.meta.client) {
+    await nextTick()
 
-  const images = imageContainer.value?.querySelectorAll('img') || []
-  let loadedCount = 0
+    const images = imageContainer.value.querySelectorAll('img')
+    let loadedCount = 0
 
-  images.forEach((img) => {
-    if (img.complete) {
-      loadedCount++
+    images.forEach((img) => {
+      if (img.complete) {
+        loadedCount++
+      }
+    })
+
+    imgsLoaded.value += loadedCount
+
+    if (imgsLoaded.value >= totalImages) {
+      isAllImgsLoaded.value = true
     }
-  })
-
-  imgsLoaded.value += loadedCount
-
-  if (imgsLoaded.value >= totalImages) {
-    isAllImgsLoaded.value = true
   }
 })
+
+const isImgVisible = computed(() => import.meta.server || isAllImgsLoaded.value)
 
 function handleMouseMove(event: MouseEvent) {
   if (!imageContainer.value || !product.img_mini.length) return

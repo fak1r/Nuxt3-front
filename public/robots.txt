@@ -1,4 +1,6 @@
 User-agent: *
+Disallow: /report.html
+Disallow: /report-
 Disallow: /api/
 Disallow: /admin/
 Disallow: /profile/

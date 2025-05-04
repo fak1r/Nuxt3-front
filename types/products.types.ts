@@ -18,3 +18,10 @@ export interface ProductFilters {
   sort_by?: string
   order?: string
 }
+
+export interface Producer {
+  id: number
+  name: string
+  slug: string
+  category_id: number
+}

@@ -10,7 +10,16 @@ import { useProductsStore } from '~/store/products'
 import ProductList from '~/components/Products/Products/ProductList.vue'
 import type { Product } from '~/types/products.types'
 
-const productsStore = useProductsStore()
+definePageMeta({
+  prerender: true,
+})
+
+const { data, status } = await useAsyncData<Product[]>('favorite-products', () => $fetch('/api/products/popular'))
+
+const products = computed<Product[]>(() => data.value ?? [])
+const isSkeletonVisible = computed(() => status.value === 'success' || status.value === 'error')
+
+/* const productsStore = useProductsStore()
 
 const { fetchPopularProducts } = productsStore
 
@@ -18,7 +27,7 @@ const { data, status } = await useAsyncData<Product[]>('favorite-products', () =
 
 const isSkeletonVisible = computed(() => status.value === 'success' || 'error')
 
-const products = data.value || []
+const products = data.value || []*/
 </script>
 
 <style scoped lang="scss">
