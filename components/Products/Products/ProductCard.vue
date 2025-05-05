@@ -1,10 +1,10 @@
 <template>
   <article class="product-card" @click="goToProduct">
     <template v-if="showMobileImage">
-      <ProductImageMobile :product="product" />
+      <ProductImageMobile v-if="hasImgs" :product="product" />
     </template>
     <template v-else>
-      <ProductImageDesktop :product="product" />
+      <ProductImageDesktop v-if="hasImgs" :product="product" />
     </template>
 
     <p class="product-card__price">{{ product.price }} ₽</p>
@@ -28,6 +28,8 @@ const router = useRouter()
 const { isMobile } = import.meta.client ? useIsMobile() : { isMobile: ref(false) }
 
 const showMobileImage = computed(() => isMobile.value === true)
+
+const hasImgs = computed(() => Array.isArray(product.img_mini) && product.img_mini.length)
 
 function goToProduct() {
   router.push(product.self)

@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import axios from 'axios'
-import type { Producer } from '~/types/products.types.js'
+import type { Producer } from '~/types/categories.types'
 
 const API_BASE = process.env.NUXT_PUBLIC_API_BASE_URL || 'https://zampol.ru/api'
 

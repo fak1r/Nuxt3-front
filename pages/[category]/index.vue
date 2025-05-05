@@ -1,42 +1,29 @@
 <template>
-  <ProductListPage :title="title" :filters="filters" title-prefix="Категория" />
+  <ProductListPage :state="productPageState" @load-more="loadMoreProducts" />
 </template>
 
 <script setup lang="ts">
-import { useCategoriesStore } from '~/store/categories'
 import type { ProductFilters } from '~/types/products.types'
+import { useCategoriesStore } from '~/store/categories'
 import ProductListPage from '~/components/Products/Products/ProductListPage.vue'
 
 const route = useRoute()
-const router = useRouter()
-
-const { categories } = storeToRefs(useCategoriesStore())
-
 const categorySlug = route.params.category as string
-const producerSlug = route.params.producer as string
 
 const filters = ref<ProductFilters>({
   category_slug: categorySlug,
-  producer_slug: producerSlug,
   sort_by: 'price',
   order: 'asc',
 })
 
-const title = computed(() => categories.value.find((c) => c.slug === categorySlug)?.name || '')
+const { categories } = storeToRefs(useCategoriesStore())
 
-watch(
-  categories,
-  (newCategories) => {
-    if (newCategories.length > 0) {
-      const titleExists = newCategories.find((c) => c.slug === categorySlug)
-
-      if (!titleExists) {
-        router.push('/404')
-      }
-    }
-  },
-  { immediate: true },
-)
+const { productPageState, loadMoreProducts } = useProductListPage({
+  titlePrefix: 'Категория',
+  getTitleBySlug: (slug) => categories.value.find((c) => c.slug === slug)?.name,
+  validateSlugExists: () => !!categories.value.find((c) => c.slug === categorySlug),
+  filters,
+})
 </script>
 
 <style scoped lang="scss">

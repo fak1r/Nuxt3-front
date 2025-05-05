@@ -12,25 +12,27 @@ export function useInfiniteProducts(filters: Ref<ProductFilters>) {
   const { fetchProducts } = productsStore
   const { productsAreLoading } = storeToRefs(productsStore)
 
-  const isServerPrerender = import.meta.env.SSR && import.meta.server
-
   async function loadMoreProducts() {
     if (!hasMore.value) return
 
     const currentFilters = {
-      ...filters,
+      ...filters.value,
       page: page.value,
-      limit: isServerPrerender ? 9999 : limit,
+      limit: limit,
     }
 
     const { products: newProducts = [] } = await fetchProducts(currentFilters)
 
-    if (newProducts.length < (isServerPrerender ? 9999 : limit)) {
+    if (newProducts.length < limit) {
       hasMore.value = false
     }
 
     products.value.push(...newProducts)
     page.value++
+  }
+
+  if (firstLoading.value) {
+    firstLoading.value = false
   }
 
   return {

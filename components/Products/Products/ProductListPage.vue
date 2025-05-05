@@ -1,45 +1,38 @@
 <template>
   <div class="product-page">
-    <h1 class="product-page__title">{{ titlePrefix }}: {{ title }}</h1>
+    <h1 class="product-page__title">{{ state.titlePrefix }}: {{ state.title }}</h1>
 
-    <ProductList :products="products" :is-skeleton-visible="isSkeletonVisible" />
+    <ProductList :products="state.products ?? []" :is-skeleton-visible="isSkeletonVisible" />
 
-    <div v-if="firstLoading" class="product-page__loader">
+    <div v-if="state.firstLoading" class="product-page__loader">
       <TheLoader size="xl" />
     </div>
-    <div v-if="!firstLoading && productsAreLoading && hasMore" class="product-page__loader">
+    <div v-if="!state.firstLoading && state.productsAreLoading && state.hasMore" class="product-page__loader">
       <TheLoader size="md" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useInfiniteProducts } from '~/composables/useInfiniteProducts'
-import { useInfiniteScroll } from '~/composables/useInfiniteScroll'
-import type { ProductFilters } from '~/types/products.types'
+import type { ProductListState } from '~/types/products.types'
 import ProductList from '~/components/Products/Products/ProductList.vue'
 import TheLoader from '~/components/UI/TheLoader.vue'
 
 interface Props {
-  title: string
-  filters: unknown
-  titlePrefix?: string
+  state: ProductListState
 }
 
 const props = defineProps<Props>()
 
-const { products, loadMoreProducts, productsAreLoading, hasMore, firstLoading } = useInfiniteProducts(
-  props.filters as Ref<ProductFilters>,
-)
+interface Emits {
+  (e: 'loadMore'): void
+}
 
-const isSkeletonVisible = computed(() => firstLoading.value)
+const emit = defineEmits<Emits>()
 
-onMounted(async () => {
-  await loadMoreProducts()
-  firstLoading.value = false
-})
+const isSkeletonVisible = computed(() => props.state.firstLoading)
 
-useInfiniteScroll(loadMoreProducts)
+useInfiniteScroll(() => emit('loadMore'))
 </script>
 
 <style scoped lang="scss">

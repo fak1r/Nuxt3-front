@@ -3,9 +3,18 @@ export interface Product {
   name: string
   slug: string
   price: number
-  img_mini: string[]
+  favorite: boolean
   product_line_id: number
+  img_mini: string[]
   self: string
+}
+
+export interface PaginatedProducts {
+  items: Product[]
+  total: number
+  page: number
+  limit: number
+  pages: number
 }
 
 export interface ProductFilters {
@@ -18,10 +27,11 @@ export interface ProductFilters {
   sort_by?: string
   order?: string
 }
-
-export interface Producer {
-  id: number
-  name: string
-  slug: string
-  category_id: number
+export interface ProductListState {
+  title: string
+  titlePrefix?: string
+  products: Product[]
+  productsAreLoading: boolean
+  hasMore: boolean
+  firstLoading: boolean
 }
