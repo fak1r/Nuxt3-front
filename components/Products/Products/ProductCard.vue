@@ -1,14 +1,16 @@
 <template>
-  <article class="product-card" @click="goToProduct">
-    <template v-if="showMobileImage">
-      <ProductImageMobile v-if="hasImgs" :product="product" />
-    </template>
-    <template v-else>
-      <ProductImageDesktop v-if="hasImgs" :product="product" />
-    </template>
+  <article class="product-card">
+    <a :href="product.self" class="product-card__link" @click.prevent="goToProduct">
+      <template v-if="showMobileImage">
+        <ProductImageMobile v-if="hasImgs" :product="product" />
+      </template>
+      <template v-else>
+        <ProductImageDesktop v-if="hasImgs" :product="product" />
+      </template>
 
-    <p class="product-card__price">{{ product.price }} ₽</p>
-    <h3 class="product-card__name">{{ product.name }}</h3>
+      <p class="product-card__price">{{ product.price }} ₽</p>
+      <h3 class="product-card__name">{{ product.name }}</h3>
+    </a>
   </article>
 </template>
 
@@ -32,7 +34,9 @@ const showMobileImage = computed(() => isMobile.value === true)
 const hasImgs = computed(() => Array.isArray(product.img_mini) && product.img_mini.length)
 
 function goToProduct() {
-  router.push(product.self)
+  if (import.meta.client) {
+    router.push(product.self)
+  }
 }
 </script>
 

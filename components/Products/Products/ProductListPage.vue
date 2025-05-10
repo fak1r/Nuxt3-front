@@ -2,12 +2,12 @@
   <div class="product-page">
     <h1 class="product-page__title">{{ state.titlePrefix }}: {{ state.title }}</h1>
 
-    <ProductList :products="state.products ?? []" :is-skeleton-visible="isSkeletonVisible" />
+    <ProductList :products="state.products ?? []" :is-skeleton-visible="isFirstLoading" />
 
-    <div v-if="state.firstLoading" class="product-page__loader">
+    <div v-if="isFirstLoading" class="product-page__loader">
       <TheLoader size="xl" />
     </div>
-    <div v-if="!state.firstLoading && state.productsAreLoading && state.hasMore" class="product-page__loader">
+    <div v-if="!isFirstLoading && state.productsAreLoading && state.hasMore" class="product-page__loader">
       <TheLoader size="md" />
     </div>
   </div>
@@ -30,7 +30,7 @@ interface Emits {
 
 const emit = defineEmits<Emits>()
 
-const isSkeletonVisible = computed(() => props.state.firstLoading)
+const isFirstLoading = computed(() => props.state.firstLoading)
 
 useInfiniteScroll(() => emit('loadMore'))
 </script>

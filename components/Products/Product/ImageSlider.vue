@@ -48,6 +48,11 @@ function onImgError(event: Event) {
 }
 
 onMounted(() => {
+  const firstImg = document.querySelector('.image-slider__swiper img') as HTMLImageElement
+  if (firstImg?.complete) {
+    isImgLoaded.value = true
+  }
+
   window.addEventListener('resize', handleResize)
 })
 

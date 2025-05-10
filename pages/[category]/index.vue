@@ -12,17 +12,26 @@ const categorySlug = route.params.category as string
 
 const filters = ref<ProductFilters>({
   category_slug: categorySlug,
-  sort_by: 'price',
+  sort_by: 'name',
   order: 'asc',
 })
 
 const { categories } = storeToRefs(useCategoriesStore())
 
+const categoryName = computed(() => {
+  return Array.isArray(categories.value) ? (categories.value.find((p) => p.slug === categorySlug)?.name ?? '') : ''
+})
+
 const { productPageState, loadMoreProducts } = useProductListPage({
   titlePrefix: 'Категория',
-  getTitleBySlug: (slug) => categories.value.find((c) => c.slug === slug)?.name,
-  validateSlugExists: () => !!categories.value.find((c) => c.slug === categorySlug),
+  title: categoryName,
   filters,
+  slugListRef: categories,
+  slugToCheck: categorySlug,
+})
+
+onMounted(() => {
+  loadMoreProducts()
 })
 </script>
 

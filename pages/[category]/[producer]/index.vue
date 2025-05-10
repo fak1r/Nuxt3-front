@@ -3,10 +3,13 @@
 </template>
 
 <script setup lang="ts">
+import { useRuntimeConfig } from '#app'
 import type { ProductFilters, PaginatedProducts } from '~/types/products.types'
-import ProductListPage from '~/components/Products/Products/ProductListPage.vue'
+import type { Producer } from '~/types/categories.types'
 import { useCategoriesStore } from '~/store/categories'
+import ProductListPage from '~/components/Products/Products/ProductListPage.vue'
 
+const config = useRuntimeConfig()
 const route = useRoute()
 const categorySlug = route.params.category as string
 const producerSlug = route.params.producer as string
@@ -20,12 +23,24 @@ const filters = ref<ProductFilters>({
 
 const { producers } = storeToRefs(useCategoriesStore())
 
+const limit = config.public.isStatic ? 9999 : 30
+
+const producerName = computed(() => {
+  return producersData.value?.find((p) => p.slug === producerSlug)?.name ?? ''
+})
+
+const { data: producersData } = await useAsyncData<Producer[]>('producers', () =>
+  $fetch('/products/producers', {
+    baseURL: config.public.apiBaseUrl,
+  }),
+)
+
 const { data: ssrProducts } = await useAsyncData<PaginatedProducts>(`products-${categorySlug}-${producerSlug}`, () =>
   $fetch(`/products/${categorySlug}/${producerSlug}`, {
-    baseURL: useRuntimeConfig().public.apiBaseUrl,
+    baseURL: config.public.apiBaseUrl,
     params: {
       page: 1,
-      limit: 9999,
+      limit: limit,
       sort_by: 'name',
       order: 'asc',
     },
@@ -34,10 +49,11 @@ const { data: ssrProducts } = await useAsyncData<PaginatedProducts>(`products-${
 
 const { productPageState, loadMoreProducts } = useProductListPage({
   titlePrefix: 'Производитель',
-  getTitleBySlug: (slug) => (Array.isArray(producers.value) ? producers.value.find((p) => p.slug === slug)?.name : ''),
-  validateSlugExists: () => Array.isArray(producers.value) && !!producers.value.find((p) => p.slug === producerSlug),
+  title: producerName,
   filters,
   ssrProducts: ssrProducts.value ?? null,
+  slugListRef: producers,
+  slugToCheck: producerSlug,
 })
 </script>
 

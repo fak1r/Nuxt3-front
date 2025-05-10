@@ -1,16 +1,29 @@
 <template>
   <div ref="imageContainer" class="image-container" @mousemove="handleMouseMove" @mouseleave="resetImage">
-    <ImgSkeleton v-if="!isAllImgsLoaded" />
-    <img
-      v-for="(img, index) in product.img_mini"
-      v-show="isImgVisible && index === activeIndex"
-      :key="index"
-      :src="img"
-      :alt="`${product.name} – миниатюра ${index + 1}`"
-      :class="['image-container__img', { active: index === activeIndex }]"
-      @error="onImgError"
-      @load="onImageLoad"
-    />
+    <ClientOnly>
+      <ImgSkeleton v-show="!isAllImgsLoaded" />
+    </ClientOnly>
+    <template v-for="(img, index) in product.img_mini" :key="index">
+      <img
+        v-if="!img.includes('/img/no-image.png')"
+        v-show="isImgVisible && index === activeIndex"
+        :src="img"
+        :alt="`${product.name} – миниатюра ${index + 1}`"
+        :class="['image-container__img', { active: index === activeIndex }]"
+        @error="onImgError"
+        @load="onImageLoad"
+      />
+      <ClientOnly v-else>
+        <img
+          v-show="isImgVisible && index === activeIndex"
+          :src="img"
+          alt="Фото отсутствует"
+          :class="['image-container__img', { active: index === activeIndex }]"
+          @error="onImgError"
+          @load="onImageLoad"
+        />
+      </ClientOnly>
+    </template>
     <div v-if="hasImgs" class="image-container__pagination">
       <span v-for="(_, index) in product.img_mini" :key="index" :class="{ active: index === activeIndex }" />
     </div>
@@ -37,27 +50,26 @@ const imgsLoaded = ref(0)
 
 onMounted(async () => {
   if (!imageContainer.value) return
-  if (import.meta.client) {
-    await nextTick()
 
-    const images = imageContainer.value.querySelectorAll('img')
-    let loadedCount = 0
+  await nextTick()
 
-    images.forEach((img) => {
-      if (img.complete) {
-        loadedCount++
-      }
-    })
+  const images = imageContainer.value.querySelectorAll('img')
+  let loadedCount = 0
 
-    imgsLoaded.value += loadedCount
-
-    if (imgsLoaded.value >= totalImages) {
-      isAllImgsLoaded.value = true
+  images.forEach((img) => {
+    if (img.complete) {
+      loadedCount++
     }
+  })
+
+  imgsLoaded.value += loadedCount
+
+  if (imgsLoaded.value >= totalImages) {
+    isAllImgsLoaded.value = true
   }
 })
 
-const isImgVisible = computed(() => import.meta.server || isAllImgsLoaded.value)
+const isImgVisible = computed(() => isAllImgsLoaded.value)
 
 function handleMouseMove(event: MouseEvent) {
   if (!imageContainer.value || !product.img_mini.length) return

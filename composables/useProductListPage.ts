@@ -1,52 +1,48 @@
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import type { ProductListState, ProductFilters, PaginatedProducts } from '~/types/products.types'
+import { normalizeProducts } from '~/utils/normalize-products'
 
 interface UseProductListPageOptions {
   titlePrefix: string
-  getTitleBySlug: (slug: string) => string | undefined
-  validateSlugExists: () => boolean
+  title: Ref<string>
   filters: Ref<ProductFilters>
   ssrProducts?: PaginatedProducts | null
+  slugListRef: Ref<{ slug: string }[]>
+  slugToCheck: string
 }
 
 export function useProductListPage({
   titlePrefix,
-  getTitleBySlug,
-  validateSlugExists,
+  title,
   filters,
   ssrProducts,
+  slugListRef,
+  slugToCheck,
 }: UseProductListPageOptions) {
-  const route = useRoute()
   const router = useRouter()
 
-  const title = computed(
-    () => getTitleBySlug((route.params.producer as string) || (route.params.category as string)) || '',
+  const { products, loadMoreProducts, productsAreLoading, hasMore, firstLoading } = useInfiniteProducts(
+    filters,
+    ssrProducts?.items ?? [],
   )
 
-  const { products, loadMoreProducts, productsAreLoading, hasMore, firstLoading } = useInfiniteProducts(filters)
-
-  const hasSSR = !!ssrProducts?.items?.length
+  if (ssrProducts?.items?.length) {
+    ssrProducts.items = normalizeProducts(ssrProducts.items)
+  }
 
   const productPageState = computed<ProductListState>(() => ({
     title: title.value,
     titlePrefix,
-    products: hasSSR ? ssrProducts.items : products.value,
+    products: products.value,
     productsAreLoading: productsAreLoading.value,
-    hasMore: hasSSR ? false : hasMore.value,
+    hasMore: hasMore.value,
     firstLoading: firstLoading.value,
   }))
 
-  watch(
-    validateSlugExists,
-    (exists) => {
+  watchEffect(() => {
+    if (Array.isArray(slugListRef.value) && slugListRef.value.length > 0) {
+      const exists = slugListRef.value.some((el) => el.slug === slugToCheck)
       if (!exists) router.push('/404')
-    },
-    { immediate: true },
-  )
-
-  onMounted(() => {
-    if (!hasSSR) {
-      loadMoreProducts()
     }
   })
 

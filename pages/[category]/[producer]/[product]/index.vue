@@ -13,33 +13,48 @@
 </template>
 
 <script setup lang="ts">
-import { useProductsStore } from '~/store/products'
+import type { Product } from '~/types/products.types'
 import ProductView from '~/components/Products/Product/ProductView.vue'
 import TheLoader from '~/components/UI/TheLoader.vue'
 import TheLinkButton from '~/components/UI/TheLinkButton.vue'
 
+definePageMeta({
+  payload: true,
+})
+
 const route = useRoute()
-const { fetchProduct } = useProductsStore()
+const config = useRuntimeConfig()
 
-const product = ref<any | null>(null)
-const isLoading = ref(true)
+const pathParts = route.path.split('/').filter(Boolean)
+const category = pathParts[0]
+const producer = pathParts[1]
+const slug = pathParts[2]
 
-onMounted(async () => {
-  const category = route.params.category as string
-  const producer = route.params.producer as string
-  const slug = route.params.product as string
+const {
+  data: product,
+  status,
+  error,
+} = await useAsyncData<Product>(`product-${category}-${producer}-${slug}`, () =>
+  $fetch(`/products/${category}/${producer}/${slug}`, {
+    baseURL: config.public.apiBaseUrl,
+  }),
+)
 
-  try {
-    product.value = await fetchProduct({
-      category_slug: category,
-      producer_slug: producer,
-      product_slug: slug,
-    })
-  } catch (error) {
-    console.error('Ошибка загрузки продукта:', error)
-  } finally {
-    isLoading.value = false
-  }
+const isLoading = computed(() => status.value === 'pending')
+
+if (error.value && !import.meta.server) {
+  throw createError({ statusCode: 404, statusMessage: 'Товар не найден' })
+}
+
+const defaultImage = `${config.public.siteUrl}/static/og-image.png`
+
+useHead({
+  title: product.value?.full_name,
+  meta: [
+    { name: 'description', content: `Цена ${product.value?.price} ₽. Ламинат, паркет, напольные покрытия.` },
+    { property: 'og:title', content: product.value?.name },
+    { property: 'og:image', content: product.value?.img_mini?.[0] || defaultImage },
+  ],
 })
 </script>
 

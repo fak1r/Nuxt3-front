@@ -15,6 +15,16 @@ async function getProducers() {
   return data
 }
 
+async function getProducts(categorySlug: string, producerSlug: string) {
+  const { data } = await axios.get(`${API_BASE}/products/${categorySlug}/${producerSlug}`, {
+    params: {
+      page: 1,
+      limit: 9999,
+    },
+  })
+  return data.items
+}
+
 async function generateRoutes() {
   const categories = await getCategories()
   const producers = await getProducers()
@@ -25,7 +35,19 @@ async function generateRoutes() {
     const relatedProducers = producers.filter((p: Producer) => p.category_id === category.id)
 
     for (const producer of relatedProducers) {
-      routes.push(`/${category.slug}/${producer.slug}`)
+      const baseRoute = `/${category.slug}/${producer.slug}`
+      routes.push(baseRoute)
+
+      try {
+        const products = await getProducts(category.slug, producer.slug)
+        for (const product of products) {
+          if (product.self) {
+            routes.push(product.self)
+          }
+        }
+      } catch (err: any) {
+        console.warn(`⚠️ Не удалось загрузить продукты для ${baseRoute}: ${err.message}`)
+      }
     }
   }
 

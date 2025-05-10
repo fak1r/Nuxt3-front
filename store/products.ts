@@ -5,12 +5,12 @@ import { toQueryString } from '~/utils/to-query-string'
 import type { ProductFilters } from '~/types/products.types'
 
 export const useProductsStore = defineStore('products', () => {
+  const { $axios } = useNuxtApp()
   const productsAreLoading = ref(false)
 
   async function fetchProducts(filters: ProductFilters = {}) {
     productsAreLoading.value = true
     try {
-      const { $axios } = useNuxtApp()
       const { category_slug, producer_slug, ...queryFilters } = filters
 
       let endpoint = '/products'
@@ -50,8 +50,6 @@ export const useProductsStore = defineStore('products', () => {
     producer_slug: string
     product_slug: string
   }) {
-    const { $axios } = useNuxtApp()
-
     try {
       const { data } = await $axios.get(`/products/${category_slug}/${producer_slug}/${product_slug}`)
       return data
@@ -62,7 +60,6 @@ export const useProductsStore = defineStore('products', () => {
   }
 
   async function fetchPopularProducts() {
-    const { $axios } = useNuxtApp()
     const { data } = await $axios.get('/products/popular')
     const normalized = normalizeProducts(data.items)
 

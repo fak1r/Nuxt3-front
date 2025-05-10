@@ -11,7 +11,7 @@
     "lint": "eslint --ext .js,.vue .",
     "format": "prettier --write .",
     "generate:routes": "node --loader ts-node/esm scripts/generate-routes.ts",
-    "generate:full": "yarn generate:routes && yarn generate"
+    "generate:full": "cross-env NUXT_IS_STATIC=true yarn generate"
   },
   "dependencies": {
     "@pinia/nuxt": "^0.11.0",
@@ -26,6 +26,7 @@
     "@nuxt/eslint": "^1.1.0",
     "@nuxtjs/sitemap": "^7.2.10",
     "@types/node": "^22.15.3",
+    "cross-env": "^7.0.3",
     "eslint": "^9.21.0",
     "prettier": "^3.5.1",
     "sass": "^1.85.0",

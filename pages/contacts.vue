@@ -5,7 +5,7 @@
     <address class="contacts__info">
       <p class="contacts__address">Коломна, ул. Октябрьской Революции, 387А</p>
       <p class="contacts__phone">
-        <a href="tel:+79268436282" class="link-default">+7 (926) 843-62-82</a>
+        <a href="tel:+79268436282" class="link-default">+7 (910) 414-35-67</a>
       </p>
     </address>
 

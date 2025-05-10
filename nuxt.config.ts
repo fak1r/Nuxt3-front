@@ -38,6 +38,7 @@ export default defineNuxtConfig({
     public: {
       apiBaseUrl: apiBaseUrl,
       siteUrl: siteUrl,
+      isStatic: process.env.NUXT_IS_STATIC === 'true',
     },
   },
   css: ['@/assets/styles/global.scss', 'swiper/css'],

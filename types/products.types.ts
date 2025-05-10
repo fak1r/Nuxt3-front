@@ -2,10 +2,13 @@ export interface Product {
   id: number
   name: string
   slug: string
+  full_name?: string
   price: number
   favorite: boolean
   product_line_id: number
   img_mini: string[]
+  images?: { id: number; image_url: string }[]
+  details?: Record<string, string>
   self: string
 }
 
