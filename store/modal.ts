@@ -1,11 +1,15 @@
 import { defineStore } from 'pinia'
+import { useProductSearch } from '~/composables/useProductSearch'
 
 export const useModalStore = defineStore('modal', () => {
+  const { closeSearchRes } = useProductSearch()
+
   const state = reactive({
     modalType: null as 'auth' | 'catalog' | null,
   })
 
   function open(type: 'auth' | 'catalog') {
+    closeSearchRes()
     state.modalType = type
   }
 

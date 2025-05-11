@@ -19,6 +19,7 @@
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router'
 import throttle from 'lodash/throttle'
 import TheHeader from '~/components/TheHeader.vue'
 import MobileNav from '~/components/MobileNav.vue'
@@ -27,6 +28,7 @@ import ModalCatalog from '~/components/Modals/ModalCatalog.vue'
 import { useModalStore } from '~/store/modal'
 import { useCategoriesStore } from '@/store/categories'
 
+const router = useRouter()
 const modalStore = useModalStore()
 const categoriesStore = useCategoriesStore()
 const { isMobile } = useIsMobile()
@@ -61,6 +63,10 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   window.removeEventListener('scroll', handleScroll)
+})
+
+router.afterEach(() => {
+  closeSearchRes()
 })
 </script>
 

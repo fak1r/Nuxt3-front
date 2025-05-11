@@ -25,6 +25,7 @@
 
 <script setup lang="ts">
 import type { ProductSearchItem } from '~/types/products.types'
+import { useModalStore } from '~/store/modal'
 import SvgIcons from '~/components/Svg/SvgIcons.vue'
 
 interface Props {
@@ -36,7 +37,9 @@ const { modelValue, searchResults } = defineProps<Props>()
 
 const emit = defineEmits(['update:modelValue', 'focus'])
 
-const { isSearchResOpen } = useProductSearch()
+const modalStore = useModalStore()
+
+const { isSearchResOpen, openSearchRes } = useProductSearch()
 
 const isSearchResVisible = computed(() => isInputFocused.value && searchResults?.length && isSearchResOpen.value)
 
@@ -51,7 +54,9 @@ function updateInput(event: Event) {
 }
 
 function focusInput() {
+  modalStore.close()
   isInputFocused.value = true
+  openSearchRes()
   emit('focus')
 }
 
