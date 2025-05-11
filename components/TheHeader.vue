@@ -16,7 +16,7 @@
     </button>
 
     <form class="search-form" role="search">
-      <TheSearch v-model="search" />
+      <TheSearch v-model="search" :search-results="searchResults" />
       <NuxtLink v-if="isMobile" to="/contacts" class="nav__item nav__contacts" active-class="active">
         <SvgIcons icon="geo-square" :size="'md'" />
         <span>Контакты</span>
@@ -56,16 +56,18 @@
 <script setup lang="ts">
 import { useAuthStore } from '~/store/auth'
 import { useModalStore } from '~/store/modal'
-import { useIsMobile } from '~/composables/useIsMobile'
 import TheSearch from '~/components/UI/TheSearch.vue'
 
 const modalStore = useModalStore()
 const authStore = useAuthStore()
+
 const { isMobile } = useIsMobile()
 
 const user = computed(() => authStore.user)
 const hasUser = computed(() => !!user.value?.email)
+
 const search = ref('')
+const { searchResults } = useProductSearch(search)
 
 function openAuthModal() {
   modalStore.open('auth')

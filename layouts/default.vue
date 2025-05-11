@@ -31,6 +31,8 @@ const modalStore = useModalStore()
 const categoriesStore = useCategoriesStore()
 const { isMobile } = useIsMobile()
 
+const { closeSearchRes, openSearchRes } = useProductSearch()
+
 const isHeaderHidden = ref(false)
 let lastScrollY = 0
 
@@ -41,8 +43,10 @@ function onScroll() {
 
   if (currentY > lastScrollY && currentY > 100) {
     isHeaderHidden.value = true
+    closeSearchRes()
   } else {
     isHeaderHidden.value = false
+    openSearchRes()
   }
 
   lastScrollY = currentY

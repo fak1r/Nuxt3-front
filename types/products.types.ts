@@ -38,3 +38,9 @@ export interface ProductListState {
   hasMore: boolean
   firstLoading: boolean
 }
+
+export interface ProductSearchItem {
+  id: number
+  full_name: string
+  self: string
+}

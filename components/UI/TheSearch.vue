@@ -13,19 +13,32 @@
     <button v-if="isIconXVisible" class="input__clear" aria-label="Очистить" type="button" @click="clearInput">
       ✕
     </button>
+    <ul v-if="isSearchResVisible" class="input__suggestions">
+      <li v-for="item in searchResults" :key="item.id" class="input__suggestion">
+        <NuxtLink :to="item.self" @click="selectSuggestion">
+          {{ item.full_name }}
+        </NuxtLink>
+      </li>
+    </ul>
   </div>
 </template>
 
 <script setup lang="ts">
+import type { ProductSearchItem } from '~/types/products.types'
 import SvgIcons from '~/components/Svg/SvgIcons.vue'
 
 interface Props {
   modelValue: string
+  searchResults?: ProductSearchItem[]
 }
 
-const { modelValue } = defineProps<Props>()
+const { modelValue, searchResults } = defineProps<Props>()
 
 const emit = defineEmits(['update:modelValue', 'focus'])
+
+const { isSearchResOpen } = useProductSearch()
+
+const isSearchResVisible = computed(() => isInputFocused.value && searchResults?.length && isSearchResOpen.value)
 
 const isInputFocused = ref(false)
 const isIconHovered = ref(false)
@@ -48,6 +61,10 @@ function blurInput() {
 
 function clearInput() {
   emit('update:modelValue', '')
+}
+
+function selectSuggestion() {
+  isInputFocused.value = false
 }
 </script>
 
@@ -83,6 +100,37 @@ function clearInput() {
     &:hover,
     &:focus {
       color: black;
+    }
+  }
+
+  &__suggestions {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    width: 100%;
+    max-height: 420px;
+    overflow-y: auto;
+    background: white;
+    border: 1px solid var(--input-border-hover);
+    border-radius: 6px;
+    z-index: 1000;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+  }
+
+  &__suggestion {
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 14px;
+
+    &:hover {
+      background-color: var(--border);
+    }
+
+    a {
+      display: block;
+      width: 100%;
+      color: inherit;
+      text-decoration: none;
     }
   }
 
