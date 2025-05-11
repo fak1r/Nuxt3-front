@@ -59,11 +59,7 @@ function openAuthModal() {
   padding: 16px;
   box-sizing: border-box;
   z-index: 900;
-  display: none;
-
-  @include phone {
-    display: flex;
-  }
+  display: flex;
 
   &__item {
     color: var(--menu-items-color);

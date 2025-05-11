@@ -107,6 +107,14 @@ onBeforeUnmount(() => {
   }
 }
 
+.mobile-nav-container {
+  display: none;
+
+  @include phone {
+    display: flex;
+  }
+}
+
 .footer-container {
   height: 64px;
   position: fixed;

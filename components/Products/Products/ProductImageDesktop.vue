@@ -53,7 +53,9 @@ onMounted(async () => {
 
   await nextTick()
 
-  const images = imageContainer.value.querySelectorAll('img')
+  const images = imageContainer.value?.querySelectorAll?.('img')
+  if (!images) return
+
   let loadedCount = 0
 
   images.forEach((img) => {
