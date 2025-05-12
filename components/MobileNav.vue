@@ -1,18 +1,37 @@
 <template>
   <nav class="mobile-nav" aria-label="Мобильная навигация" role="menu">
     <ul>
-      <li v-for="item in navItems" :key="item.to" role="menuItem">
-        <template v-if="item.type === 'link'">
-          <NuxtLink :to="item.to" class="mobile-nav__item" active-class="active">
-            <SvgIcons :icon="item.icon" />
-            <span>{{ item.label }}</span>
+      <li>
+        <NuxtLink to="/" class="mobile-nav__item" active-class="active">
+          <SvgIcons icon="home" />
+          <span>Главная</span>
+        </NuxtLink>
+      </li>
+
+      <li>
+        <NuxtLink to="/catalog" class="mobile-nav__item" active-class="active">
+          <SvgIcons icon="catalog" />
+          <span>Каталог</span>
+        </NuxtLink>
+      </li>
+
+      <li>
+        <NuxtLink to="/cart" class="mobile-nav__item mobile-nav__cart" active-class="active">
+          <CartNavIcon />
+        </NuxtLink>
+      </li>
+
+      <li>
+        <template v-if="hasUser">
+          <NuxtLink to="/profile" class="mobile-nav__item" active-class="active">
+            <SvgIcons icon="profile" />
+            <span>Профиль</span>
           </NuxtLink>
         </template>
-
         <template v-else>
-          <button type="button" v-bind="authBtnStyle" class="mobile-nav__item" @click="openAuthModal">
-            <SvgIcons :icon="item.icon" />
-            <span>{{ item.label }}</span>
+          <button type="button" class="mobile-nav__item" v-bind="authBtnStyle" @click="openAuthModal">
+            <SvgIcons icon="profile" />
+            <span>Войти</span>
           </button>
         </template>
       </li>
@@ -22,6 +41,7 @@
 
 <script setup lang="ts">
 import SvgIcons from '~/components/Svg/SvgIcons.vue'
+import CartNavIcon from '~/components/UI/CartNavIcon.vue'
 import { useAuthStore } from '@/store/auth'
 import { useModalStore } from '~/store/modal'
 
@@ -31,15 +51,6 @@ const authStore = useAuthStore()
 const user = computed(() => authStore.user)
 const hasUser = computed(() => !!user.value?.email)
 const authBtnStyle = computed(() => ({ style: { color: modalStore.isAuthVisible ? 'black' : '' } }))
-
-const navItems = computed(() => [
-  { to: '/', label: 'Главная', icon: 'home', type: 'link' },
-  { to: '/catalog', label: 'Каталог', icon: 'catalog', type: 'link' },
-  { to: '/cart', label: 'Корзина', icon: 'cart', type: 'link' },
-  hasUser.value
-    ? { to: '/profile', label: 'Профиль', icon: 'profile', type: 'link' }
-    : { to: '#', label: 'Войти', icon: 'profile', type: 'button' },
-])
 
 function openAuthModal() {
   modalStore.open('auth')
@@ -73,6 +84,10 @@ function openAuthModal() {
     &:hover {
       color: var(--menu-items-color-hover);
     }
+  }
+
+  &__cart {
+    position: relative;
   }
 
   a {

@@ -29,9 +29,8 @@
         <span>Контакты</span>
       </NuxtLink>
 
-      <NuxtLink to="/cart" class="nav__item" active-class="active">
-        <SvgIcons icon="cart" />
-        <span>Корзина</span>
+      <NuxtLink to="/cart" class="nav__item nav__cart" active-class="active">
+        <CartNavIcon />
       </NuxtLink>
 
       <button
@@ -57,6 +56,7 @@
 import { useAuthStore } from '~/store/auth'
 import { useModalStore } from '~/store/modal'
 import TheSearch from '~/components/UI/TheSearch.vue'
+import CartNavIcon from '~/components/UI/CartNavIcon.vue'
 
 const modalStore = useModalStore()
 const authStore = useAuthStore()
@@ -118,6 +118,10 @@ function activeStyle(name: 'catalog' | 'auth') {
       color: inherit;
       transition: color 0s ease-in-out;
     }
+  }
+
+  &__cart {
+    position: relative;
   }
 
   &__actions {
