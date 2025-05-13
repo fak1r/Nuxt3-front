@@ -33,9 +33,16 @@ watch(
 
 function emitChange(): void {
   const min = props.minOne ? 1 : 0
+  const max = 999
+
   if (localValue.value < min) {
     localValue.value = min
   }
+
+  if (localValue.value > max) {
+    localValue.value = max
+  }
+
   emit('update:modelValue', localValue.value)
 }
 
@@ -58,15 +65,18 @@ function decrement(): void {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid var(--border);
+  border: 1px solid var(--primary-btn);
   box-sizing: border-box;
   border-radius: 8px;
   overflow: hidden;
   padding: 9px 12px;
-  width: 100%;
   max-height: 41px;
+  width: 100%;
+  max-width: 160px;
 
   &__btn {
+    all: unset;
+    cursor: pointer;
     width: 24px;
     font-size: 18px;
     font-weight: bold;
@@ -80,7 +90,15 @@ function decrement(): void {
     text-align: center;
     font-size: 16px;
     font-weight: 500;
-    width: 50px;
+    width: 100%;
+
+    -moz-appearance: textfield;
+    appearance: textfield;
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
   }
 }
 </style>

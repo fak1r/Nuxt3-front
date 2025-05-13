@@ -8,7 +8,7 @@
         <ProductImageDesktop v-if="hasImgs" :product="product" />
       </template>
 
-      <p class="product-card__price">{{ product.price }} ₽</p>
+      <p class="product-card__price">{{ formatPrice(product.price) }} ₽</p>
       <h3 class="product-card__name">{{ product.name }}</h3>
     </a>
   </article>
@@ -24,6 +24,8 @@ interface Props {
 }
 
 const { product } = defineProps<Props>()
+
+const { formatPrice } = usePriceFormat()
 
 const router = useRouter()
 

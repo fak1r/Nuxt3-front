@@ -15,7 +15,7 @@
     </div>
 
     <div class="order-card">
-      <p class="order-card__price">{{ product.price }} ₽</p>
+      <p class="order-card__price">{{ formatPrice(product.price) }} ₽</p>
       <div class="order-card__row">
         <div class="order-card__col">
           <TheButton @click="addToCart">В корзину</TheButton>
@@ -41,6 +41,8 @@ interface Props {
 }
 
 const { product } = defineProps<Props>()
+
+const { formatPrice } = usePriceFormat()
 
 const cartStore = useCartStore()
 
@@ -117,7 +119,7 @@ function addToCart() {
   }
 
   .order-card {
-    border-radius: 20px;
+    border-radius: 8px;
     padding: 20px;
     display: flex;
     flex-direction: column;

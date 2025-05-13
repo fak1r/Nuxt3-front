@@ -1,50 +1,75 @@
 <template>
-  <section class="cart">
-    <h1 class="cart__title">Корзина</h1>
+  <section class="cart-page">
+    <template v-if="hasProductsInCart">
+      <h1 class="cart-page__title">Корзина</h1>
 
-    <div v-if="hasProductsInCart" class="cart__empty">Ваша корзина пуста</div>
+      <div class="cart-page__cards">
+        <div class="cart-page__card">
+          <div v-for="item in cartStore.items" :key="item.id" class="product">
+            <div class="product__preview">
+              <NuxtLink :to="item.self" class="product__image">
+                <img :src="item.img_mini?.[0]" :alt="item.name" />
+              </NuxtLink>
 
-    <div v-else class="cart__list">
-      <div v-for="item in cartStore.items" :key="item.id" class="cart__item">
-        <NuxtLink :to="item.self" class="cart__image">
-          <img :src="item.img_mini?.[0]" :alt="item.name" />
-        </NuxtLink>
+              <div class="product__info">
+                <div class="product__content">
+                  <NuxtLink :to="item.self" class="product__name">
+                    {{ item.full_name }}
+                  </NuxtLink>
+                  <p class="product__price">{{ formatPrice(item.price) }} ₽</p>
+                </div>
+                <button type="button" class="product__remove" @click="removeProduct(item.id)">
+                  <SvgIcons icon="trash-bin" />
+                </button>
+              </div>
+            </div>
 
-        <div class="cart__info">
-          <NuxtLink :to="item.self" class="cart__name">
-            {{ item.full_name }}
-          </NuxtLink>
-          <p class="cart__price">{{ item.price }} ₽ / шт</p>
-          <TheQuantityInput v-model="quantities[item.id]" :min-one="true" />
-          <p class="cart__total">{{ item.price * quantities[item.id] }} ₽</p>
+            <div class="product__quantity">
+              <TheQuantityInput v-model="quantities[item.id]" :min-one="true" />
+            </div>
+          </div>
         </div>
 
-        <button class="cart__remove" @click="remove(item.id)">✕</button>
-      </div>
-    </div>
+        <div class="cart-page__card order-card">
+          <div class="order-card__title">Ваша корзина</div>
 
-    <div v-if="cartStore.totalItems > 0" class="cart__summary">
-      <p>Товаров: {{ cartStore.totalItems }}</p>
-      <p>Итого: {{ cartStore.totalPrice }} ₽</p>
-    </div>
+          <div v-if="cartStore.totalItems > 0" class="order-card__summary">
+            <p>Товары ({{ cartStore.totalItems }})</p>
+            <p class="order-card__total">{{ formatPrice(cartStore.totalPrice) }} ₽</p>
+          </div>
+
+          <TheButton>Перейти к оформлению</TheButton>
+        </div>
+      </div>
+    </template>
+
+    <template v-else>
+      <div class="cart-page__card">
+        <h1 class="cart-page__title">Корзина пуста</h1>
+        <div class="cart-page__empty">Выберите товары или войдите в аккаунт, если добавляли товары в корзину</div>
+      </div>
+    </template>
   </section>
 </template>
 
 <script setup lang="ts">
 import { useCartStore } from '~/store/cart'
 import TheQuantityInput from '~/components/UI/TheQuantityInput.vue'
+import SvgIcons from '~/components/Svg/SvgIcons.vue'
+import TheButton from '~/components/UI/TheButton.vue'
 
 const cartStore = useCartStore()
 
+const { formatPrice } = usePriceFormat()
+
 const quantities = reactive<Record<number, number>>({})
 
-const hasProductsInCart = computed(() => cartStore.items.length === 0)
-// Инициализация кол-ва из стора
+const hasProductsInCart = computed(() => cartStore.items.length !== 0)
+
 cartStore.items.forEach((item) => {
   quantities[item.id] = item.quantity
 })
 
-// Следим за изменениями и обновляем store
 watch(
   quantities,
   (newVal) => {
@@ -60,87 +85,122 @@ watch(
   { deep: true },
 )
 
-function remove(id: number) {
-  cartStore.removeFromCart(id)
+function removeProduct(id: number) {
+  if (confirm('Удалить товар? Вы точно хотите удалить выбранный товар? Отменить данное действие будет невозможно.')) {
+    cartStore.removeFromCart(id)
+  }
 }
 </script>
 
 <style scoped lang="scss">
-.cart {
-  padding: 16px;
+.cart-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 
   &__title {
     font-size: 24px;
-    margin-bottom: 16px;
   }
 
   &__empty {
     font-size: 16px;
-    text-align: center;
     color: gray;
   }
 
-  &__list {
+  &__cards {
+    gap: 16px;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+  }
+
+  &__card {
+    background-color: var(--white-color);
+    padding: 20px;
+    border-radius: 8px;
     display: flex;
     flex-direction: column;
     gap: 16px;
+    height: fit-content;
   }
 
-  &__item {
+  .product {
     display: flex;
-    gap: 16px;
-    align-items: center;
-    border: 1px solid var(--border);
-    padding: 12px;
     border-radius: 8px;
-    position: relative;
-  }
+    justify-content: space-between;
+    width: 100%;
 
-  &__image img {
-    width: 64px;
-    height: 64px;
-    object-fit: cover;
-    border-radius: 8px;
-  }
+    &__preview {
+      display: flex;
+      gap: 16px;
+    }
 
-  &__info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
+    &__image {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 120px;
 
-  &__name {
-    font-weight: 500;
-    font-size: 16px;
-    color: var(--text);
-  }
+      img {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 8px;
+      }
+    }
 
-  &__price,
-  &__total {
-    font-size: 14px;
-    color: #666;
-  }
+    &__info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
 
-  &__remove {
-    position: absolute;
-    right: 12px;
-    top: 12px;
-    background: none;
-    border: none;
-    font-size: 18px;
-    cursor: pointer;
-    color: #888;
+    &__name {
+      font-weight: 500;
+      font-size: 16px;
+    }
 
-    &:hover {
-      color: #000;
+    &__price {
+      font-size: 22px;
+      font-weight: 500;
+      color: #fe2722;
+    }
+
+    &__quantity {
+      width: 100%;
+      max-width: 160px;
+    }
+
+    &__remove {
+      color: var(--menu-items-color);
+
+      &:hover {
+        color: var(--menu-items-color-hover);
+      }
     }
   }
 
-  &__summary {
-    margin-top: 24px;
-    font-size: 16px;
-    font-weight: 500;
+  .order-card {
+    &__title {
+      font-weight: bold;
+      font-size: 22px;
+    }
+
+    &__summary {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+
+      p {
+        width: fit-content;
+      }
+    }
+
+    &__total {
+      font-weight: bold;
+      font-size: 22px;
+    }
   }
 }
 </style>
