@@ -1,6 +1,6 @@
 <template>
   <section class="cart-page">
-    <template v-if="hasProductsInCart">
+    <template v-if="hasProductsInCart && cartReady">
       <h1 class="cart-page__title">Корзина</h1>
 
       <div class="cart-page__cards">
@@ -18,14 +18,19 @@
                   </NuxtLink>
                   <p class="product__price">{{ formatPrice(item.price) }} ₽</p>
                 </div>
-                <button type="button" class="product__remove" @click="removeProduct(item.id)">
-                  <SvgIcons icon="trash-bin" />
-                </button>
+                <div class="product__row">
+                  <div class="product__quantity-info">
+                    <TheQuantityInput v-if="quantities[item.id]" v-model="quantities[item.id]" :min-one="true" />
+                  </div>
+                  <button type="button" class="product__remove" @click="removeProduct(item.id)">
+                    <SvgIcons icon="trash-bin" />
+                  </button>
+                </div>
               </div>
             </div>
 
             <div class="product__quantity">
-              <TheQuantityInput v-model="quantities[item.id]" :min-one="true" />
+              <TheQuantityInput v-if="quantities[item.id]" v-model="quantities[item.id]" :min-one="true" />
             </div>
           </div>
         </div>
@@ -43,11 +48,15 @@
       </div>
     </template>
 
-    <template v-else>
+    <template v-else-if="cartReady">
       <div class="cart-page__card">
         <h1 class="cart-page__title">Корзина пуста</h1>
         <div class="cart-page__empty">Выберите товары или войдите в аккаунт, если добавляли товары в корзину</div>
       </div>
+    </template>
+
+    <template v-else>
+      <TheLoader size="xl" />
     </template>
   </section>
 </template>
@@ -57,6 +66,7 @@ import { useCartStore } from '~/store/cart'
 import TheQuantityInput from '~/components/UI/TheQuantityInput.vue'
 import SvgIcons from '~/components/Svg/SvgIcons.vue'
 import TheButton from '~/components/UI/TheButton.vue'
+import TheLoader from '~/components/UI/TheLoader.vue'
 
 const cartStore = useCartStore()
 
@@ -66,9 +76,7 @@ const quantities = reactive<Record<number, number>>({})
 
 const hasProductsInCart = computed(() => cartStore.items.length !== 0)
 
-cartStore.items.forEach((item) => {
-  quantities[item.id] = item.quantity
-})
+const cartReady = ref(false)
 
 watch(
   quantities,
@@ -84,6 +92,13 @@ watch(
   },
   { deep: true },
 )
+
+onMounted(() => {
+  cartStore.items.forEach((item) => {
+    quantities[item.id] = item.quantity
+  })
+  cartReady.value = true
+})
 
 function removeProduct(id: number) {
   if (confirm('Удалить товар? Вы точно хотите удалить выбранный товар? Отменить данное действие будет невозможно.')) {
@@ -111,6 +126,11 @@ function removeProduct(id: number) {
     gap: 16px;
     display: grid;
     grid-template-columns: 2fr 1fr;
+
+    @media screen and (max-width: 900px) {
+      display: flex;
+      flex-direction: column;
+    }
   }
 
   &__card {
@@ -121,6 +141,10 @@ function removeProduct(id: number) {
     flex-direction: column;
     gap: 16px;
     height: fit-content;
+
+    @media screen and (max-width: 900px) {
+      padding: 12px 8px;
+    }
   }
 
   .product {
@@ -154,6 +178,7 @@ function removeProduct(id: number) {
       gap: 4px;
       align-items: flex-start;
       justify-content: space-between;
+      margin-right: 16px;
     }
 
     &__name {
@@ -170,6 +195,26 @@ function removeProduct(id: number) {
     &__quantity {
       width: 100%;
       max-width: 160px;
+
+      @include phone {
+        display: none;
+      }
+    }
+
+    &__quantity-info {
+      display: none;
+      width: 100%;
+      max-width: 160px;
+
+      @include phone {
+        display: flex;
+      }
+    }
+
+    &__row {
+      display: flex;
+      gap: 8px;
+      width: 100%;
     }
 
     &__remove {

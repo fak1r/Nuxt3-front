@@ -41,6 +41,28 @@ export const useCartStore = defineStore('cart', () => {
     items.splice(0, items.length)
   }
 
+  onMounted(() => {
+    const savedProducts = localStorage.getItem('cart')
+    if (savedProducts) {
+      try {
+        const parsed = JSON.parse(savedProducts)
+        if (Array.isArray(parsed)) {
+          items.splice(0, items.length, ...parsed)
+        }
+      } catch (err) {
+        console.warn('Ошибка чтения корзины из localStorage', err)
+      }
+    }
+  })
+
+  watch(
+    items,
+    (newItems) => {
+      localStorage.setItem('cart', JSON.stringify(newItems))
+    },
+    { deep: true },
+  )
+
   return {
     items,
     totalItems,
