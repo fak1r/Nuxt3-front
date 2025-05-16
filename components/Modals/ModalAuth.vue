@@ -1,14 +1,14 @@
 <template>
   <dialog class="overlay" @click.self="closeModal">
     <transition :name="animDirection">
-      <form :key="formType" class="auth" @submit.prevent="submitForm">
-        <button class="auth__close" aria-label="Закрыть" type="button" @click="closeModal">✕</button>
+      <form :key="formType" class="modal" @submit.prevent="submitForm">
+        <button class="modal__close" aria-label="Закрыть" type="button" @click="closeModal">✕</button>
 
-        <div class="auth__title">
+        <div class="modal__title">
           <h1>{{ formTitle }}</h1>
         </div>
 
-        <div class="auth__body">
+        <div class="modal__body">
           <template v-if="isFormTypeRegister">
             <TheInput
               v-model="name"
@@ -38,10 +38,10 @@
             @focus="clearError('password')"
           />
 
-          <TheButton class="auth__btn" variant="Primary" type="submit">{{ formTitle }}</TheButton>
+          <TheButton class="modal__btn" variant="Primary" type="submit">{{ formTitle }}</TheButton>
         </div>
 
-        <div class="auth__info">
+        <div class="modal__info">
           {{ formText }}&nbsp;
           <button class="link-default" type="button" @click="changeFormType">
             {{ formLink }}
@@ -138,36 +138,7 @@ function closeModal() {
 </script>
 
 <style scoped lang="scss">
-.auth {
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  z-index: 1001;
-  position: relative;
-  background-color: var(--general-background-color);
-  border: 1px solid var(--border);
-  padding: 20px;
-  display: flex;
-  gap: 26px;
-  width: 400px;
-  height: fit-content;
-  border-radius: 6px;
-
-  &__close {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    font-size: 20px;
-    color: var(--primary-btn-hover);
-
-    &:hover,
-    &:focus {
-      color: black;
-    }
-  }
-
+.modal {
   &__info {
     display: flex;
     justify-content: center;

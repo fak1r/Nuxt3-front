@@ -84,6 +84,7 @@ a {
   color: blue;
   text-decoration: underline;
   text-underline-offset: 4px;
+  cursor: pointer;
 
   &:hover {
     text-decoration: none;
@@ -117,6 +118,38 @@ p {
   justify-content: center;
   align-items: center;
   z-index: 1000;
+}
+
+.modal {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  z-index: 1001;
+  position: relative;
+  background-color: var(--general-background-color);
+  border: 1px solid var(--border);
+  padding: 20px;
+  gap: 26px;
+  width: 400px;
+  border-radius: 6px;
+
+  @include phone {
+    width: 300px;
+  }
+
+  &__close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 20px;
+    color: var(--primary-btn-hover);
+
+    &:hover,
+    &:focus {
+      color: black;
+    }
+  }
 }
 
 dialog {

@@ -43,7 +43,7 @@
             <p class="order-card__total">{{ formatPrice(cartStore.totalPrice) }} ₽</p>
           </div>
 
-          <TheButton>Перейти к оформлению</TheButton>
+          <TheButton @click="openPhoneModal">Перейти к оформлению</TheButton>
         </div>
       </div>
     </template>
@@ -58,17 +58,27 @@
     <template v-else>
       <TheLoader size="xl" />
     </template>
+
+    <ModalPhone v-if="modalStore.isPhoneModalVisible" @order="submitOrder" />
+    <ModalSuccess v-if="modalStore.isSuccessModalVisible" />
+    <ModalError v-if="modalStore.isErrorModalVisible" />
   </section>
 </template>
 
 <script setup lang="ts">
 import { useCartStore } from '~/store/cart'
+import { useModalStore } from '~/store/modal'
 import TheQuantityInput from '~/components/UI/TheQuantityInput.vue'
 import SvgIcons from '~/components/Svg/SvgIcons.vue'
 import TheButton from '~/components/UI/TheButton.vue'
 import TheLoader from '~/components/UI/TheLoader.vue'
+import ModalPhone from '~/components/Modals/ModalPhone.vue'
+import ModalSuccess from '~/components/Modals/ModalSuccess.vue'
+import ModalError from '~/components/Modals/ModalError.vue'
 
 const cartStore = useCartStore()
+const { sendTelegramOrder } = useOrderSubmit()
+const modalStore = useModalStore()
 
 const { formatPrice } = usePriceFormat()
 
@@ -103,6 +113,19 @@ onMounted(() => {
 function removeProduct(id: number) {
   if (confirm('Удалить товар? Вы точно хотите удалить выбранный товар? Отменить данное действие будет невозможно.')) {
     cartStore.removeFromCart(id)
+  }
+}
+
+function openPhoneModal() {
+  modalStore.open('phone')
+}
+
+async function submitOrder(phone: string) {
+  const result = await sendTelegramOrder(phone)
+  if (result.success) {
+    modalStore.open('success')
+  } else {
+    modalStore.open('error')
   }
 }
 </script>

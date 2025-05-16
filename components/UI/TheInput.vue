@@ -35,9 +35,10 @@ interface Props {
   type: 'text' | 'email' | 'password'
   name: string
   error?: string
+  isPhone?: boolean
 }
 
-const { modelValue, placeholder, type, name, error } = defineProps<Props>()
+const { modelValue, placeholder, type, name, error, isPhone = false } = defineProps<Props>()
 
 interface Emits {
   (e: 'update:modelValue', value: string): void
@@ -56,9 +57,27 @@ const customType = computed(() => (isPasswordVisible.value ? 'text' : type))
 const inputId = computed(() => `input-${name}`)
 const hasError = computed(() => !!error)
 
+onMounted(() => {
+  if (isPhone) {
+    emit('update:modelValue', '+7')
+  }
+})
+
 function updateInput(event: Event) {
   const target = event.target as HTMLInputElement
-  emit('update:modelValue', target.value)
+  let rawValue = target.value
+
+  if (isPhone && !rawValue.startsWith('+7')) {
+    rawValue = '+7'
+  }
+
+  if (isPhone) {
+    const formatted = formatPhone(rawValue)
+    target.value = formatted
+    emit('update:modelValue', formatted)
+  } else {
+    emit('update:modelValue', rawValue)
+  }
 }
 
 function focusInput() {
@@ -78,6 +97,28 @@ function togglePasswordVisibility() {
 
 function setIconHoverState(isHovered: boolean) {
   isIconHovered.value = isHovered
+}
+
+function formatPhone(value: string): string {
+  // убираем всё, кроме цифр
+  let digits = value.replace(/\D/g, '')
+
+  // удаляем первую 7 или 8, если она случайно введена
+  if (digits.startsWith('7') || digits.startsWith('8')) {
+    digits = digits.slice(1)
+  }
+
+  // только первые 10 цифр после +7
+  digits = digits.slice(0, 10)
+
+  let formatted = '+7'
+
+  if (digits.length > 0) formatted += ` (${digits.slice(0, 3)}`
+  if (digits.length >= 4) formatted += `) ${digits.slice(3, 6)}`
+  if (digits.length >= 7) formatted += `-${digits.slice(6, 8)}`
+  if (digits.length >= 9) formatted += `-${digits.slice(8, 10)}`
+
+  return formatted
 }
 </script>
 
