@@ -4,25 +4,27 @@
       <ImageSlider :images="product.images ?? []" />
     </div>
 
-    <div class="info-card">
-      <h1 class="info-card__title">{{ product.full_name }}</h1>
+    <div class="product-view__cards">
+      <div class="info-card">
+        <h1 class="info-card__title">{{ product.full_name }}</h1>
 
-      <ul class="info-card__details">
-        <li v-for="(value, key) in product.details" :key="key">
-          <strong>{{ key }}:</strong> {{ value }}
-        </li>
-      </ul>
-    </div>
+        <ul class="info-card__details">
+          <li v-for="(value, key) in product.details" :key="key">
+            <strong>{{ key }}:</strong> {{ value }}
+          </li>
+        </ul>
+      </div>
 
-    <div class="order-card">
-      <p class="order-card__price">{{ formatPrice(product.price) }} ₽</p>
-      <div class="order-card__row">
-        <div class="order-card__col">
-          <TheButton @click="addToCart">В корзину</TheButton>
-        </div>
-        <div class="order-card__col">
-          <TheQuantityInput v-if="isProductInCart" v-model="quantity" />
-          <TheButton v-else variant="Secondary">Купить сейчас</TheButton>
+      <div class="order-card">
+        <p class="order-card__price">{{ formatPrice(product.price) }} ₽</p>
+        <div class="order-card__row">
+          <div class="order-card__col">
+            <TheButton @click="addToCart">В корзину</TheButton>
+          </div>
+          <div class="order-card__col">
+            <TheQuantityInput v-if="isProductInCart" v-model="quantity" />
+            <TheButton v-else variant="Secondary">Купить сейчас</TheButton>
+          </div>
         </div>
       </div>
     </div>
@@ -84,12 +86,24 @@ function addToCart() {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
+  }
+
+  &__cards {
+    display: flex;
+    gap: 8px;
+
+    @media screen and (max-width: 1100px) {
+      flex-direction: column;
+    }
   }
 
   .gallery {
     width: 100%;
     max-width: 40%;
+
+    @media screen and (max-width: 1100px) {
+      max-width: 60%;
+    }
 
     @include phone {
       max-width: 100%;
@@ -129,6 +143,10 @@ function addToCart() {
       0 20px 12px -16px rgba(0, 30, 85, 0.1),
       0 8px 24px 18px rgba(0, 30, 85, 0.05);
     width: 400px;
+
+    @media screen and (max-width: 1350px) {
+      width: auto;
+    }
 
     &__price {
       font-size: 20px;

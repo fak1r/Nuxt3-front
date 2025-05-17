@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-v-html -->
 <template>
   <section class="cart-page">
     <template v-if="hasProductsInCart && cartReady">
@@ -60,8 +61,11 @@
     </template>
 
     <ModalPhone v-if="modalStore.isPhoneModalVisible" @order="submitOrder" />
-    <ModalSuccess v-if="modalStore.isSuccessModalVisible" />
-    <ModalError v-if="modalStore.isErrorModalVisible" />
+    <ModalOrderFinal v-if="modalStore.isModalOrderFinalVisible" :title="modalFinalTitle" :modal-type="modalFinalType">
+      <template #default>
+        <p v-html="modalFinalText" />
+      </template>
+    </ModalOrderFinal>
   </section>
 </template>
 
@@ -73,8 +77,7 @@ import SvgIcons from '~/components/Svg/SvgIcons.vue'
 import TheButton from '~/components/UI/TheButton.vue'
 import TheLoader from '~/components/UI/TheLoader.vue'
 import ModalPhone from '~/components/Modals/ModalPhone.vue'
-import ModalSuccess from '~/components/Modals/ModalSuccess.vue'
-import ModalError from '~/components/Modals/ModalError.vue'
+import ModalOrderFinal from '~/components/Modals/ModalOrderFinal.vue'
 
 const cartStore = useCartStore()
 const { sendTelegramOrder } = useOrderSubmit()
@@ -87,6 +90,9 @@ const quantities = reactive<Record<number, number>>({})
 const hasProductsInCart = computed(() => cartStore.items.length !== 0)
 
 const cartReady = ref(false)
+const modalFinalTitle = ref('')
+const modalFinalText = ref('')
+const modalFinalType: Ref<'success' | 'error'> = ref('error')
 
 watch(
   quantities,
@@ -123,9 +129,22 @@ function openPhoneModal() {
 async function submitOrder(phone: string) {
   const result = await sendTelegramOrder(phone)
   if (result.success) {
-    modalStore.open('success')
+    addModalContent('success', result.order_number)
   } else {
-    modalStore.open('error')
+    addModalContent('error')
+  }
+  modalStore.open('final')
+}
+
+function addModalContent(modalType: 'success' | 'error', orderNumber?: number) {
+  if (modalType === 'success') {
+    modalFinalType.value = 'success'
+    modalFinalTitle.value = `Заказ №${orderNumber} успешно оформлен!`
+    modalFinalText.value = `Мы передали его нашему продавцу — он уже получил всю информацию и свяжется с вами в ближайшее рабочее время<br />😊<br /> Ожидайте звонок или сообщение<br /> Большое спасибо за ваш заказ!`
+  } else if (modalType === 'error') {
+    modalFinalType.value = 'error'
+    modalFinalTitle.value = 'Произошла ошибка'
+    modalFinalText.value = `К сожалению, нам не удалось обработать ваш заказ<br />😔<br /> Вы можете попробовать снова или связаться с продавцом для оформления по телефону <br /><span class="link-default">+7 (910) 414-35-67</span> Александр`
   }
 }
 </script>

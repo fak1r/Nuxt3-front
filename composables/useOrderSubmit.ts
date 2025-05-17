@@ -4,7 +4,7 @@ export function useOrderSubmit() {
   const cartStore = useCartStore()
   const { $axios } = useNuxtApp()
 
-  async function sendTelegramOrder(phone: string): Promise<{ success: boolean }> {
+  async function sendTelegramOrder(phone: string): Promise<{ success: boolean; order_number?: number }> {
     const payload = {
       phone,
       items: cartStore.items.map(function (item) {
@@ -18,8 +18,8 @@ export function useOrderSubmit() {
     }
 
     try {
-      await $axios.post('/order/telegram', payload)
-      return { success: true }
+      const response = await $axios.post('/order/telegram', payload)
+      return response.data
     } catch (error) {
       console.error('Ошибка отправки заказа в Telegram:', error)
       return { success: false }

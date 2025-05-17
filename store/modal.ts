@@ -5,10 +5,10 @@ export const useModalStore = defineStore('modal', () => {
   const { closeSearchRes } = useProductSearch()
 
   const state = reactive({
-    modalType: null as 'auth' | 'catalog' | 'phone' | 'success' | 'error' | null,
+    modalType: null as 'auth' | 'catalog' | 'phone' | 'final' | null,
   })
 
-  function open(type: 'auth' | 'catalog' | 'phone' | 'success' | 'error') {
+  function open(type: 'auth' | 'catalog' | 'phone' | 'final') {
     closeSearchRes()
     state.modalType = type
   }
@@ -20,8 +20,7 @@ export const useModalStore = defineStore('modal', () => {
   const isAuthVisible = computed(() => state.modalType === 'auth')
   const isCatalogVisible = computed(() => state.modalType === 'catalog')
   const isPhoneModalVisible = computed(() => state.modalType === 'phone')
-  const isSuccessModalVisible = computed(() => state.modalType === 'success')
-  const isErrorModalVisible = computed(() => state.modalType === 'error')
+  const isModalOrderFinalVisible = computed(() => state.modalType === 'final')
 
   return {
     state,
@@ -30,7 +29,6 @@ export const useModalStore = defineStore('modal', () => {
     isAuthVisible,
     isCatalogVisible,
     isPhoneModalVisible,
-    isSuccessModalVisible,
-    isErrorModalVisible,
+    isModalOrderFinalVisible,
   }
 })

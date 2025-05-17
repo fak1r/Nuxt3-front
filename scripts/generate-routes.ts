@@ -52,6 +52,7 @@ async function generateRoutes() {
   }
 
   const outputPath = path.resolve('./.generated-routes.json')
+
   fs.writeFileSync(outputPath, JSON.stringify(routes, null, 2), 'utf-8')
   console.log(`✅ Сохранено ${routes.length} маршрутов в ${outputPath}`)
 }

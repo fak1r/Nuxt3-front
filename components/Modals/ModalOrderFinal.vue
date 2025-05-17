@@ -4,13 +4,11 @@
       <button class="modal__close" aria-label="Закрыть" type="button" @click="closeModal">✕</button>
 
       <div class="modal__title">
-        <h1>Заказ успешно оформлен!</h1>
+        <h1>{{ title }}</h1>
       </div>
 
       <div class="modal__body">
-        Мы уже передали его нашему продавцу — он лично получил вашу заявку и свяжется с вами в ближайшее рабочее
-        время.<br />
-        Ожидайте звонок или сообщение — большое спасибо за ваш заказ!
+        <slot />
       </div>
     </div>
   </dialog>
@@ -20,13 +18,22 @@
 import { useModalStore } from '~/store/modal'
 import { useCartStore } from '~/store/cart'
 
+interface Props {
+  title: string
+  modalType: 'success' | 'error'
+}
+
+const { title, modalType } = defineProps<Props>()
+
 const modalStore = useModalStore()
 const cartStore = useCartStore()
 
-async function closeModal() {
-  cartStore.clearCart()
+function closeModal() {
   modalStore.close()
-  await navigateTo('/')
+  if (modalType === 'success') {
+    navigateTo('/')
+    cartStore.clearCart()
+  }
 }
 </script>
 
@@ -44,12 +51,6 @@ async function closeModal() {
 
   &__btn {
     width: 100%;
-  }
-
-  &__error {
-    color: red;
-    font-size: 14px;
-    margin-top: -10px;
   }
 }
 </style>
