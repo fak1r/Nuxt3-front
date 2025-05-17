@@ -4,17 +4,17 @@
       <ImageSlider :images="product.images ?? []" />
     </div>
 
-    <div class="product-view__cards">
-      <div class="info-card">
-        <h1 class="info-card__title">{{ product.full_name }}</h1>
+    <div class="info-card">
+      <h1 class="info-card__title">{{ product.full_name }}</h1>
 
-        <ul class="info-card__details">
-          <li v-for="(value, key) in product.details" :key="key">
-            <strong>{{ key }}:</strong> {{ value }}
-          </li>
-        </ul>
-      </div>
+      <ul class="info-card__details">
+        <li v-for="(value, key) in product.details" :key="key">
+          <strong>{{ key }}:</strong> {{ value }}
+        </li>
+      </ul>
+    </div>
 
+    <div class="order-wrap">
       <div class="order-card">
         <p class="order-card__price">{{ formatPrice(product.price) }} ₽</p>
         <div class="order-card__row">
@@ -79,38 +79,32 @@ function addToCart() {
 
 <style scoped lang="scss">
 .product-view {
-  display: flex;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-areas: 'gallery info order';
   gap: 8px;
 
-  @include phone {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+  @media screen and (max-width: 1100px) {
+    grid-template-columns: 2fr 1fr;
+    grid-template-areas:
+      'gallery info'
+      'order order';
   }
 
-  &__cards {
-    display: flex;
-    gap: 8px;
-
-    @media screen and (max-width: 1100px) {
-      flex-direction: column;
-    }
+  @include phone {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'gallery'
+      'info'
+      'order';
   }
 
   .gallery {
-    width: 100%;
-    max-width: 40%;
-
-    @media screen and (max-width: 1100px) {
-      max-width: 60%;
-    }
-
-    @include phone {
-      max-width: 100%;
-    }
+    grid-area: gallery;
   }
 
   .info-card {
+    grid-area: info;
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -132,6 +126,12 @@ function addToCart() {
     }
   }
 
+  .order-wrap {
+    grid-area: order;
+    display: flex;
+    justify-content: center;
+  }
+
   .order-card {
     border-radius: 8px;
     padding: 20px;
@@ -145,7 +145,15 @@ function addToCart() {
     width: 400px;
 
     @media screen and (max-width: 1350px) {
-      width: auto;
+      width: 320px;
+    }
+
+    @media screen and (max-width: 1100px) {
+      width: 400px;
+    }
+
+    @media screen and (max-width: 450px) {
+      width: 100%;
     }
 
     &__price {

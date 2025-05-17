@@ -102,4 +102,8 @@ function handleResize() {
     background: #000;
   }
 }
+
+:deep(.swiper-slide) {
+  width: 100% !important;
+}
 </style>
