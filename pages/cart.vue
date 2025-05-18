@@ -9,13 +9,13 @@
           <div v-for="item in cartStore.items" :key="item.id" class="product">
             <div class="product__preview">
               <NuxtLink :to="item.self" class="product__image">
-                <img :src="item.img_mini?.[0]" :alt="item.name" />
+                <img :src="item.img_mini?.[0] ?? '/img/no-image.png'" :alt="item.name" />
               </NuxtLink>
 
               <div class="product__info">
                 <div class="product__content">
                   <NuxtLink :to="item.self" class="product__name">
-                    {{ item.full_name }}
+                    {{ item.full_name ? item.full_name : item.name }}
                   </NuxtLink>
                   <p class="product__price">{{ formatPrice(item.price) }} ₽</p>
                 </div>
@@ -23,7 +23,7 @@
                   <div class="product__quantity-info">
                     <TheQuantityInput v-if="quantities[item.id]" v-model="quantities[item.id]" :min-one="true" />
                   </div>
-                  <button type="button" class="product__remove" @click="removeProduct(item.id)">
+                  <button type="button" class="product__remove" @click="openRemoveModal(item.id)">
                     <SvgIcons icon="trash-bin" />
                   </button>
                 </div>
@@ -66,6 +66,11 @@
         <p v-html="modalFinalText" />
       </template>
     </ModalOrderFinal>
+    <ModalConfirm v-if="modalStore.isModalConfirmVisible" title="Удалить товар?">
+      <template #default>
+        <TheButton @click="removeProduct">Удалить</TheButton>
+      </template>
+    </ModalConfirm>
   </section>
 </template>
 
@@ -78,21 +83,19 @@ import TheButton from '~/components/UI/TheButton.vue'
 import TheLoader from '~/components/UI/TheLoader.vue'
 import ModalPhone from '~/components/Modals/ModalPhone.vue'
 import ModalOrderFinal from '~/components/Modals/ModalOrderFinal.vue'
+import ModalConfirm from '~/components/Modals/ModalConfirm.vue'
 
-const cartStore = useCartStore()
-const { sendTelegramOrder } = useOrderSubmit()
-const modalStore = useModalStore()
-
+const { submitOrder, modalFinalTitle, modalFinalText, modalFinalType } = useOrderSubmit()
 const { formatPrice } = usePriceFormat()
+const cartStore = useCartStore()
+const modalStore = useModalStore()
 
 const quantities = reactive<Record<number, number>>({})
 
 const hasProductsInCart = computed(() => cartStore.items.length !== 0)
 
 const cartReady = ref(false)
-const modalFinalTitle = ref('')
-const modalFinalText = ref('')
-const modalFinalType: Ref<'success' | 'error'> = ref('error')
+const removeProductId = ref(0)
 
 watch(
   quantities,
@@ -116,36 +119,19 @@ onMounted(() => {
   cartReady.value = true
 })
 
-function removeProduct(id: number) {
-  if (confirm('Удалить товар? Вы точно хотите удалить выбранный товар? Отменить данное действие будет невозможно.')) {
-    cartStore.removeFromCart(id)
-  }
-}
-
 function openPhoneModal() {
   modalStore.open('phone')
 }
 
-async function submitOrder(phone: string) {
-  const result = await sendTelegramOrder(phone)
-  if (result.success) {
-    addModalContent('success', result.order_number)
-  } else {
-    addModalContent('error')
-  }
-  modalStore.open('final')
+function openRemoveModal(id: number) {
+  removeProductId.value = id
+  modalStore.open('confirm')
 }
 
-function addModalContent(modalType: 'success' | 'error', orderNumber?: number) {
-  if (modalType === 'success') {
-    modalFinalType.value = 'success'
-    modalFinalTitle.value = `Заказ №${orderNumber} успешно оформлен!`
-    modalFinalText.value = `Мы передали его нашему продавцу — он уже получил всю информацию и свяжется с вами в ближайшее рабочее время<br />😊<br /> Ожидайте звонок или сообщение<br /> Большое спасибо за ваш заказ!`
-  } else if (modalType === 'error') {
-    modalFinalType.value = 'error'
-    modalFinalTitle.value = 'Произошла ошибка'
-    modalFinalText.value = `К сожалению, нам не удалось обработать ваш заказ<br />😔<br /> Вы можете попробовать снова или связаться с продавцом для оформления по телефону <br /><span class="link-default">+7 (910) 414-35-67</span> Александр`
-  }
+function removeProduct() {
+  cartStore.removeFromCart(removeProductId.value)
+  removeProductId.value = 0
+  modalStore.close()
 }
 </script>
 
@@ -177,15 +163,15 @@ function addModalContent(modalType: 'success' | 'error', orderNumber?: number) {
 
   &__card {
     background-color: var(--white-color);
-    padding: 20px;
+    padding: 16px;
     border-radius: 8px;
     display: flex;
     flex-direction: column;
     gap: 16px;
     height: fit-content;
 
-    @media screen and (max-width: 900px) {
-      padding: 12px 8px;
+    @include phone {
+      padding: 8px;
     }
   }
 
@@ -225,13 +211,21 @@ function addModalContent(modalType: 'success' | 'error', orderNumber?: number) {
 
     &__name {
       font-weight: 500;
-      font-size: 16px;
+      font-size: 18px;
+
+      @include phone {
+        font-size: 16px;
+      }
     }
 
     &__price {
       font-size: 22px;
       font-weight: 500;
       color: #fe2722;
+
+      @include phone {
+        font-size: 20px;
+      }
     }
 
     &__quantity {

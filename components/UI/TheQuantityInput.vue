@@ -1,12 +1,14 @@
 <template>
   <div class="qty-input">
-    <button class="qty-input__btn" @click="decrement">−</button>
+    <TheButton class="qty-input__btn" variant="Outlined" @click="decrement">-</TheButton>
     <input v-model.number="localValue" type="number" min="0" max="999" class="qty-input__field" @input="emitChange" />
-    <button class="qty-input__btn" @click="increment">+</button>
+    <TheButton class="qty-input__btn" variant="Outlined" @click="increment">+</TheButton>
   </div>
 </template>
 
 <script setup lang="ts">
+import TheButton from '~/components/UI/TheButton.vue'
+
 interface Props {
   modelValue: number
   minOne?: boolean
@@ -69,21 +71,13 @@ function decrement(): void {
   box-sizing: border-box;
   border-radius: 8px;
   overflow: hidden;
-  padding: 9px 12px;
   max-height: 41px;
   width: 100%;
-  max-width: 160px;
 
   &__btn {
-    all: unset;
-    cursor: pointer;
     width: 24px;
     font-size: 18px;
     font-weight: bold;
-
-    &:hover {
-      background-color: var(--hover);
-    }
   }
 
   &__field {

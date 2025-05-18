@@ -16,27 +16,17 @@
 
 <script setup lang="ts">
 import { useModalStore } from '~/store/modal'
-import { useCartStore } from '~/store/cart'
 
 interface Props {
   title: string
-  modalType: 'success' | 'error'
-  orderType?: 'buy_now' | 'cart'
 }
 
-const { title, modalType, orderType = 'cart' } = defineProps<Props>()
+const { title } = defineProps<Props>()
 
 const modalStore = useModalStore()
-const cartStore = useCartStore()
 
 function closeModal() {
   modalStore.close()
-  if (modalType === 'success') {
-    cartStore.clearCart()
-    if (orderType === 'cart') {
-      navigateTo('/')
-    }
-  }
 }
 </script>
 
@@ -48,8 +38,8 @@ function closeModal() {
   }
 
   &__body {
-    text-align: center;
-    font-size: 16px;
+    display: flex;
+    justify-content: center;
   }
 
   &__btn {

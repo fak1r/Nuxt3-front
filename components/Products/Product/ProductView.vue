@@ -1,17 +1,20 @@
+<!-- eslint-disable vue/no-v-html -->
 <template>
-  <article class="product-view">
+  <article class="product-view" :class="{ 'product-view--no-gallery': !hasImgs }">
     <div v-if="hasImgs" class="gallery">
       <ImageSlider :images="product.images ?? []" />
     </div>
 
-    <div class="info-card">
-      <h1 class="info-card__title">{{ product.full_name }}</h1>
+    <div class="info-wrap">
+      <div class="info-card">
+        <h1 class="info-card__title">{{ product.full_name }}</h1>
 
-      <ul class="info-card__details">
-        <li v-for="(value, key) in product.details" :key="key">
-          <strong>{{ key }}:</strong> {{ value }}
-        </li>
-      </ul>
+        <ul class="info-card__details">
+          <li v-for="(value, key) in product.details" :key="key">
+            <strong>{{ key }}:</strong> {{ value }}
+          </li>
+        </ul>
+      </div>
     </div>
 
     <div class="order-wrap">
@@ -19,24 +22,45 @@
         <p class="order-card__price">{{ formatPrice(product.price) }} ₽</p>
         <div class="order-card__row">
           <div class="order-card__col">
-            <TheButton @click="addToCart">В корзину</TheButton>
+            <TheButton v-if="!isProductInCart" @click="addToCart">В корзину</TheButton>
+            <TheButton v-else size="none" @click="goToCart">
+              <div class="order-card__btn-label">
+                <span>В корзине</span>
+                <span class="order-card__btn-subtitle">Перейти</span>
+              </div>
+            </TheButton>
           </div>
           <div class="order-card__col">
             <TheQuantityInput v-if="isProductInCart" v-model="quantity" />
-            <TheButton v-else variant="Secondary">Купить сейчас</TheButton>
+            <TheButton v-else variant="Secondary" @click="buyNow">Купить сейчас</TheButton>
           </div>
         </div>
       </div>
     </div>
+
+    <ModalPhone v-if="modalStore.isPhoneModalVisible" @order="submitOrder($event, 'buy_now')" />
+    <ModalOrderFinal
+      v-if="modalStore.isModalOrderFinalVisible"
+      :title="modalFinalTitle"
+      :modal-type="modalFinalType"
+      order-type="buy_now"
+    >
+      <template #default>
+        <p v-html="modalFinalText" />
+      </template>
+    </ModalOrderFinal>
   </article>
 </template>
 
 <script setup lang="ts">
 import type { Product } from '~/types/products.types'
 import { useCartStore } from '~/store/cart'
+import { useModalStore } from '~/store/modal'
 import ImageSlider from '~/components/Products/Product/ImageSlider.vue'
 import TheButton from '~/components/UI/TheButton.vue'
 import TheQuantityInput from '~/components/UI/TheQuantityInput.vue'
+import ModalPhone from '~/components/Modals/ModalPhone.vue'
+import ModalOrderFinal from '~/components/Modals/ModalOrderFinal.vue'
 
 interface Props {
   product: Product
@@ -45,8 +69,9 @@ interface Props {
 const { product } = defineProps<Props>()
 
 const { formatPrice } = usePriceFormat()
-
+const { submitOrder, modalFinalTitle, modalFinalText, modalFinalType } = useOrderSubmit()
 const cartStore = useCartStore()
+const modalStore = useModalStore()
 
 const hasImgs = computed(() => product.images?.length)
 const cartItem = computed(() => cartStore.items.find((item) => item.id === product.id))
@@ -75,6 +100,15 @@ function addToCart() {
     cartStore.addToCart(product, 1)
   }
 }
+
+async function buyNow() {
+  cartStore.addToCart(product, 1)
+  modalStore.open('phone')
+}
+
+function goToCart() {
+  navigateTo('/cart')
+}
 </script>
 
 <style scoped lang="scss">
@@ -84,11 +118,25 @@ function addToCart() {
   grid-template-areas: 'gallery info order';
   gap: 8px;
 
+  &--no-gallery {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'info'
+      'order';
+  }
+
   @media screen and (max-width: 1100px) {
     grid-template-columns: 2fr 1fr;
     grid-template-areas:
       'gallery info'
       'order order';
+
+    &--no-gallery {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        'info'
+        'order';
+    }
   }
 
   @include phone {
@@ -103,14 +151,23 @@ function addToCart() {
     grid-area: gallery;
   }
 
-  .info-card {
+  .info-wrap {
     grid-area: info;
+    display: flex;
+    justify-content: center;
+  }
+
+  .info-card {
     display: flex;
     flex-direction: column;
     gap: 16px;
     padding: 16px;
     border-radius: 16px;
     box-sizing: border-box;
+
+    @include phone {
+      padding: 8px;
+    }
 
     &__title {
       font-size: 24px;
@@ -134,7 +191,7 @@ function addToCart() {
 
   .order-card {
     border-radius: 8px;
-    padding: 20px;
+    padding: 16px;
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -154,6 +211,7 @@ function addToCart() {
 
     @media screen and (max-width: 450px) {
       width: 100%;
+      padding: 8px;
     }
 
     &__price {
@@ -177,6 +235,16 @@ function addToCart() {
       button {
         width: 100%;
       }
+    }
+
+    &__btn-label {
+      display: flex;
+      flex-direction: column;
+    }
+
+    &__btn-subtitle {
+      font-size: 12px;
+      color: rgb(226, 226, 226);
     }
   }
 }

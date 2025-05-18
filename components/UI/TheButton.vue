@@ -24,8 +24,8 @@
 
 <script setup lang="ts">
 interface Props {
-  variant?: 'Primary' | 'Secondary'
-  size?: 'sm' | 'md' | 'lg'
+  variant?: 'Primary' | 'Secondary' | 'Outlined'
+  size?: 'none' | 'sm' | 'md' | 'lg'
 }
 
 const { variant = 'Primary', size = 'lg' } = defineProps<Props>()
@@ -49,8 +49,16 @@ const buttonVariants = {
     color: 'var(--primary-btn)',
     ripple: 'rgba(0, 0, 0, 0.15)',
   },
+  Outlined: {
+    background: 'transparent',
+    hover: 'rgba(100, 116, 139, 0.15)',
+    border: 'none',
+    color: 'var(--primary-btn)',
+    ripple: 'rgba(0, 0, 0, 0.15)',
+  },
 }
 const buttonSizes = {
+  none: '0',
   sm: '3px 12px',
   md: '6px 16px',
   lg: '9px 20px',
@@ -122,12 +130,14 @@ function handleMouseLeave(event: MouseEvent) {
 
 <style scoped lang="scss">
 .btn {
-  padding: 9px 20px;
   font-size: 16px;
   border-radius: 6px;
   overflow: hidden;
   transition: background 0.2s ease;
   font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   &__ripple {
     position: absolute;
