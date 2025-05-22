@@ -1,18 +1,25 @@
 <template>
-  <div class="image-container">
+  <div class="image-wrap">
     <swiper
       :modules="[Pagination]"
-      class="product-image-mobile"
+      class="image-swiper"
       :pagination="{
-        el: '.custom-pagination',
+        el: '.image-swiper__pagination',
         clickable: true,
       }"
     >
-      <div class="custom-pagination" :style="{ opacity: hasImgs ? 1 : 0 }" />
+      <div class="image-swiper__pagination" :style="{ opacity: hasImgs ? 1 : 0 }" />
 
       <swiper-slide v-for="(img, index) in product.img_mini" :key="index">
         <ImgSkeleton v-if="!isImgLoaded" />
-        <img v-show="isImgLoaded" :src="img" alt="Фото товара" @error="onImgError" @load="onImageLoad" />
+        <img
+          v-show="isImgLoaded"
+          :src="img"
+          loading="lazy"
+          :alt="`${product.name} – миниатюра ${index + 1}`"
+          @error="onImgError"
+          @load="onImageLoad"
+        />
       </swiper-slide>
     </swiper>
   </div>
@@ -31,20 +38,7 @@ interface Props {
 const { product } = defineProps<Props>()
 
 const hasImgs = computed(() => product.img_mini.length > 1)
-const swiperRef = ref<any>(null)
-const isImgLoaded = ref(false)
-
-onMounted(() => {
-  window.addEventListener('resize', handleResize)
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', handleResize)
-})
-
-function handleResize() {
-  swiperRef.value?.update()
-}
+const isImgLoaded = ref(true)
 
 function onImgError(event: Event) {
   const target = event.target as HTMLImageElement
@@ -57,27 +51,30 @@ function onImageLoad() {
 </script>
 
 <style scoped lang="scss">
-.product-image-mobile {
-  border-radius: 4px;
-  aspect-ratio: 4 / 3;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.image-wrap {
+  .image-swiper {
+    position: relative;
     border-radius: 4px;
-  }
+    aspect-ratio: 4 / 3;
 
-  .custom-pagination {
-    display: flex;
-    width: 100%;
-    height: 2px;
-    background-color: #d6d6db;
-    overflow: hidden;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 10;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+
+    &__pagination {
+      display: flex;
+      width: 100%;
+      height: 2px;
+      background-color: #d6d6db;
+      overflow: hidden;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 10;
+    }
   }
 }
 

@@ -1,6 +1,7 @@
 <template>
   <div class="main-page">
-    <h1 class="main-page__title">Популярные товары:</h1>
+    <h1 class="main-page__title">Интернет-магазин ламината и напольных покрытий Зам Пол</h1>
+    <h2 class="main-page__subtitle">Скидки в честь открытия интернет магазина</h2>
     <ProductList :products="products" :is-skeleton-visible="!isSkeletonVisible" />
   </div>
 </template>
@@ -14,7 +15,10 @@ const productsStore = useProductsStore()
 
 const { fetchPopularProducts } = productsStore
 
-const { data, status } = await useAsyncData<Product[]>('favorite-products', () => fetchPopularProducts())
+const { data, status } = await useAsyncData<Product[]>('popular-products', () => fetchPopularProducts(), {
+  server: true,
+  lazy: false,
+})
 
 const isSkeletonVisible = computed(() => status.value === 'success' || 'error')
 
@@ -33,6 +37,19 @@ const products = data.value || []
   &__title {
     margin-bottom: 16px;
     text-align: center;
+
+    @include phone {
+      font-size: 24px;
+    }
+  }
+
+  &__subtitle {
+    margin-bottom: 16px;
+    text-align: center;
+
+    @include phone {
+      font-size: 20px;
+    }
   }
 }
 </style>

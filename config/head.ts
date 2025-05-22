@@ -2,6 +2,9 @@ const siteUrl = process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 
 export default {
   title: 'Зам Пол — Ламинат, паркет, линолеум в наличии и под заказ',
+  htmlAttrs: {
+    lang: 'ru',
+  },
   meta: [
     {
       name: 'description',

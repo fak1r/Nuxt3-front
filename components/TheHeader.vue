@@ -1,6 +1,6 @@
 <template>
   <nav class="nav" aria-label="Основная навигация">
-    <NuxtLink to="/" class="nav__item nav__logo" active-class="active">
+    <NuxtLink to="/" class="nav__item nav__logo" active-class="active" aria-label="Главная страница">
       <SvgIcons icon="logo" />
     </NuxtLink>
 
@@ -17,7 +17,13 @@
 
     <form class="search-form" role="search">
       <TheSearch v-model="search" :search-results="searchResults" />
-      <NuxtLink v-if="isMobile" to="/contacts" class="nav__item nav__contacts" active-class="active">
+      <NuxtLink
+        v-if="isMobile"
+        to="/contacts"
+        class="nav__item nav__contacts"
+        active-class="active"
+        aria-label="Контакты"
+      >
         <SvgIcons icon="geo-square" :size="'md'" />
         <span>Контакты</span>
       </NuxtLink>
@@ -79,9 +85,9 @@ function toggleCatalogModal() {
 }
 
 function activeStyle(name: 'catalog' | 'auth') {
-  return {
-    style: { color: (name === 'catalog' ? modalStore.isCatalogVisible : modalStore.isAuthVisible) ? 'black' : '' },
-  }
+  const isActive = name === 'catalog' ? modalStore.isCatalogVisible : modalStore.isAuthVisible
+
+  return isActive ? { style: { color: 'black' } } : {}
 }
 </script>
 

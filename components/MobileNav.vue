@@ -1,5 +1,5 @@
 <template>
-  <nav class="mobile-nav" aria-label="Мобильная навигация" role="menu">
+  <nav class="mobile-nav" aria-label="Мобильная навигация">
     <ul>
       <li>
         <NuxtLink to="/" class="mobile-nav__item" active-class="active">
@@ -50,7 +50,7 @@ const authStore = useAuthStore()
 
 const user = computed(() => authStore.user)
 const hasUser = computed(() => !!user.value?.email)
-const authBtnStyle = computed(() => ({ style: { color: modalStore.isAuthVisible ? 'black' : '' } }))
+const authBtnStyle = computed(() => (modalStore.isAuthVisible ? { style: { color: 'black' } } : {}))
 
 function openAuthModal() {
   modalStore.open('auth')
