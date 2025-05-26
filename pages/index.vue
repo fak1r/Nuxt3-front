@@ -1,6 +1,6 @@
 <template>
   <div class="main-page">
-    <h1 class="main-page__title">Интернет-магазин ламината и напольных покрытий Зам Пол</h1>
+    <h1 class="main-page__title">Магазин напольных покрытий Зам Пол</h1>
     <h2 class="main-page__subtitle">Скидки в честь открытия интернет магазина</h2>
     <ProductList :products="products" :is-skeleton-visible="!isSkeletonVisible" />
   </div>

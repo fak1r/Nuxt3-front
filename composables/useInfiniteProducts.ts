@@ -1,10 +1,9 @@
 import type { Product, ProductFilters } from '~/types/products.types'
 import { useProductsStore } from '~/store/products'
 
-export function useInfiniteProducts(filters: Ref<ProductFilters>, initialProducts?: Product[]) {
-  const products = ref<Product[]>(initialProducts || [])
+export function useInfiniteProducts(filters: Ref<ProductFilters>, limit: number = 30) {
+  const products = ref<Product[]>([])
   const page = ref(1)
-  const limit = 30
   const hasMore = ref(true)
   const firstLoading = ref(true)
 
@@ -12,22 +11,13 @@ export function useInfiniteProducts(filters: Ref<ProductFilters>, initialProduct
   const { fetchProducts } = productsStore
   const { productsAreLoading } = storeToRefs(productsStore)
 
-  if (initialProducts?.length) {
-    firstLoading.value = false
-    if (initialProducts.length < limit) {
-      hasMore.value = false
-    } else {
-      page.value = 2
-    }
-  }
-
   async function loadMoreProducts() {
     if (!hasMore.value) return
 
     const currentFilters = {
       ...filters.value,
       page: page.value,
-      limit: limit,
+      limit,
     }
 
     const { products: newProducts = [] } = await fetchProducts(currentFilters)
