@@ -9,11 +9,20 @@
       <div class="info-card">
         <h1 class="info-card__title">{{ product.full_name }}</h1>
 
-        <ul class="info-card__details">
-          <li v-for="(value, key) in product.details" :key="key">
-            <strong>{{ key }}:</strong> {{ value }}
-          </li>
-        </ul>
+        <section v-if="hasDetails" class="info-card__details" aria-labelledby="details-title">
+          <h2 id="details-title">Характеристики</h2>
+
+          <dl class="info-card__list">
+            <template v-for="(value, key) in product.details" :key="key">
+              <template v-if="key !== 'Описание'">
+                <div class="info-card__row">
+                  <dt class="info-card__item">{{ key }}:</dt>
+                  <dd class="info-card__item">{{ value }}</dd>
+                </div>
+              </template>
+            </template>
+          </dl>
+        </section>
       </div>
     </div>
 
@@ -37,6 +46,11 @@
         </div>
       </div>
     </div>
+
+    <section v-if="product.details?.['Описание']" class="product-description" aria-labelledby="description-title">
+      <h2 id="description-title">Описание</h2>
+      <p v-html="product.details['Описание']" />
+    </section>
 
     <ModalPhone v-if="modalStore.isPhoneModalVisible" @order="submitOrder($event, 'buy_now')" />
     <ModalOrderFinal
@@ -88,6 +102,10 @@ const quantity = computed({
     }
   },
 })
+const detailsWithoutDescription = computed(() => {
+  return Object.fromEntries(Object.entries(product.details || {}).filter(([key]) => key !== 'Описание'))
+})
+const hasDetails = computed(() => Object.keys(detailsWithoutDescription.value).length > 0)
 
 watch(quantity, (val) => {
   if (val < 1 && isProductInCart.value) {
@@ -115,7 +133,9 @@ function goToCart() {
 .product-view {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr;
-  grid-template-areas: 'gallery info order';
+  grid-template-areas:
+    'gallery info order'
+    'description description description';
   gap: 8px;
 
   &--no-gallery {
@@ -125,17 +145,19 @@ function goToCart() {
       'order';
   }
 
-  @media screen and (max-width: 1100px) {
+  @media screen and (max-width: 1200px) {
     grid-template-columns: 2fr 1fr;
     grid-template-areas:
       'gallery info'
-      'order order';
+      'order order'
+      'description description';
 
     &--no-gallery {
       grid-template-columns: 1fr;
       grid-template-areas:
         'info'
-        'order';
+        'order'
+        'description';
     }
   }
 
@@ -144,7 +166,8 @@ function goToCart() {
     grid-template-areas:
       'gallery'
       'info'
-      'order';
+      'order'
+      'description';
   }
 
   .gallery {
@@ -166,7 +189,7 @@ function goToCart() {
     box-sizing: border-box;
 
     @include phone {
-      padding: 8px;
+      padding: 0;
     }
 
     &__title {
@@ -180,6 +203,27 @@ function goToCart() {
       gap: 4px;
       display: flex;
       flex-direction: column;
+    }
+
+    &__list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    &__row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    &__item {
+      margin: 0;
+
+      &:first-child {
+        font-weight: bold;
+        min-width: 190px;
+      }
     }
   }
 
@@ -205,7 +249,7 @@ function goToCart() {
       width: 320px;
     }
 
-    @media screen and (max-width: 1100px) {
+    @media screen and (max-width: 1200px) {
       width: 400px;
     }
 
@@ -245,6 +289,17 @@ function goToCart() {
     &__btn-subtitle {
       font-size: 12px;
       color: rgb(226, 226, 226);
+    }
+  }
+
+  .product-description {
+    grid-area: description;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    p {
+      line-height: 1.6;
     }
   }
 }
