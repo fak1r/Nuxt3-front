@@ -5,6 +5,13 @@ export default {
   htmlAttrs: {
     lang: 'ru',
   },
+  link: [
+    {
+      rel: 'shortcut icon',
+      type: 'image/x-icon',
+      href: '/favicon.ico',
+    },
+  ],
   meta: [
     {
       name: 'description',

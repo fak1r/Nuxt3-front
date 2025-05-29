@@ -8,6 +8,11 @@
 
 <script setup lang="ts">
 import TheLinkButton from '~/components/UI/TheLinkButton.vue'
+
+useHead({
+  title: '404 — Страница не найдена',
+  meta: [{ name: 'robots', content: 'noindex, nofollow' }],
+})
 </script>
 
 <style lang="scss" scoped>
