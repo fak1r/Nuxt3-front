@@ -25,10 +25,10 @@
 <script setup lang="ts">
 interface Props {
   variant?: 'Primary' | 'Secondary' | 'Outlined'
-  size?: 'none' | 'sm' | 'md' | 'lg'
+  size?: 'sm' | 'md' | 'lg'
 }
 
-const { variant = 'Primary', size = 'lg' } = defineProps<Props>()
+const { variant = 'Primary', size = 'md' } = defineProps<Props>()
 
 const ripples = ref<{ id: number; x: number; y: number }[]>([])
 const isHovered = ref(false)
@@ -57,15 +57,20 @@ const buttonVariants = {
     ripple: 'rgba(0, 0, 0, 0.15)',
   },
 }
-const buttonSizes = {
-  none: '0',
-  sm: '3px 12px',
-  md: '6px 16px',
-  lg: '9px 20px',
+const buttonPaddingSizes = {
+  sm: '0px 12px',
+  md: '0px 16px',
+  lg: '0px 20px',
+}
+const buttonHeightSizes = {
+  sm: '38px',
+  md: '42px',
+  lg: '46px',
 }
 
 const buttonVariant = computed(() => buttonVariants[variant])
-const buttonSize = computed(() => buttonSizes[size])
+const buttonPaddingSize = computed(() => buttonPaddingSizes[size])
+const buttonHeightSize = computed(() => buttonHeightSizes[size])
 
 const buttonStyles = computed(() => {
   const isActive = isHovered.value || isFocused.value
@@ -73,7 +78,8 @@ const buttonStyles = computed(() => {
     background: isActive ? buttonVariant.value.hover : buttonVariant.value.background,
     border: buttonVariant.value.border,
     color: buttonVariant.value.color,
-    padding: buttonSize.value,
+    padding: buttonPaddingSize.value,
+    height: buttonHeightSize.value,
   }
 })
 
@@ -138,7 +144,6 @@ function handleMouseLeave(event: MouseEvent) {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 41px;
 
   &__ripple {
     position: absolute;

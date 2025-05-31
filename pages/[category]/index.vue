@@ -1,5 +1,5 @@
 <template>
-  <ProductListPage :state="productPageState" @load-more="loadMoreProducts" />
+  <ProductListPage :state="productPageState" @load-more="loadMoreProducts" @update-sort="onSortUpdate" />
 </template>
 
 <script setup lang="ts">
@@ -12,9 +12,14 @@ const categorySlug = route.params.category as string
 
 const filters = ref<ProductFilters>({
   category_slug: categorySlug,
-  sort_by: 'name',
-  order: 'asc',
 })
+
+const parsedSort = parseSortParam(route.query.sort as string)
+
+if (parsedSort) {
+  filters.value.sort_by = parsedSort.sort_by
+  filters.value.order = parsedSort.order
+}
 
 const { categories } = storeToRefs(useCategoriesStore())
 
@@ -33,6 +38,13 @@ const { productPageState, loadMoreProducts } = useProductListPage({
 onMounted(() => {
   loadMoreProducts()
 })
+
+function onSortUpdate(sort: { sort_by: string; order: 'asc' | 'desc' } | null) {
+  if (sort) {
+    filters.value.sort_by = sort.sort_by
+    filters.value.order = sort.order
+  }
+}
 </script>
 
 <style scoped lang="scss">

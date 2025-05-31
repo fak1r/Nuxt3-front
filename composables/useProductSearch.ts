@@ -39,7 +39,10 @@ export function useProductSearch(
         })
 
         searchResults.value = data
-        isSearchResOpen.value = data.length > 0
+        if (searchResults.value.length === 0) {
+          searchResults.value.push({ id: 1, full_name: 'Ничего не найдено', self: '' })
+        }
+        isSearchResOpen.value = true
       } catch (error) {
         console.error('Ошибка поиска продуктов:', error)
         searchResults.value = []

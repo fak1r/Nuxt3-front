@@ -28,7 +28,7 @@ export interface ProductFilters {
   page?: number
   limit?: number
   sort_by?: string
-  order?: string
+  order?: 'asc' | 'desc'
 }
 export interface ProductListState {
   title: string
@@ -37,6 +37,7 @@ export interface ProductListState {
   productsAreLoading: boolean
   hasMore: boolean
   firstLoading: boolean
+  order?: 'asc' | 'desc'
 }
 
 export interface ProductSearchItem {

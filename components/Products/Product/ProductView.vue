@@ -32,7 +32,7 @@
         <div class="order-card__row">
           <div class="order-card__col">
             <TheButton v-if="!isProductInCart" @click="addToCart">В корзину</TheButton>
-            <TheButton v-else size="none" @click="goToCart">
+            <TheButton v-else @click="goToCart">
               <div class="order-card__btn-label">
                 <span>В корзине</span>
                 <span class="order-card__btn-subtitle">Перейти</span>

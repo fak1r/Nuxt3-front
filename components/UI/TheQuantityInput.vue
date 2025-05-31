@@ -71,7 +71,7 @@ function decrement(): void {
   box-sizing: border-box;
   border-radius: 8px;
   overflow: hidden;
-  max-height: 41px;
+  max-height: 42px;
   width: 100%;
 
   &__btn {
