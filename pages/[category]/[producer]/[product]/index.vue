@@ -1,5 +1,6 @@
 <template>
   <section class="product-page">
+    <TheBreadcrumbs v-if="product" :breadcrumbs="product.breadcrumbs" />
     <ProductView v-if="product" :product="product" />
   </section>
 </template>
@@ -7,6 +8,7 @@
 <script setup lang="ts">
 import type { Product } from '~/types/products.types'
 import ProductView from '~/components/Products/Product/ProductView.vue'
+import TheBreadcrumbs from '~/components/UI/TheBreadcrumbs.vue'
 
 definePageMeta({
   payload: true,

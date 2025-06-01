@@ -43,7 +43,7 @@
 
         <div class="modal__info">
           {{ formText }}&nbsp;
-          <button class="link-default" type="button" @click="changeFormType">
+          <button class="link" type="button" @click="changeFormType">
             {{ formLink }}
           </button>
         </div>

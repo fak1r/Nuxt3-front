@@ -10,6 +10,12 @@ export interface Product {
   images?: { id: number; image_url: string }[]
   details?: Record<string, string>
   self: string
+  breadcrumbs: BreadcrumbItem[]
+}
+
+export interface BreadcrumbItem {
+  label: string
+  to: string
 }
 
 export interface PaginatedProducts {
