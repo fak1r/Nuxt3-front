@@ -13,6 +13,11 @@ export interface Product {
   breadcrumbs: BreadcrumbItem[]
 }
 
+export interface RelatedProductsResponse {
+  collection_name: string
+  items: Product[]
+}
+
 export interface BreadcrumbItem {
   label: string
   to: string

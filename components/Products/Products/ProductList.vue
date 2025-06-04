@@ -22,7 +22,7 @@ import type { Product } from '~/types/products.types'
 
 interface Props {
   products?: Product[]
-  isSkeletonVisible: boolean
+  isSkeletonVisible?: boolean
 }
 
 const props = defineProps<Props>()

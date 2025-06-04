@@ -2,13 +2,17 @@
   <section class="product-page">
     <TheBreadcrumbs v-if="product" :breadcrumbs="product.breadcrumbs" />
     <ProductView v-if="product" :product="product" />
+
+    <h2 v-if="relatedProducts">Товары из коллекции {{ collectionName }}</h2>
+    <ProductList v-if="relatedProducts" :products="relatedProducts" />
   </section>
 </template>
 
 <script setup lang="ts">
-import type { Product } from '~/types/products.types'
+import type { Product, RelatedProductsResponse } from '~/types/products.types'
 import ProductView from '~/components/Products/Product/ProductView.vue'
 import TheBreadcrumbs from '~/components/UI/TheBreadcrumbs.vue'
+import ProductList from '~/components/Products/Products/ProductList.vue'
 
 definePageMeta({
   payload: true,
@@ -28,6 +32,15 @@ const { data: product, error } = await useAsyncData<Product>(`product-${category
   }),
 )
 
+const { data: related } = await useAsyncData<RelatedProductsResponse>(`related-${category}-${producer}-${slug}`, () =>
+  $fetch(`/products/${category}/${producer}/${slug}/related`, {
+    baseURL: config.public.apiBaseUrl,
+  }),
+)
+
+const relatedProducts = computed(() => related.value?.items || [])
+const collectionName = computed(() => related.value?.collection_name || '')
+
 if (error.value && !import.meta.server) {
   throw createError({ statusCode: 404, statusMessage: 'Товар не найден' })
 }
@@ -46,23 +59,12 @@ useHead({
 
 <style scoped lang="scss">
 .product-page {
-  &__loader {
-    display: flex;
-    justify-content: center;
-    padding: 64px 0;
-  }
-}
-.not-found {
-  text-align: center;
-  padding: 60px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 
-  &__title {
-    font-size: 32px;
-    margin-bottom: 16px;
-  }
-
-  &__text {
-    margin-bottom: 32px;
+  @include phone {
+    gap: 8px;
   }
 }
 </style>
