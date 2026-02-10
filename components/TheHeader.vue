@@ -24,7 +24,7 @@
         active-class="active"
         aria-label="Контакты"
       >
-        <SvgIcons icon="geo-square" :size="'md'" />
+        <SvgIcons icon="geo-square" size="xxl" />
         <span>Контакты</span>
       </NuxtLink>
     </form>

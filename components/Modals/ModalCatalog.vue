@@ -1,6 +1,6 @@
 <template>
   <dialog class="overlay overlay--mt" @click.self="closeModal">
-    <div class="catalog-wrap">
+    <div class="catalog-wrap" @click.self="closeModal">
       <div class="catalog">
         <aside class="catalog__side--left">
           <div

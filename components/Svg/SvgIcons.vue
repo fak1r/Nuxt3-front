@@ -244,5 +244,10 @@ defineProps<Props>()
     width: 24px;
     height: 24px;
   }
+
+  &.xxl {
+    width: 32px;
+    height: 32px;
+  }
 }
 </style>

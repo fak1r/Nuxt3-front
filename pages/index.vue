@@ -2,7 +2,7 @@
   <div class="main-page">
     <h1 class="main-page__title">Магазин напольных покрытий Зам Пол</h1>
     <h2 class="main-page__subtitle">Скидки в честь открытия интернет магазина</h2>
-    <ProductList :products="products" :is-skeleton-visible="!isSkeletonVisible" />
+    <ProductList :products="products" />
   </div>
 </template>
 
@@ -15,12 +15,10 @@ const productsStore = useProductsStore()
 
 const { fetchPopularProducts } = productsStore
 
-const { data, status } = await useAsyncData<Product[]>('popular-products', () => fetchPopularProducts(), {
+const { data } = await useAsyncData<Product[]>('popular-products', () => fetchPopularProducts(), {
   server: true,
   lazy: false,
 })
-
-const isSkeletonVisible = computed(() => status.value === 'success' || 'error')
 
 const products = data.value || []
 </script>
