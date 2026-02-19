@@ -24,7 +24,7 @@
 
 <script setup lang="ts">
 interface Props {
-  variant?: 'Primary' | 'Secondary' | 'Outlined'
+  variant?: 'Primary' | 'Secondary' | 'Outlined' | 'Filled'
   size?: 'sm' | 'md' | 'lg'
 }
 
@@ -51,6 +51,13 @@ const buttonVariants = {
   },
   Outlined: {
     background: 'transparent',
+    hover: 'rgba(100, 116, 139, 0.15)',
+    border: 'none',
+    color: 'var(--primary-btn)',
+    ripple: 'rgba(0, 0, 0, 0.15)',
+  },
+  Filled: {
+    background: '#e2dfe2',
     hover: 'rgba(100, 116, 139, 0.15)',
     border: 'none',
     color: 'var(--primary-btn)',
