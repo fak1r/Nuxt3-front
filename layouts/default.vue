@@ -38,6 +38,8 @@ const { closeSearchRes, openSearchRes } = useProductSearch()
 const isHeaderHidden = ref(false)
 let lastScrollY = 0
 
+await categoriesStore.init()
+
 function onScroll() {
   if (!isMobile.value) return
 
@@ -56,8 +58,7 @@ function onScroll() {
 
 const handleScroll = throttle(onScroll, 200)
 
-onMounted(async () => {
-  await categoriesStore.init()
+onMounted(() => {
   window.addEventListener('scroll', handleScroll, { passive: true })
 })
 
