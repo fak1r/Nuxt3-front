@@ -3,8 +3,21 @@ import getSitemapRoutes from './scripts/get-sitemap-routes'
 import appHead from './config/head'
 import { getPrerenderRoutes } from './utils/get-prerender-routes'
 
+const fallbackSiteUrl = 'http://localhost:3000'
 const apiBaseUrl = process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api'
-const siteUrl = process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+const rawSiteUrl = process.env.NUXT_PUBLIC_SITE_URL || fallbackSiteUrl
+
+function normalizeSiteUrl(url: string): string {
+  try {
+    const parsed = new URL(url)
+    parsed.hostname = parsed.hostname.replace(/^www\./i, '')
+    return parsed.toString().replace(/\/+$/, '')
+  } catch {
+    return fallbackSiteUrl
+  }
+}
+
+const siteUrl = normalizeSiteUrl(rawSiteUrl)
 
 export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
@@ -16,17 +29,19 @@ export default defineNuxtConfig({
     compressPublicAssets: true,
   },
   site: {
-    url: siteUrl || 'http://5.8.54.84',
+    url: siteUrl,
   },
   app: {
     head: appHead,
   },
   sitemap: {
-    hostname: siteUrl || 'http://localhost:3000',
+    hostname: siteUrl,
     name: 'Зам Пол - магазин напольных покрытий',
     gzip: true,
-    exclude: ['/admin', '/profile', '/cart'],
-    routes: () => getSitemapRoutes(apiBaseUrl),
+    exclude: ['/admin', '/profile', '/cart', '/404'],
+    urls: () => getSitemapRoutes(),
+    autoLastmod: true,
+    discoverImages: true,
     defaults: {
       changefreq: 'weekly',
       priority: 0.7,

@@ -5,11 +5,11 @@
         <TheHeader />
       </div>
     </header>
-    <div class="main-container">
+    <main class="main-container">
       <div class="main-container__body">
         <slot />
       </div>
-    </div>
+    </main>
     <div class="mobile-nav-container">
       <MobileNav />
     </div>

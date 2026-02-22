@@ -1,25 +1,46 @@
-type Category = { id: number }
-type Producer = { id: number }
-type Product = { id: number }
+import { existsSync, readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 
-export default async function getSitemapRoutes(apiBaseUrl: string): Promise<{ url: string }[]> {
-  const [categoriesRes, producersRes, productsRes] = await Promise.all([
-    fetch(`${apiBaseUrl}/products/categories`),
-    fetch(`${apiBaseUrl}/products/producers`),
-    fetch(`${apiBaseUrl}/products`),
-  ])
+type SitemapUrl = {
+  loc: string
+}
 
-  if (!categoriesRes.ok) throw new Error(`Ошибка загрузки категорий: ${categoriesRes.status}`)
-  if (!producersRes.ok) throw new Error(`Ошибка загрузки производителей: ${producersRes.status}`)
-  if (!productsRes.ok) throw new Error(`Ошибка загрузки продуктов: ${productsRes.status}`)
+function normalizePath(path: string): string {
+  if (!path) return '/'
+  return path.startsWith('/') ? path : `/${path}`
+}
 
-  const categories: Category[] = await categoriesRes.json()
-  const producers: Producer[] = await producersRes.json()
-  const products: Product[] = await productsRes.json()
+function readGeneratedRoutes(): string[] {
+  const generatedRoutesPath = resolve('.generated-routes.json')
 
-  const categoryRoutes = categories.map((c) => ({ url: `/catalog/${c.id}` }))
-  const producerRoutes = producers.map((p) => ({ url: `/producers/${p.id}` }))
-  const productRoutes = products.map((p) => ({ url: `/products/${p.id}` }))
+  if (!existsSync(generatedRoutesPath)) {
+    console.warn('No .generated-routes.json found for sitemap. Run `yarn generate:routes` first.')
+    return []
+  }
 
-  return [...categoryRoutes, ...producerRoutes, ...productRoutes]
+  try {
+    const raw = readFileSync(generatedRoutesPath, 'utf-8')
+    const parsed = JSON.parse(raw) as unknown
+
+    if (!Array.isArray(parsed)) {
+      console.warn('Invalid .generated-routes.json format. Expected string[].')
+      return []
+    }
+
+    return parsed.filter((route): route is string => typeof route === 'string' && route.length > 0)
+  } catch {
+    console.warn('Failed to read .generated-routes.json for sitemap.')
+    return []
+  }
+}
+
+function toSitemapUrls(paths: string[]): SitemapUrl[] {
+  return Array.from(new Set(paths.map((path) => normalizePath(path))))
+    .sort((a, b) => a.localeCompare(b))
+    .map((loc) => ({ loc }))
+}
+
+export default async function getSitemapRoutes(): Promise<SitemapUrl[]> {
+  const generatedRoutes = readGeneratedRoutes()
+  return toSitemapUrls(generatedRoutes)
 }

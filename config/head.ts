@@ -1,4 +1,17 @@
-const siteUrl = process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+const fallbackSiteUrl = 'http://localhost:3000'
+const rawSiteUrl = process.env.NUXT_PUBLIC_SITE_URL || fallbackSiteUrl
+
+function normalizeSiteUrl(url: string): string {
+  try {
+    const parsed = new URL(url)
+    parsed.hostname = parsed.hostname.replace(/^www\./i, '')
+    return parsed.toString().replace(/\/+$/, '')
+  } catch {
+    return fallbackSiteUrl
+  }
+}
+
+const siteUrl = normalizeSiteUrl(rawSiteUrl)
 
 export default {
   title: 'Зам Пол — Ламинат, паркет, линолеум в наличии и под заказ',
@@ -30,10 +43,6 @@ export default {
     {
       property: 'og:type',
       content: 'website',
-    },
-    {
-      property: 'og:url',
-      content: siteUrl,
     },
     {
       property: 'og:image',
