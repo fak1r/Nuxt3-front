@@ -1,4 +1,11 @@
 declare module 'lodash/throttle' {
+  type ThrottledFunc<T extends (...args: any[]) => any> = ((
+    ...args: Parameters<T>
+  ) => ReturnType<T>) & {
+    cancel: () => void
+    flush: () => ReturnType<T>
+  }
+
   const throttle: <T extends (...args: any[]) => any>(
     func: T,
     wait?: number,
@@ -6,10 +13,17 @@ declare module 'lodash/throttle' {
       leading?: boolean
       trailing?: boolean
     },
-  ) => T
+  ) => ThrottledFunc<T>
   export default throttle
 }
 declare module 'lodash/debounce' {
+  type DebouncedFunc<T extends (...args: any[]) => any> = ((
+    ...args: Parameters<T>
+  ) => ReturnType<T>) & {
+    cancel: () => void
+    flush: () => ReturnType<T>
+  }
+
   const debounce: <T extends (...args: any[]) => any>(
     func: T,
     wait?: number,
@@ -18,6 +32,6 @@ declare module 'lodash/debounce' {
       trailing?: boolean
       maxWait?: number
     },
-  ) => T
+  ) => DebouncedFunc<T>
   export default debounce
 }

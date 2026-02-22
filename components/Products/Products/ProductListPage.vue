@@ -35,6 +35,12 @@ const emit = defineEmits<Emits>()
 const isFirstLoading = computed(() => props.state.firstLoading)
 
 useInfiniteScroll(() => emit('loadMore'))
+useAutoloadUntilScrollable({
+  hasMore: computed(() => props.state.hasMore),
+  isLoading: computed(() => props.state.productsAreLoading),
+  itemsCount: computed(() => props.state.products?.length ?? 0),
+  onLoadMore: () => emit('loadMore'),
+})
 
 function onSortChange(sort: { sort_by: string; order: 'asc' | 'desc' }) {
   emit('updateSort', sort)
