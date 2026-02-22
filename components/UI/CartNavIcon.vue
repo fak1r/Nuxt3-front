@@ -18,6 +18,9 @@ const totalItems = computed(function () {
 
 <style scoped lang="scss">
 .cart-icon {
+  width: 24px;
+  height: 24px;
+  
   &__badge {
     position: absolute;
     top: -4px;

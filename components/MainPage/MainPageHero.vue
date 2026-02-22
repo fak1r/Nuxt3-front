@@ -1,8 +1,19 @@
-﻿<template>
+<template>
   <div class="main-page-hero">
-    
     <div class="main-page-hero__image-wrapper">
-      <img class="main-page-hero__image" :src="MainPageImg" alt="Качественный паркет" />
+      <img
+        ref="heroImage"
+        class="main-page-hero__image"
+        :src="MainPageImg"
+        alt="Качественный паркет"
+        width="1536"
+        height="509"
+        loading="eager"
+        fetchpriority="high"
+        @load="onHeroLoad"
+        @error="onHeroLoad"
+      />
+      <div v-if="!isHeroLoaded" class="main-page-hero__image-skeleton" aria-hidden="true" />
       <div class="main-page-hero__content">
         <h2 class="main-page-hero__title">Ламинат и Паркет</h2>
         <h3 class="main-page-hero__description">Большой выбор качественных напольных покрытий</h3>
@@ -16,6 +27,19 @@
 <script setup lang="ts">
 import MainPageImg from '~/assets/img/hero-block.webp'
 import GrassImg from '~/assets/img/grass.webp'
+
+const heroImage = ref<HTMLImageElement | null>(null)
+const isHeroLoaded = ref(false)
+
+function onHeroLoad() {
+  isHeroLoaded.value = true
+}
+
+onMounted(() => {
+  if (heroImage.value?.complete) {
+    onHeroLoad()
+  }
+})
 </script>
 
 <style scoped lang="scss">
@@ -25,8 +49,13 @@ import GrassImg from '~/assets/img/grass.webp'
 
   &__image-wrapper {
     position: relative;
+    aspect-ratio: 1536 / 509;
     border-radius: 10px;
     overflow: hidden;
+
+    @include phone {
+      aspect-ratio: 16 / 9;
+    }
   }
 
   &__image {
@@ -34,6 +63,15 @@ import GrassImg from '~/assets/img/grass.webp'
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  &__image-skeleton {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(90deg, #dfe5ec 25%, #edf2f7 37%, #dfe5ec 63%);
+    background-size: 400% 100%;
+    animation: hero-skeleton-loading 1.2s ease-in-out infinite;
   }
 
   &__grass {
@@ -74,7 +112,6 @@ import GrassImg from '~/assets/img/grass.webp'
     @media screen and (max-width: 570px) {
       gap: 0;
     }
-
   }
 
   &__title {
@@ -120,6 +157,16 @@ import GrassImg from '~/assets/img/grass.webp'
     @media screen and (max-width: 400px) {
       max-width: 80%;
     }
+  }
+}
+
+@keyframes hero-skeleton-loading {
+  0% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0 50%;
   }
 }
 </style>
