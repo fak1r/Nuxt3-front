@@ -10,6 +10,8 @@ import { useAuthStore } from '@/store/auth'
 
 definePageMeta({
   middleware: 'auth',
+  requiresAuth: true,
+  requiresAdmin: true,
 })
 
 const authStore = useAuthStore()

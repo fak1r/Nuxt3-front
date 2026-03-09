@@ -4,34 +4,29 @@ import { useModalStore } from '@/store/modal'
 export default defineNuxtRouteMiddleware(async (to) => {
   const authStore = useAuthStore()
   const modalStore = useModalStore()
+  const requiresAdmin = Boolean(to.meta.requiresAdmin)
+  const requiresAuth = Boolean(to.meta.requiresAuth || requiresAdmin)
+  const authRedirect = '/?auth'
 
-  if (to.path.startsWith('/admin')) {
-    if (!authStore.user?.is_admin) return navigateTo('/')
+  if (!requiresAuth) return
 
-    try {
-      const { $axios } = useNuxtApp()
-      const { data } = await $axios.get('/me', { withCredentials: true })
-
-      if (!data.is_admin) {
-        alert('Требуются права администратора')
-        return navigateTo('/')
-      }
-    } catch {
-      return navigateTo('/')
-    }
-  }
-
-  if (to.path === '/profile' && !authStore.accessToken) {
-    return navigateTo('/')
-  }
-
-  if (!authStore.accessToken && authStore.hasRefreshToken) {
+  if (!authStore.accessToken) {
     await authStore.refresh()
   }
 
-  if (!authStore.accessToken && to.meta.requiresAuth) {
-    modalStore.open('auth')
-    return abortNavigation()
+  if (!authStore.accessToken) return navigateTo(authRedirect)
+
+  if (requiresAdmin) {
+    if (!authStore.isAdmin) return navigateTo(authRedirect)
+
+    try {
+      const { $axios } = useNuxtApp()
+      const { data } = await $axios.get('/auth/me', { withCredentials: true })
+
+      if (!data.is_admin) return navigateTo(authRedirect)
+    } catch {
+      return navigateTo(authRedirect)
+    }
   }
 
   modalStore.close()

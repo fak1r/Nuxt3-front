@@ -22,14 +22,22 @@ export default defineNuxtPlugin(() => {
     (response) => response,
     async (error) => {
       const authStore = useAuthStore()
-      if (error.response?.status === 401) {
-        try {
-          await authStore.refresh()
-          error.config.headers.Authorization = `Bearer ${authStore.accessToken}`
+      const originalRequest = error.config as (typeof error.config & { _retry?: boolean })
 
-          return instance(error.config)
+      if (error.response?.status === 401 && !originalRequest?._retry) {
+        try {
+          originalRequest._retry = true
+          const refreshed = await authStore.refresh()
+
+          if (!refreshed || !authStore.accessToken) {
+            await authStore.logout()
+            return Promise.reject(error)
+          }
+
+          originalRequest.headers.Authorization = `Bearer ${authStore.accessToken}`
+          return instance(originalRequest)
         } catch {
-          authStore.logout()
+          await authStore.logout()
         }
       }
       return Promise.reject(error)

@@ -4,14 +4,14 @@ import { useNuxtApp } from '#app'
 import type { User } from '~/types/auth.types'
 
 export const useAuthStore = defineStore('auth', () => {
+  const apiBaseUrl = useRuntimeConfig().public.apiBaseUrl
   const accessToken = ref<string | null>(null)
   const user = ref<User | null>(null)
-  const isClient = import.meta.client
-  const hasRefreshToken = computed(() => {
-    return isClient ? localStorage.getItem('isAuthenticated') === 'true' : false
-  })
+  const isAuthenticated = computed(() => !!accessToken.value)
+  const isAdmin = computed(() => !!user.value?.is_admin)
+  let refreshPromise: Promise<boolean> | null = null
 
-  function setTokens(access: string) {
+  function setTokens(access: string | null) {
     accessToken.value = access
   }
 
@@ -19,16 +19,21 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = { ...userData }
   }
 
+  function clearAuthState() {
+    accessToken.value = null
+    user.value = null
+  }
+
   async function logout() {
     try {
-      const { $axios } = useNuxtApp()
-      await $axios.post(`/auth/logout`, {}, { withCredentials: true })
-
-      accessToken.value = null
-      user.value = null
-      localStorage.removeItem('isAuthenticated')
+      await fetch(`${apiBaseUrl}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      })
     } catch (error: any) {
       console.error('Ошибка при выходе:', error.message)
+    } finally {
+      clearAuthState()
     }
   }
 
@@ -36,7 +41,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const { $axios } = useNuxtApp()
       const { data } = await $axios.post(
-        `/auth/login`,
+        '/auth/login',
         {
           email,
           password,
@@ -46,7 +51,6 @@ export const useAuthStore = defineStore('auth', () => {
 
       setTokens(data.access_token)
       setUser(data.user)
-      localStorage.setItem('isAuthenticated', 'true')
 
       return true
     } catch (error: any) {
@@ -58,7 +62,7 @@ export const useAuthStore = defineStore('auth', () => {
   async function register(name: string, email: string, password: string) {
     try {
       const { $axios } = useNuxtApp()
-      await $axios.post(`/auth/register`, {
+      await $axios.post('/auth/register', {
         name,
         email,
         password,
@@ -72,33 +76,52 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function refresh() {
-    try {
-      if (!hasRefreshToken.value) {
-        return
-      }
-
-      const config = useRuntimeConfig()
-      const apiBaseUrl = config.public.apiBaseUrl
-      const response = await fetch(`${apiBaseUrl}/auth/refresh`, {
-        method: 'POST',
-        credentials: 'include',
-      })
-
-      if (!response.ok) {
-        throw new Error('Ошибка обновления токена')
-      }
-
-      const data = await response.json()
-
-      localStorage.setItem('isAuthenticated', 'true')
-      setTokens(data.access_token)
-      setUser(data.user)
-    } catch (error: any) {
-      console.error('Ошибка обновления токена:', error.message)
-      localStorage.removeItem('isAuthenticated')
-      logout()
+    if (refreshPromise) {
+      return refreshPromise
     }
+
+    refreshPromise = (async () => {
+      try {
+        const headers = import.meta.server ? useRequestHeaders(['cookie']) : undefined
+        const response = await fetch(`${apiBaseUrl}/auth/refresh`, {
+          method: 'POST',
+          credentials: 'include',
+          headers,
+        })
+
+        if (!response.ok) {
+          clearAuthState()
+          return false
+        }
+
+        const data = await response.json()
+
+        setTokens(data.access_token)
+        setUser(data.user)
+        return true
+      } catch (error: any) {
+        console.error('Ошибка обновления токена:', error.message)
+        clearAuthState()
+        return false
+      } finally {
+        refreshPromise = null
+      }
+    })()
+
+    return refreshPromise
   }
 
-  return { accessToken, user, hasRefreshToken, setTokens, setUser, logout, login, register, refresh }
+  return {
+    accessToken,
+    user,
+    isAuthenticated,
+    isAdmin,
+    setTokens,
+    setUser,
+    clearAuthState,
+    logout,
+    login,
+    register,
+    refresh,
+  }
 })

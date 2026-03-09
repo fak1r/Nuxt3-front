@@ -5,11 +5,13 @@
       <span>Имя: {{ authStore.user?.name }}</span>
       <span>Email: {{ authStore.user?.email }}</span>
     </div>
+
     <button type="button" aria-label="Выйти из аккаунта" class="profile__logout" @click="logout">
       <SvgIcons icon="logout" />
       <span>Выйти из аккаунта</span>
     </button>
-    <TheButton>Админка </TheButton>
+
+    <TheButton v-if="authStore.isAdmin" @click="navigateTo('/admin')">Админка</TheButton>
   </div>
 </template>
 
@@ -20,6 +22,7 @@ import TheButton from '~/components/UI/TheButton.vue'
 
 definePageMeta({
   middleware: 'auth',
+  requiresAuth: true,
 })
 
 const authStore = useAuthStore()
@@ -59,3 +62,4 @@ function logout() {
   }
 }
 </style>
+

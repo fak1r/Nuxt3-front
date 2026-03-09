@@ -1,5 +1,5 @@
 <template>
-  <dialog class="overlay" @click.self="closeModal">
+  <dialog class="overlay">
     <transition :name="animDirection">
       <form :key="formType" class="modal" @submit.prevent="submitForm">
         <button class="modal__close" aria-label="Закрыть" type="button" @click="closeModal">✕</button>
@@ -129,6 +129,7 @@ async function submitForm() {
 
   if (result) {
     closeModal()
+    await navigateTo('/profile')
   }
 }
 
