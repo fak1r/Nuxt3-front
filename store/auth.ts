@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { useNuxtApp } from '#app'
-import type { User } from '~/types/auth.types'
+import type { User, AuthActionResult } from '~/types/auth.types'
+import { logAuthError, mapAuthApiError } from '~/utils/map-auth-api-error'
 
 export const useAuthStore = defineStore('auth', () => {
   const apiBaseUrl = useRuntimeConfig().public.apiBaseUrl
@@ -30,14 +31,18 @@ export const useAuthStore = defineStore('auth', () => {
         method: 'POST',
         credentials: 'include',
       })
-    } catch (error: any) {
-      console.error('Ошибка при выходе:', error.message)
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('Ошибка при выходе:', error.message)
+      } else {
+        console.error('Ошибка при выходе:', error)
+      }
     } finally {
       clearAuthState()
     }
   }
 
-  async function login(email: string, password: string) {
+  async function login(email: string, password: string): Promise<AuthActionResult> {
     try {
       const { $axios } = useNuxtApp()
       const { data } = await $axios.post(
@@ -52,14 +57,14 @@ export const useAuthStore = defineStore('auth', () => {
       setTokens(data.access_token)
       setUser(data.user)
 
-      return true
-    } catch (error: any) {
-      console.error('Ошибка авторизации:', error.response?.data?.detail || error.message)
-      return false
+      return { ok: true }
+    } catch (error: unknown) {
+      logAuthError('Ошибка авторизации:', error)
+      return { ok: false, errors: mapAuthApiError(error) }
     }
   }
 
-  async function register(name: string, email: string, password: string) {
+  async function register(name: string, email: string, password: string): Promise<AuthActionResult> {
     try {
       const { $axios } = useNuxtApp()
       await $axios.post('/auth/register', {
@@ -69,9 +74,9 @@ export const useAuthStore = defineStore('auth', () => {
       })
 
       return await login(email, password)
-    } catch (error: any) {
-      console.error('Ошибка регистрации:', error.response?.data?.detail || error.message)
-      return false
+    } catch (error: unknown) {
+      logAuthError('Ошибка регистрации:', error)
+      return { ok: false, errors: mapAuthApiError(error) }
     }
   }
 
@@ -99,8 +104,12 @@ export const useAuthStore = defineStore('auth', () => {
         setTokens(data.access_token)
         setUser(data.user)
         return true
-      } catch (error: any) {
-        console.error('Ошибка обновления токена:', error.message)
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.error('Ошибка обновления токена:', error.message)
+        } else {
+          console.error('Ошибка обновления токена:', error)
+        }
         clearAuthState()
         return false
       } finally {

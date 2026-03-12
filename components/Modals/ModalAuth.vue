@@ -120,17 +120,17 @@ function clearError(field: keyof FormErrors) {
 async function submitForm() {
   if (!validateForm()) return
 
-  let result
-  if (isFormTypeRegister.value) {
-    result = await authStore.register(name.value, email.value, password.value)
-  } else {
-    result = await authStore.login(email.value, password.value)
+  const result = isFormTypeRegister.value
+    ? await authStore.register(name.value, email.value, password.value)
+    : await authStore.login(email.value, password.value)
+
+  if (!result.ok) {
+    errors.value = { ...(result.errors || {}) }
+    return
   }
 
-  if (result) {
-    closeModal()
-    await navigateTo('/profile')
-  }
+  closeModal()
+  await navigateTo('/profile')
 }
 
 function closeModal() {

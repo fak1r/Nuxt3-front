@@ -21,3 +21,8 @@ export type FormErrors = {
   name?: string
   phone?: string
 }
+
+export type AuthActionResult = {
+  ok: boolean
+  errors?: FormErrors
+}
