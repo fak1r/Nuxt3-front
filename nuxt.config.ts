@@ -1,11 +1,11 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-import getSitemapRoutes from './scripts/get-sitemap-routes'
 import appHead from './config/head'
 import { getPrerenderRoutes } from './utils/get-prerender-routes'
 
 const fallbackSiteUrl = 'http://localhost:3000'
 const apiBaseUrl = process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api'
 const rawSiteUrl = process.env.NUXT_PUBLIC_SITE_URL || fallbackSiteUrl
+const protectedShellRoutes = ['/profile', '/admin']
 
 function normalizeSiteUrl(url: string): string {
   try {
@@ -24,7 +24,7 @@ export default defineNuxtConfig({
   ssr: true,
   nitro: {
     prerender: {
-      routes: getPrerenderRoutes(),
+      routes: [...new Set([...getPrerenderRoutes(), ...protectedShellRoutes])],
     },
     compressPublicAssets: true,
   },
@@ -39,7 +39,6 @@ export default defineNuxtConfig({
     name: 'Зам Пол - магазин напольных покрытий',
     gzip: true,
     exclude: ['/admin', '/profile', '/cart', '/404'],
-    urls: () => getSitemapRoutes(),
     autoLastmod: true,
     discoverImages: true,
     defaults: {

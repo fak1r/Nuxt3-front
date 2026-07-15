@@ -1,0 +1,85 @@
+import { useAuthStore } from '~/store/auth'
+import { getSafeRouteRedirect } from '~/utils/get-safe-route-redirect'
+
+interface ProtectedPageOptions {
+  requiresAdmin?: boolean
+}
+
+export function useProtectedPage(options: ProtectedPageOptions = {}) {
+  const authStore = useAuthStore()
+  const route = useRoute()
+  const { $axios } = useNuxtApp()
+
+  const isCheckingAccess = ref(true)
+  const hasAccess = ref(false)
+
+  const redirectTarget = computed(() => getSafeRouteRedirect(route.fullPath, '/profile'))
+
+  async function redirectGuestToAuth() {
+    await navigateTo(
+      {
+        path: '/',
+        query: {
+          auth: '1',
+          redirect: redirectTarget.value,
+        },
+      },
+      { replace: true },
+    )
+  }
+
+  async function verifyAdminAccess() {
+    if (authStore.isAdmin) {
+      return true
+    }
+
+    try {
+      const { data } = await $axios.get('/auth/me', { withCredentials: true })
+
+      if (!data?.is_admin) {
+        return false
+      }
+
+      authStore.setUser(data)
+      return true
+    } catch {
+      return false
+    }
+  }
+
+  async function checkAccess() {
+    if (!authStore.accessToken) {
+      const refreshed = await authStore.refresh()
+
+      if (!refreshed || !authStore.accessToken) {
+        hasAccess.value = false
+        isCheckingAccess.value = false
+        await redirectGuestToAuth()
+        return
+      }
+    }
+
+    if (options.requiresAdmin) {
+      const isAdminAllowed = await verifyAdminAccess()
+
+      if (!isAdminAllowed) {
+        hasAccess.value = false
+        isCheckingAccess.value = false
+        await navigateTo('/', { replace: true })
+        return
+      }
+    }
+
+    hasAccess.value = true
+    isCheckingAccess.value = false
+  }
+
+  onMounted(async function initProtectedPage() {
+    await checkAccess()
+  })
+
+  return {
+    isCheckingAccess,
+    canRenderPage: computed(() => hasAccess.value && !isCheckingAccess.value),
+  }
+}

@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <div v-if="isCheckingAccess" class="admin admin--loading">Проверяем доступ...</div>
+  <div v-else-if="canRenderPage">
     <h1 class="admin">Админка</h1>
     <p>Добро пожаловать, {{ authStore.user?.name }}</p>
   </div>
@@ -8,11 +9,14 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/store/auth'
 
-definePageMeta({
-  middleware: 'auth',
-  requiresAuth: true,
-  requiresAdmin: true,
-})
-
 const authStore = useAuthStore()
+const { isCheckingAccess, canRenderPage } = useProtectedPage({ requiresAdmin: true })
 </script>
+
+<style scoped lang="scss">
+.admin {
+  &--loading {
+    text-align: center;
+  }
+}
+</style>

@@ -58,9 +58,11 @@ import { useModalStore } from '~/store/modal'
 import TheInput from '~/components/UI/TheInput.vue'
 import TheButton from '~/components/UI/TheButton.vue'
 import type { FormType, FormVariants, FormErrors } from '~/types/auth.types'
+import { getSafeRouteRedirect } from '~/utils/get-safe-route-redirect'
 
 const authStore = useAuthStore()
 const modalStore = useModalStore()
+const route = useRoute()
 
 const email = ref('')
 const password = ref('')
@@ -90,10 +92,11 @@ const isEmailValid = computed(() => /\S+@\S+\.\S+/.test(email.value))
 const isPasswordValid = computed(() => password.value.length >= 6)
 const isNameValid = computed(() => name.value.length > 1)
 const isFormTypeRegister = computed(() => formType.value === 'register')
+const redirectAfterAuth = computed(() => getSafeRouteRedirect(route.query.redirect, '/profile'))
 
 onBeforeMount(() => {
   if (authStore.accessToken) {
-    navigateTo('/')
+    navigateTo(redirectAfterAuth.value, { replace: true })
   }
 })
 
@@ -129,12 +132,29 @@ async function submitForm() {
     return
   }
 
-  closeModal()
-  await navigateTo('/profile')
+  modalStore.close()
+  await navigateTo(redirectAfterAuth.value, { replace: true })
 }
 
-function closeModal() {
+async function closeModal() {
   modalStore.close()
+
+  if (!('auth' in route.query)) {
+    return
+  }
+
+  const nextQuery = { ...route.query }
+
+  Reflect.deleteProperty(nextQuery, 'auth')
+  Reflect.deleteProperty(nextQuery, 'redirect')
+
+  await navigateTo(
+    {
+      path: route.path,
+      query: nextQuery,
+    },
+    { replace: true },
+  )
 }
 </script>
 

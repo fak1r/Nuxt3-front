@@ -5,11 +5,11 @@
         <TheHeader />
       </div>
     </header>
-    <main class="main-container">
+    <div class="main-container">
       <div class="main-container__body">
         <slot />
       </div>
-    </main>
+    </div>
     <div class="mobile-nav-container">
       <MobileNav />
     </div>
@@ -38,8 +38,6 @@ const { closeSearchRes, openSearchRes } = useProductSearch()
 const isHeaderHidden = ref(false)
 let lastScrollY = 0
 
-await categoriesStore.init()
-
 function onScroll() {
   if (!isMobile.value) return
 
@@ -58,7 +56,8 @@ function onScroll() {
 
 const handleScroll = throttle(onScroll, 200)
 
-onMounted(() => {
+onMounted(async () => {
+  await categoriesStore.init()
   window.addEventListener('scroll', handleScroll, { passive: true })
 })
 

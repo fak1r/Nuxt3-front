@@ -1,5 +1,6 @@
 <template>
-  <div class="profile">
+  <div v-if="isCheckingAccess" class="profile profile--loading">Проверяем доступ...</div>
+  <div v-else-if="canRenderPage" class="profile">
     <h1>Профиль</h1>
     <div class="profile__info">
       <span>Имя: {{ authStore.user?.name }}</span>
@@ -11,7 +12,11 @@
       <span>Выйти из аккаунта</span>
     </button>
 
-    <TheButton v-if="authStore.isAdmin" @click="navigateTo('/admin')">Админка</TheButton>
+    <ClientOnly>
+      <TheButton v-if="authStore.isAuthenticated && authStore.isAdmin" @click="navigateTo('/admin')"
+        >Админка</TheButton
+      >
+    </ClientOnly>
   </div>
 </template>
 
@@ -20,12 +25,8 @@ import { useAuthStore } from '~/store/auth'
 import SvgIcons from '~/components/Svg/SvgIcons.vue'
 import TheButton from '~/components/UI/TheButton.vue'
 
-definePageMeta({
-  middleware: 'auth',
-  requiresAuth: true,
-})
-
 const authStore = useAuthStore()
+const { isCheckingAccess, canRenderPage } = useProtectedPage()
 
 function logout() {
   authStore.logout()
@@ -38,6 +39,10 @@ function logout() {
   display: flex;
   flex-direction: column;
   gap: 16px;
+
+  &--loading {
+    text-align: center;
+  }
 
   &__info {
     display: flex;
@@ -62,4 +67,3 @@ function logout() {
   }
 }
 </style>
-

@@ -3,7 +3,11 @@
     <h1>Магазин напольных покрытий «Зам Пол»</h1>
     <MainPageHero />
     <h4>Популярные товары</h4>
-    <ProductList class="main-page__products" :products="popularProducts" />
+    <ProductList
+      class="main-page__products"
+      :products="popularProducts"
+      :is-skeleton-visible="isPopularProductsLoading"
+    />
     <div class="main-page__catalog-btn">
       <TheButton variant="Filled" size="lg" @click="goToCatalog">Смотреть каталог</TheButton>
     </div>
@@ -21,12 +25,14 @@ const productsStore = useProductsStore()
 
 const { fetchPopularProducts } = productsStore
 
-const { data } = await useAsyncData<Product[]>('popular-products', () => fetchPopularProducts(), {
-  server: true,
+const { data, status } = useAsyncData<Product[]>('popular-products', () => fetchPopularProducts(), {
+  server: false,
   lazy: false,
+  default: () => [],
 })
 
-const popularProducts = data.value || []
+const popularProducts = computed(() => data.value || [])
+const isPopularProductsLoading = computed(() => ['idle', 'pending'].includes(status.value))
 
 function goToCatalog() {
   navigateTo('/catalog')

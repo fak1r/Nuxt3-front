@@ -1,17 +1,28 @@
 import { useAuthStore } from '@/store/auth'
 import { useModalStore } from '@/store/modal'
+import { getSafeRouteRedirect } from '~/utils/get-safe-route-redirect'
 
 export default defineNuxtRouteMiddleware(async (to) => {
   const authStore = useAuthStore()
   const modalStore = useModalStore()
   const requiresAdmin = Boolean(to.meta.requiresAdmin)
   const requiresAuth = Boolean(to.meta.requiresAuth || requiresAdmin)
-  const authRedirect = '/?auth'
+  const authRedirect = {
+    path: '/',
+    query: {
+      auth: '1',
+      redirect: getSafeRouteRedirect(to.fullPath, '/'),
+    },
+  }
 
   if (!requiresAuth) return
 
   if (!authStore.accessToken) {
-    await authStore.refresh()
+    const refreshed = await authStore.refresh()
+
+    if (!refreshed || !authStore.accessToken) {
+      return navigateTo(authRedirect)
+    }
   }
 
   if (!authStore.accessToken) return navigateTo(authRedirect)
