@@ -4,19 +4,23 @@ import axios from 'axios'
 import type { Producer } from '~/types/categories.types'
 
 const API_BASE = process.env.NUXT_PUBLIC_API_BASE_URL || 'https://zampol.ru/api'
+const api = axios.create({
+  baseURL: API_BASE,
+  proxy: false,
+})
 
 async function getCategories() {
-  const { data } = await axios.get(`${API_BASE}/products/categories`)
+  const { data } = await api.get('/products/categories')
   return data
 }
 
 async function getProducers() {
-  const { data } = await axios.get(`${API_BASE}/products/producers`)
+  const { data } = await api.get('/products/producers')
   return data
 }
 
 async function getProducts(categorySlug: string, producerSlug: string) {
-  const { data } = await axios.get(`${API_BASE}/products/${categorySlug}/${producerSlug}`, {
+  const { data } = await api.get(`/products/${categorySlug}/${producerSlug}`, {
     params: {
       page: 1,
       limit: 9999,

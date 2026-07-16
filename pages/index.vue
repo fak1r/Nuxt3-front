@@ -25,8 +25,8 @@ const productsStore = useProductsStore()
 
 const { fetchPopularProducts } = productsStore
 
-const { data, status } = useAsyncData<Product[]>('popular-products', () => fetchPopularProducts(), {
-  server: false,
+const { data, status } = await useAsyncData<Product[]>('popular-products', () => fetchPopularProducts(), {
+  server: true,
   lazy: false,
   default: () => [],
 })
