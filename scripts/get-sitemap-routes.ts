@@ -40,7 +40,7 @@ function toSitemapUrls(paths: string[]): SitemapUrl[] {
     .map((loc) => ({ loc }))
 }
 
-export default async function getSitemapRoutes(): Promise<SitemapUrl[]> {
+export default function getSitemapRoutes(): SitemapUrl[] {
   const generatedRoutes = readGeneratedRoutes()
   return toSitemapUrls(generatedRoutes)
 }

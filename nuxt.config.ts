@@ -1,4 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import getSitemapRoutes from './scripts/get-sitemap-routes'
 import appHead from './config/head'
 import { getPrerenderRoutes } from './utils/get-prerender-routes'
 
@@ -39,6 +40,7 @@ export default defineNuxtConfig({
     name: 'Зам Пол - магазин напольных покрытий',
     gzip: true,
     exclude: ['/admin', '/profile', '/cart', '/404'],
+    urls: getSitemapRoutes(),
     autoLastmod: true,
     discoverImages: true,
     defaults: {
