@@ -92,11 +92,19 @@ const isEmailValid = computed(() => /\S+@\S+\.\S+/.test(email.value))
 const isPasswordValid = computed(() => password.value.length >= 6)
 const isNameValid = computed(() => name.value.length > 1)
 const isFormTypeRegister = computed(() => formType.value === 'register')
-const redirectAfterAuth = computed(() => getSafeRouteRedirect(route.query.redirect, '/profile'))
+const redirectAfterAuth = computed(() => {
+  if (modalStore.authRedirectPath) {
+    return modalStore.authRedirectPath
+  }
+
+  return getSafeRouteRedirect(route.query.redirect, '/profile')
+})
 
 onBeforeMount(() => {
   if (authStore.accessToken) {
-    navigateTo(redirectAfterAuth.value, { replace: true })
+    const nextRoute = redirectAfterAuth.value
+    modalStore.close()
+    navigateTo(nextRoute, { replace: true })
   }
 })
 
@@ -132,8 +140,9 @@ async function submitForm() {
     return
   }
 
+  const nextRoute = redirectAfterAuth.value
   modalStore.close()
-  await navigateTo(redirectAfterAuth.value, { replace: true })
+  await navigateTo(nextRoute, { replace: true })
 }
 
 async function closeModal() {

@@ -6,6 +6,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   if (!('auth' in to.query)) return
 
   const authStore = useAuthStore()
+  const modalStore = useModalStore()
   const redirectTarget = getSafeRouteRedirect(to.query.redirect, '/')
 
   if (!authStore.accessToken) {
@@ -13,10 +14,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
 
   if (authStore.accessToken) {
+    modalStore.close()
     return navigateTo(redirectTarget, { replace: true })
   }
 
-  const modalStore = useModalStore()
   modalStore.close()
-  modalStore.open('auth')
+  modalStore.openAuth(redirectTarget)
 })

@@ -1,4 +1,5 @@
 import { useAuthStore } from '~/store/auth'
+import { useModalStore } from '~/store/modal'
 import { getSafeRouteRedirect } from '~/utils/get-safe-route-redirect'
 
 interface ProtectedPageOptions {
@@ -7,6 +8,7 @@ interface ProtectedPageOptions {
 
 export function useProtectedPage(options: ProtectedPageOptions = {}) {
   const authStore = useAuthStore()
+  const modalStore = useModalStore()
   const route = useRoute()
   const { $axios } = useNuxtApp()
 
@@ -16,16 +18,8 @@ export function useProtectedPage(options: ProtectedPageOptions = {}) {
   const redirectTarget = computed(() => getSafeRouteRedirect(route.fullPath, '/profile'))
 
   async function redirectGuestToAuth() {
-    await navigateTo(
-      {
-        path: '/',
-        query: {
-          auth: '1',
-          redirect: redirectTarget.value,
-        },
-      },
-      { replace: true },
-    )
+    modalStore.openAuth(redirectTarget.value)
+    await navigateTo('/', { replace: true })
   }
 
   async function verifyAdminAccess() {
@@ -52,8 +46,6 @@ export function useProtectedPage(options: ProtectedPageOptions = {}) {
       const refreshed = await authStore.refresh()
 
       if (!refreshed || !authStore.accessToken) {
-        hasAccess.value = false
-        isCheckingAccess.value = false
         await redirectGuestToAuth()
         return
       }
@@ -63,9 +55,12 @@ export function useProtectedPage(options: ProtectedPageOptions = {}) {
       const isAdminAllowed = await verifyAdminAccess()
 
       if (!isAdminAllowed) {
-        hasAccess.value = false
-        isCheckingAccess.value = false
-        await navigateTo('/', { replace: true })
+        if (!authStore.isAuthenticated) {
+          await redirectGuestToAuth()
+          return
+        }
+
+        await navigateTo('/profile', { replace: true })
         return
       }
     }
