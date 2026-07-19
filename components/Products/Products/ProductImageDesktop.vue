@@ -1,32 +1,26 @@
 <template>
   <div ref="imageContainer" class="image-container" @mousemove="handleMouseMove" @mouseleave="resetImage">
     <ClientOnly>
-      <ImgSkeleton v-if="!isSlideLoaded(activeIndex)" />
+      <ImgSkeleton v-show="!isAllImgsLoaded" />
     </ClientOnly>
     <template v-for="(img, index) in product.img_mini" :key="index">
       <img
         v-if="!img.includes('/img/no-image.png')"
-        :data-index="index"
-        :class="['image-container__img', { active: index === activeIndex, 'image-container__img--hidden': !isSlideLoaded(index) }]"
-        v-show="index === activeIndex"
+        v-show="isImgVisible && index === activeIndex"
         :src="img"
-        :alt="product.name"
-        :loading="index === 0 ? 'eager' : 'lazy'"
-        decoding="async"
-        @error="onImgError(index, $event)"
-        @load="onImageLoad(index)"
+        :alt="`${product.name} – миниатюра ${index + 1}`"
+        :class="['image-container__img', { active: index === activeIndex }]"
+        @error="onImgError"
+        @load="onImageLoad"
       />
       <ClientOnly v-else>
         <img
-          :data-index="index"
-          :class="['image-container__img', { active: index === activeIndex, 'image-container__img--hidden': !isSlideLoaded(index) }]"
-          v-show="index === activeIndex"
+          v-show="isImgVisible && index === activeIndex"
           :src="img"
-          alt="No image"
-          loading="eager"
-          decoding="async"
-          @error="onImgError(index, $event)"
-          @load="onImageLoad(index)"
+          alt="Фото отсутствует"
+          :class="['image-container__img', { active: index === activeIndex }]"
+          @error="onImgError"
+          @load="onImageLoad"
         />
       </ClientOnly>
     </template>
@@ -48,27 +42,36 @@ const { product } = defineProps<Props>()
 
 const imageContainer = ref<HTMLElement | null>(null)
 const activeIndex = ref(0)
-const loadedSlides = ref<Record<number, boolean>>({})
 
 const hasImgs = computed(() => product.img_mini.length > 1)
+const isAllImgsLoaded = ref(false)
+const totalImages = product.img_mini.length
+const imgsLoaded = ref(0)
 
 onMounted(async () => {
   if (!imageContainer.value) return
 
   await nextTick()
 
-  const images = imageContainer.value.querySelectorAll('img')
+  const images = imageContainer.value?.querySelectorAll?.('img')
+  if (!images) return
+
+  let loadedCount = 0
 
   images.forEach((img) => {
-    if (!img.complete) return
-
-    const index = Number(img.getAttribute('data-index'))
-
-    if (Number.isFinite(index)) {
-      loadedSlides.value[index] = true
+    if (img.complete) {
+      loadedCount++
     }
   })
+
+  imgsLoaded.value += loadedCount
+
+  if (imgsLoaded.value >= totalImages) {
+    isAllImgsLoaded.value = true
+  }
 })
+
+const isImgVisible = computed(() => isAllImgsLoaded.value)
 
 function handleMouseMove(event: MouseEvent) {
   if (!imageContainer.value || !product.img_mini.length) return
@@ -77,33 +80,26 @@ function handleMouseMove(event: MouseEvent) {
   const offsetX = event.clientX - rect.left
   const newIndex = Math.floor((offsetX / rect.width) * product.img_mini.length)
   activeIndex.value = Math.min(newIndex, product.img_mini.length - 1)
-
-  if (activeIndex.value < 0) {
-    activeIndex.value = 0
-  }
+  if (activeIndex.value === -1) activeIndex.value = 0
 }
 
 function resetImage() {
   activeIndex.value = 0
 }
 
-function isSlideLoaded(index: number) {
-  return !!loadedSlides.value[index]
-}
-
-function onImgError(index: number, event: Event) {
+function onImgError(event: Event) {
   const target = event.target as HTMLImageElement
-
-  if (target.src.includes('/img/no-image.png')) {
-    loadedSlides.value[index] = true
-    return
-  }
-
   target.src = '/img/no-image.png'
 }
 
-function onImageLoad(index: number) {
-  loadedSlides.value[index] = true
+function onImageLoad(event: Event) {
+  const target = event.target as HTMLImageElement
+  if (target.complete) {
+    imgsLoaded.value++
+    if (imgsLoaded.value >= totalImages) {
+      isAllImgsLoaded.value = true
+    }
+  }
 }
 </script>
 
@@ -122,14 +118,6 @@ function onImageLoad(index: number) {
     width: 100%;
     height: 100%;
     object-fit: cover;
-  }
-
-  &__img {
-    transition: opacity 0.2s ease;
-
-    &--hidden {
-      opacity: 0;
-    }
   }
 
   &__pagination {

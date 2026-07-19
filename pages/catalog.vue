@@ -4,13 +4,16 @@
     <div class="catalog__cards">
       <ul class="catalog__list">
         <li v-for="category in categories" :key="category.id" class="catalog__item">
-          <NuxtLink :to="normalizeInternalPath(`/${category.slug}`)" class="catalog__link" :aria-label="`Перейти в категорию ${category.name}`">
-            <ImgSkeleton v-if="!isImgLoaded(category.id)" />
+          <NuxtLink
+            :to="normalizeInternalPath(`/${category.slug}`)"
+            class="catalog__link"
+            :aria-label="`Перейти в категорию ${category.name}`"
+          >
             <img
-              v-show="isImgLoaded(category.id)"
               :src="imgs[category.id - 1]"
               :alt="category.name"
-              @load="onImageLoad(category.id)"
+              loading="eager"
+              decoding="async"
             />
             <h2 class="catalog__category">
               {{ category.name }}
@@ -26,7 +29,6 @@
 import LinoleumImg from '~/assets/img/linoleum.png'
 import LaminatImg from '~/assets/img/laminat.png'
 import ParketImg from '~/assets/img/parket.png'
-import ImgSkeleton from '~/components/Products/ImgSkeleton.vue'
 import type { Category } from '~/types/categories.types'
 import { fetchCatalogCategories } from '~/utils/catalog-api'
 import { normalizeInternalPath } from '~/utils/get-safe-route-redirect'
@@ -38,23 +40,6 @@ const { data: categoriesData } = await useAsyncData('catalog-categories', () =>
 
 const categories = computed(() => (categoriesData.value ?? []) as Category[])
 const imgs = [LaminatImg, LinoleumImg, ParketImg]
-const imageLoadingStatus = ref<boolean[]>([])
-
-watch(
-  categories,
-  (newCategories) => {
-    imageLoadingStatus.value = newCategories.map(() => true)
-  },
-  { immediate: true },
-)
-
-function onImageLoad(id: number) {
-  imageLoadingStatus.value[id - 1] = false
-}
-
-function isImgLoaded(id: number): boolean {
-  return !imageLoadingStatus.value[id - 1]
-}
 
 useHead({
   title: 'Каталог | Зам Пол',
@@ -105,7 +90,7 @@ useHead({
 
     img {
       width: 100%;
-      height: 100%;
+      aspect-ratio: 1 / 1;
       object-fit: cover;
       border-radius: 4px;
     }
