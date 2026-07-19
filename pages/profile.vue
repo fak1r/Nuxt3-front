@@ -13,7 +13,7 @@
     </button>
 
     <ClientOnly>
-      <TheButton v-if="authStore.isAuthenticated && authStore.isAdmin" @click="navigateTo('/admin')"
+      <TheButton v-if="authStore.isAuthenticated && authStore.isAdmin" @click="navigateTo(normalizeInternalPath('/admin'))"
         >Админка</TheButton
       >
     </ClientOnly>
@@ -24,9 +24,15 @@
 import { useAuthStore } from '~/store/auth'
 import SvgIcons from '~/components/Svg/SvgIcons.vue'
 import TheButton from '~/components/UI/TheButton.vue'
+import { normalizeInternalPath } from '~/utils/get-safe-route-redirect'
 
 const authStore = useAuthStore()
 const { isCheckingAccess, canRenderPage } = useProtectedPage()
+
+useHead({
+  title: 'Профиль | Зам Пол',
+  meta: [{ name: 'robots', content: 'noindex, nofollow' }],
+})
 
 function logout() {
   authStore.logout()

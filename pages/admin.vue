@@ -11,6 +11,11 @@ import { useAuthStore } from '@/store/auth'
 
 const authStore = useAuthStore()
 const { isCheckingAccess, canRenderPage } = useProtectedPage({ requiresAdmin: true })
+
+useHead({
+  title: 'Админка | Зам Пол',
+  meta: [{ name: 'robots', content: 'noindex, nofollow' }],
+})
 </script>
 
 <style scoped lang="scss">

@@ -6,7 +6,6 @@ import { getPrerenderRoutes } from './utils/get-prerender-routes'
 const fallbackSiteUrl = 'http://localhost:3000'
 const apiBaseUrl = process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api'
 const rawSiteUrl = process.env.NUXT_PUBLIC_SITE_URL || fallbackSiteUrl
-const protectedShellRoutes = ['/profile', '/admin']
 
 function normalizeSiteUrl(url: string): string {
   try {
@@ -25,7 +24,8 @@ export default defineNuxtConfig({
   ssr: true,
   nitro: {
     prerender: {
-      routes: [...new Set([...getPrerenderRoutes(), ...protectedShellRoutes])],
+      crawlLinks: false,
+      routes: getPrerenderRoutes(),
     },
     compressPublicAssets: true,
   },
@@ -40,12 +40,20 @@ export default defineNuxtConfig({
     name: 'Зам Пол - магазин напольных покрытий',
     gzip: true,
     exclude: ['/admin', '/profile', '/cart', '/404'],
+    excludeAppSources: ['nuxt:pages', 'nuxt:route-rules', 'nuxt:prerender'],
     urls: getSitemapRoutes(),
     autoLastmod: true,
     discoverImages: true,
     defaults: {
       changefreq: 'weekly',
       priority: 0.7,
+    },
+  },
+  experimental: {
+    defaults: {
+      nuxtLink: {
+        trailingSlash: 'remove',
+      },
     },
   },
   devtools: { enabled: false },

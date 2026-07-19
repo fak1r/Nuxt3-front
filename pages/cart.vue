@@ -97,6 +97,11 @@ const hasProductsInCart = computed(() => cartStore.items.length !== 0)
 const cartReady = ref(false)
 const removeProductId = ref(0)
 
+useHead({
+  title: 'Корзина | Зам Пол',
+  meta: [{ name: 'robots', content: 'noindex, nofollow' }],
+})
+
 watch(
   quantities,
   (newVal) => {

@@ -46,7 +46,7 @@ export default {
     },
     {
       property: 'og:image',
-      content: `${siteUrl}/static/og-image.jpg`,
+      content: `${siteUrl}/static/og-image.png`,
     },
   ],
 }

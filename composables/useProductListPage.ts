@@ -2,6 +2,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useIsMobile } from '~/composables/useIsMobile'
 import { useProductsStore } from '~/store/products'
 import type { ProductListState, ProductFilters, Product } from '~/types/products.types'
+import { normalizeInternalPath } from '~/utils/get-safe-route-redirect'
 
 interface UseProductListPageOptions {
   titlePrefix: string
@@ -9,6 +10,8 @@ interface UseProductListPageOptions {
   filters: Ref<ProductFilters>
   slugListRef: Ref<{ slug: string }[]>
   slugToCheck: string
+  initialProducts?: Product[]
+  initialLimit?: number
 }
 
 export function useProductListPage({
@@ -17,16 +20,18 @@ export function useProductListPage({
   filters,
   slugListRef,
   slugToCheck,
+  initialProducts = [],
+  initialLimit = 30,
 }: UseProductListPageOptions) {
   const router = useRouter()
   const route = useRoute()
   const { isMobile } = useIsMobile()
-  const limit = ref(30)
+  const limit = ref(initialLimit)
 
-  const products = ref<Product[]>([])
-  const page = ref(1)
-  const hasMore = ref(true)
-  const firstLoading = ref(true)
+  const products = ref<Product[]>([...initialProducts])
+  const page = ref(initialProducts.length > 0 ? Math.floor(initialProducts.length / initialLimit) + 1 : 1)
+  const hasMore = ref(initialProducts.length >= initialLimit)
+  const firstLoading = ref(initialProducts.length === 0)
   const productsAreLoading = ref(false)
 
   const productsStore = useProductsStore()
@@ -78,13 +83,24 @@ export function useProductListPage({
   watchEffect(() => {
     if (Array.isArray(slugListRef.value) && slugListRef.value.length > 0) {
       const exists = slugListRef.value.some((el) => el.slug === slugToCheck)
-      if (!exists) router.push('/404')
+      if (!exists) router.push(normalizeInternalPath('/404'))
     }
   })
 
   onMounted(() => {
-    limit.value = isMobile.value ? 10 : 30
-    loadMoreProducts()
+    const resolvedLimit = isMobile.value ? 10 : initialLimit
+
+    if (limit.value !== resolvedLimit) {
+      limit.value = resolvedLimit
+
+      if (products.value.length > 0) {
+        page.value = Math.floor(products.value.length / limit.value) + 1
+      }
+    }
+
+    if (products.value.length === 0) {
+      loadMoreProducts()
+    }
   })
 
   async function loadMoreProducts() {

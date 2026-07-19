@@ -75,6 +75,7 @@ import TheButton from '~/components/UI/TheButton.vue'
 import TheQuantityInput from '~/components/UI/TheQuantityInput.vue'
 import ModalPhone from '~/components/Modals/ModalPhone.vue'
 import ModalOrderFinal from '~/components/Modals/ModalOrderFinal.vue'
+import { normalizeInternalPath } from '~/utils/get-safe-route-redirect'
 
 interface Props {
   product: Product
@@ -125,7 +126,7 @@ async function buyNow() {
 }
 
 function goToCart() {
-  navigateTo('/cart')
+  navigateTo(normalizeInternalPath('/cart'))
 }
 </script>
 

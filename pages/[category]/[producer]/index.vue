@@ -3,13 +3,17 @@
 </template>
 
 <script setup lang="ts">
+import type { Category, Producer } from '~/types/categories.types'
 import type { ProductFilters } from '~/types/products.types'
-import { useCategoriesStore } from '~/store/categories'
+import { useProductsStore } from '~/store/products'
 import ProductListPage from '~/components/Products/Products/ProductListPage.vue'
+import { fetchCatalogCategories, fetchCatalogProducers } from '~/utils/catalog-api'
 
 const route = useRoute()
+const config = useRuntimeConfig()
 const categorySlug = route.params.category as string
 const producerSlug = route.params.producer as string
+const initialLimit = 30
 
 const filters = ref<ProductFilters>({
   category_slug: categorySlug,
@@ -23,11 +27,37 @@ if (parsedSort) {
   filters.value.order = parsedSort.order
 }
 
-const { producers } = storeToRefs(useCategoriesStore())
+const { data: categoriesData } = await useAsyncData('catalog-categories', () =>
+  fetchCatalogCategories(config.public.apiBaseUrl),
+)
+const { data: producersData } = await useAsyncData('catalog-producers', () =>
+  fetchCatalogProducers(config.public.apiBaseUrl),
+)
 
-const producerName = computed(() => {
-  return Array.isArray(producers.value) ? (producers.value.find((p) => p.slug === producerSlug)?.name ?? '') : ''
+const categories = computed(() => (categoriesData.value ?? []) as Category[])
+const producers = computed(() => (producersData.value ?? []) as Producer[])
+const category = computed(() => categories.value.find((item) => item.slug === categorySlug) ?? null)
+const producer = computed(() => {
+  if (!category.value) return null
+
+  return producers.value.find((item) => item.slug === producerSlug && item.category_id === category.value.id) ?? null
 })
+const producerName = computed(() => producer.value?.name ?? '')
+
+if (!category.value || !producer.value) {
+  throw createError({ statusCode: 404, statusMessage: 'Производитель не найден' })
+}
+
+const { fetchProducts } = useProductsStore()
+const { data: initialProductsData } = await useAsyncData(`producer-products-${categorySlug}-${producerSlug}`, () =>
+  fetchProducts({
+    ...filters.value,
+    page: 1,
+    limit: initialLimit,
+  }),
+)
+
+const initialProducts = initialProductsData.value?.products ?? []
 
 const { productPageState, loadMoreProducts } = useProductListPage({
   titlePrefix: 'Производитель',
@@ -35,7 +65,27 @@ const { productPageState, loadMoreProducts } = useProductListPage({
   filters,
   slugListRef: producers,
   slugToCheck: producerSlug,
+  initialProducts,
+  initialLimit,
 })
+
+useHead(() => ({
+  title: `${producerName.value} | Зам Пол`,
+  meta: [
+    {
+      name: 'description',
+      content: `${producerName.value} в магазине Зам Пол. Напольные покрытия в наличии и под заказ в Коломне.`,
+    },
+    {
+      property: 'og:title',
+      content: `${producerName.value} | Зам Пол`,
+    },
+    {
+      property: 'og:description',
+      content: `${producerName.value} в магазине Зам Пол. Напольные покрытия в наличии и под заказ в Коломне.`,
+    },
+  ],
+}))
 
 function onSortUpdate(sort: { sort_by: string; order: 'asc' | 'desc' } | null) {
   if (sort) {

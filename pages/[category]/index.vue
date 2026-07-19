@@ -3,12 +3,16 @@
 </template>
 
 <script setup lang="ts">
+import type { Category } from '~/types/categories.types'
 import type { ProductFilters } from '~/types/products.types'
-import { useCategoriesStore } from '~/store/categories'
+import { useProductsStore } from '~/store/products'
 import ProductListPage from '~/components/Products/Products/ProductListPage.vue'
+import { fetchCatalogCategories } from '~/utils/catalog-api'
 
 const route = useRoute()
+const config = useRuntimeConfig()
 const categorySlug = route.params.category as string
+const initialLimit = 30
 
 const filters = ref<ProductFilters>({
   category_slug: categorySlug,
@@ -21,11 +25,28 @@ if (parsedSort) {
   filters.value.order = parsedSort.order
 }
 
-const { categories } = storeToRefs(useCategoriesStore())
+const { data: categoriesData } = await useAsyncData('catalog-categories', () =>
+  fetchCatalogCategories(config.public.apiBaseUrl),
+)
 
-const categoryName = computed(() => {
-  return Array.isArray(categories.value) ? (categories.value.find((p) => p.slug === categorySlug)?.name ?? '') : ''
-})
+const categories = computed(() => (categoriesData.value ?? []) as Category[])
+const category = computed(() => categories.value.find((item) => item.slug === categorySlug) ?? null)
+const categoryName = computed(() => category.value?.name ?? '')
+
+if (!category.value) {
+  throw createError({ statusCode: 404, statusMessage: 'Категория не найдена' })
+}
+
+const { fetchProducts } = useProductsStore()
+const { data: initialProductsData } = await useAsyncData(`category-products-${categorySlug}`, () =>
+  fetchProducts({
+    ...filters.value,
+    page: 1,
+    limit: initialLimit,
+  }),
+)
+
+const initialProducts = initialProductsData.value?.products ?? []
 
 const { productPageState, loadMoreProducts } = useProductListPage({
   titlePrefix: 'Категория',
@@ -33,11 +54,27 @@ const { productPageState, loadMoreProducts } = useProductListPage({
   filters,
   slugListRef: categories,
   slugToCheck: categorySlug,
+  initialProducts,
+  initialLimit,
 })
 
-onMounted(() => {
-  loadMoreProducts()
-})
+useHead(() => ({
+  title: `${categoryName.value} | Зам Пол`,
+  meta: [
+    {
+      name: 'description',
+      content: `${categoryName.value} в магазине Зам Пол. Напольные покрытия в наличии и под заказ в Коломне.`,
+    },
+    {
+      property: 'og:title',
+      content: `${categoryName.value} | Зам Пол`,
+    },
+    {
+      property: 'og:description',
+      content: `${categoryName.value} в магазине Зам Пол. Напольные покрытия в наличии и под заказ в Коломне.`,
+    },
+  ],
+}))
 
 function onSortUpdate(sort: { sort_by: string; order: 'asc' | 'desc' } | null) {
   if (sort) {

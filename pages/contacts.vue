@@ -30,6 +30,24 @@ import LaminatImg from '~/assets/img/store-entry.jpeg'
 
 const mapContainer = ref<HTMLElement | null>(null)
 
+useHead({
+  title: 'Контакты | Зам Пол',
+  meta: [
+    {
+      name: 'description',
+      content: 'Контакты магазина Зам Пол в Коломне: адрес, телефон +7 (910) 414-35-67 и схема проезда.',
+    },
+    {
+      property: 'og:title',
+      content: 'Контакты | Зам Пол',
+    },
+    {
+      property: 'og:description',
+      content: 'Контакты магазина Зам Пол в Коломне: адрес, телефон +7 (910) 414-35-67 и схема проезда.',
+    },
+  ],
+})
+
 onMounted(() => {
   if (mapContainer.value) {
     const script = document.createElement('script')

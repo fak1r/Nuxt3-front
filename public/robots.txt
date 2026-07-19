@@ -2,8 +2,8 @@ User-agent: *
 Disallow: /report.html
 Disallow: /report-
 Disallow: /api/
-Disallow: /admin/
-Disallow: /profile/
-Disallow: /cart/
+Disallow: /admin
+Disallow: /profile
+Disallow: /cart
 
 Sitemap: https://zampol.ru/sitemap.xml

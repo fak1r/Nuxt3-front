@@ -1,6 +1,6 @@
 import { useAuthStore } from '~/store/auth'
 import { useModalStore } from '~/store/modal'
-import { getSafeRouteRedirect } from '~/utils/get-safe-route-redirect'
+import { getSafeRouteRedirect, normalizeInternalPath } from '~/utils/get-safe-route-redirect'
 
 interface ProtectedPageOptions {
   requiresAdmin?: boolean
@@ -60,7 +60,7 @@ export function useProtectedPage(options: ProtectedPageOptions = {}) {
           return
         }
 
-        await navigateTo('/profile', { replace: true })
+        await navigateTo(normalizeInternalPath('/profile'), { replace: true })
         return
       }
     }

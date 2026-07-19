@@ -1,7 +1,29 @@
-export function getSafeRouteRedirect(value: unknown, fallback = '/') {
-  if (typeof value !== 'string') return fallback
-  if (!value.startsWith('/')) return fallback
-  if (value.startsWith('//')) return fallback
+const INTERNAL_ORIGIN = 'https://zampol.local'
 
-  return value
+export function normalizeInternalPath(value: string) {
+  try {
+    const url = new URL(value, INTERNAL_ORIGIN)
+
+    if (url.origin !== INTERNAL_ORIGIN) {
+      return '/'
+    }
+
+    if (url.pathname !== '/') {
+      url.pathname = url.pathname.replace(/\/+$/, '')
+    }
+
+    return `${url.pathname}${url.search}${url.hash}`
+  } catch {
+    return '/'
+  }
+}
+
+export function getSafeRouteRedirect(value: unknown, fallback = '/') {
+  const normalizedFallback = normalizeInternalPath(fallback)
+
+  if (typeof value !== 'string') return normalizedFallback
+  if (!value.startsWith('/')) return normalizedFallback
+  if (value.startsWith('//')) return normalizedFallback
+
+  return normalizeInternalPath(value)
 }

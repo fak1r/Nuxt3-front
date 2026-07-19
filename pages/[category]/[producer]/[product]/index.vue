@@ -41,7 +41,7 @@ const { data: related } = await useAsyncData<RelatedProductsResponse>(`related-$
 const relatedProducts = computed(() => related.value?.items || [])
 const collectionName = computed(() => related.value?.collection_name || '')
 
-if (error.value && !import.meta.server) {
+if (error.value) {
   throw createError({ statusCode: 404, statusMessage: 'Товар не найден' })
 }
 

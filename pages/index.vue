@@ -20,6 +20,7 @@ import ProductList from '~/components/Products/Products/ProductList.vue'
 import MainPageHero from '~/components/MainPage/MainPageHero.vue'
 import type { Product } from '~/types/products.types'
 import TheButton from '~/components/UI/TheButton.vue'
+import { normalizeInternalPath } from '~/utils/get-safe-route-redirect'
 
 const productsStore = useProductsStore()
 
@@ -35,7 +36,7 @@ const popularProducts = computed(() => data.value || [])
 const isPopularProductsLoading = computed(() => ['idle', 'pending'].includes(status.value))
 
 function goToCatalog() {
-  navigateTo('/catalog')
+  navigateTo(normalizeInternalPath('/catalog'))
 }
 </script>
 

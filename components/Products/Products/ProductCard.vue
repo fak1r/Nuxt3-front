@@ -1,6 +1,6 @@
 <template>
   <article class="product-card">
-    <a :href="product.self" class="product-card__link" @click.prevent="goToProduct">
+    <a :href="productUrl" class="product-card__link" @click.prevent="goToProduct">
       <template v-if="showMobileImage">
         <ProductImageMobile v-if="hasImgs" :product="product" />
       </template>
@@ -18,6 +18,7 @@
 import type { Product } from '~/types/products.types'
 import ProductImageMobile from '~/components/Products/Products/ProductImageMobile.vue'
 import ProductImageDesktop from '~/components/Products/Products/ProductImageDesktop.vue'
+import { normalizeInternalPath } from '~/utils/get-safe-route-redirect'
 
 interface Props {
   product: Product
@@ -34,10 +35,11 @@ const { isMobile } = import.meta.client ? useIsMobile() : { isMobile: ref(false)
 const showMobileImage = computed(() => isMobile.value === true)
 
 const hasImgs = computed(() => Array.isArray(product.img_mini) && product.img_mini.length)
+const productUrl = computed(() => normalizeInternalPath(product.self))
 
 function goToProduct() {
   if (import.meta.client) {
-    router.push(product.self)
+    router.push(productUrl.value)
   }
 }
 </script>

@@ -35,6 +35,7 @@
 <script setup lang="ts">
 import { useModalStore } from '~/store/modal'
 import { useCategoriesStore } from '@/store/categories'
+import { normalizeInternalPath } from '~/utils/get-safe-route-redirect'
 
 const categoriesStore = useCategoriesStore()
 const modalStore = useModalStore()
@@ -63,7 +64,7 @@ function goToCategory(id: number) {
   const category = categories.find((c) => c.id === id)
 
   if (category) {
-    navigateTo(`/${category.slug}`)
+    navigateTo(normalizeInternalPath(`/${category.slug}`))
     modalStore.close()
   }
 }
@@ -73,7 +74,7 @@ function goToProducer(id: number) {
   const category = categories.find((c) => c.id === selectedCategoryId.value)
 
   if (producer && category) {
-    navigateTo(`/${category.slug}/${producer.slug}`)
+    navigateTo(normalizeInternalPath(`/${category.slug}/${producer.slug}`))
     modalStore.close()
   }
 }
