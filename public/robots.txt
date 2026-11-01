@@ -4,6 +4,5 @@ Disallow: /report-
 Disallow: /api/
 Disallow: /admin
 Disallow: /profile
-Disallow: /cart
 
 Sitemap: https://zampol.ru/sitemap.xml

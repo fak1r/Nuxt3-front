@@ -1,31 +1,41 @@
 <template>
   <div ref="imageContainer" class="image-container" @mousemove="handleMouseMove" @mouseleave="resetImage">
     <ClientOnly>
-      <ImgSkeleton v-show="!isAllImgsLoaded" />
+      <ImgSkeleton v-if="showSkeleton" class="image-container__skeleton" />
     </ClientOnly>
     <template v-for="(img, index) in product.img_mini" :key="index">
       <img
-        v-if="!img.includes('/img/no-image.png')"
-        v-show="isImgVisible && index === activeIndex"
+        v-if="isSlideRequested(index) && !img.includes('/img/no-image.png')"
+        :data-index="index"
+        :class="[
+          'image-container__img',
+          { active: index === displayedIndex, 'image-container__img--hidden': index !== displayedIndex || !isSlideLoaded(index) },
+        ]"
         :src="img"
-        :alt="`${product.name} – миниатюра ${index + 1}`"
-        :class="['image-container__img', { active: index === activeIndex }]"
-        @error="onImgError"
-        @load="onImageLoad"
+        :alt="product.name"
+        loading="eager"
+        decoding="async"
+        @error="onImgError(index, $event)"
+        @load="onImageLoad(index)"
       />
-      <ClientOnly v-else>
+      <ClientOnly v-else-if="isSlideRequested(index)">
         <img
-          v-show="isImgVisible && index === activeIndex"
+          :data-index="index"
+          :class="[
+            'image-container__img',
+            { active: index === displayedIndex, 'image-container__img--hidden': index !== displayedIndex || !isSlideLoaded(index) },
+          ]"
           :src="img"
-          alt="Фото отсутствует"
-          :class="['image-container__img', { active: index === activeIndex }]"
-          @error="onImgError"
-          @load="onImageLoad"
+          alt="No image"
+          loading="eager"
+          decoding="async"
+          @error="onImgError(index, $event)"
+          @load="onImageLoad(index)"
         />
       </ClientOnly>
     </template>
     <div v-if="hasImgs" class="image-container__pagination">
-      <span v-for="(_, index) in product.img_mini" :key="index" :class="{ active: index === activeIndex }" />
+      <span v-for="(_, index) in product.img_mini" :key="index" :class="{ active: index === displayedIndex }" />
     </div>
   </div>
 </template>
@@ -41,37 +51,43 @@ interface Props {
 const { product } = defineProps<Props>()
 
 const imageContainer = ref<HTMLElement | null>(null)
-const activeIndex = ref(0)
+const displayedIndex = ref(0)
+const pendingIndex = ref<number | null>(null)
+const requestedSlides = ref<Record<number, boolean>>({})
+const loadedSlides = ref<Record<number, boolean>>({})
 
 const hasImgs = computed(() => product.img_mini.length > 1)
-const isAllImgsLoaded = ref(false)
-const totalImages = product.img_mini.length
-const imgsLoaded = ref(0)
+const showSkeleton = computed(() => !isSlideLoaded(displayedIndex.value))
+
+watch(
+  () => product.img_mini,
+  () => {
+    displayedIndex.value = 0
+    pendingIndex.value = null
+    requestedSlides.value = {}
+    loadedSlides.value = {}
+    requestAround(0)
+  },
+  { immediate: true },
+)
 
 onMounted(async () => {
   if (!imageContainer.value) return
 
   await nextTick()
 
-  const images = imageContainer.value?.querySelectorAll?.('img')
-  if (!images) return
-
-  let loadedCount = 0
+  const images = imageContainer.value.querySelectorAll('img')
 
   images.forEach((img) => {
-    if (img.complete) {
-      loadedCount++
+    if (!img.complete) return
+
+    const index = Number(img.getAttribute('data-index'))
+
+    if (Number.isFinite(index)) {
+      loadedSlides.value[index] = true
     }
   })
-
-  imgsLoaded.value += loadedCount
-
-  if (imgsLoaded.value >= totalImages) {
-    isAllImgsLoaded.value = true
-  }
 })
-
-const isImgVisible = computed(() => isAllImgsLoaded.value)
 
 function handleMouseMove(event: MouseEvent) {
   if (!imageContainer.value || !product.img_mini.length) return
@@ -79,26 +95,62 @@ function handleMouseMove(event: MouseEvent) {
   const rect = imageContainer.value.getBoundingClientRect()
   const offsetX = event.clientX - rect.left
   const newIndex = Math.floor((offsetX / rect.width) * product.img_mini.length)
-  activeIndex.value = Math.min(newIndex, product.img_mini.length - 1)
-  if (activeIndex.value === -1) activeIndex.value = 0
+  const nextIndex = Math.max(0, Math.min(newIndex, product.img_mini.length - 1))
+
+  requestAround(nextIndex)
+
+  if (isSlideLoaded(nextIndex)) {
+    displayedIndex.value = nextIndex
+    pendingIndex.value = null
+    return
+  }
+
+  pendingIndex.value = nextIndex
 }
 
 function resetImage() {
-  activeIndex.value = 0
+  pendingIndex.value = null
+  displayedIndex.value = 0
+  requestAround(0)
 }
 
-function onImgError(event: Event) {
+function requestSlide(index: number) {
+  if (index < 0 || index >= product.img_mini.length) return
+  if (requestedSlides.value[index]) return
+  requestedSlides.value[index] = true
+}
+
+function requestAround(index: number) {
+  requestSlide(index - 1)
+  requestSlide(index)
+  requestSlide(index + 1)
+}
+
+function isSlideRequested(index: number) {
+  return !!requestedSlides.value[index]
+}
+
+function isSlideLoaded(index: number) {
+  return !!loadedSlides.value[index]
+}
+
+function onImgError(index: number, event: Event) {
   const target = event.target as HTMLImageElement
+
+  if (target.src.includes('/img/no-image.png')) {
+    loadedSlides.value[index] = true
+    return
+  }
+
   target.src = '/img/no-image.png'
 }
 
-function onImageLoad(event: Event) {
-  const target = event.target as HTMLImageElement
-  if (target.complete) {
-    imgsLoaded.value++
-    if (imgsLoaded.value >= totalImages) {
-      isAllImgsLoaded.value = true
-    }
+function onImageLoad(index: number) {
+  loadedSlides.value[index] = true
+
+  if (pendingIndex.value === index) {
+    displayedIndex.value = index
+    pendingIndex.value = null
   }
 }
 </script>
@@ -120,6 +172,37 @@ function onImageLoad(event: Event) {
     object-fit: cover;
   }
 
+  &__img {
+    position: absolute;
+    inset: 0;
+    transition: opacity 0.2s ease;
+
+    &--hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
+
+  &__skeleton {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+
+    :deep(.skeleton) {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    :deep(.skeleton__image) {
+      width: 100%;
+      height: 100%;
+      aspect-ratio: auto;
+      border-radius: 4px;
+    }
+  }
+
   &__pagination {
     display: flex;
     width: 100%;
@@ -129,6 +212,7 @@ function onImageLoad(event: Event) {
     position: absolute;
     top: 0;
     left: 0;
+    z-index: 2;
     opacity: 0;
 
     span {
