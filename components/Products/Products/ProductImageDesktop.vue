@@ -72,11 +72,13 @@ watch(
 )
 
 onMounted(async () => {
-  if (!imageContainer.value) return
+  const container = imageContainer.value
+
+  if (!container) return
 
   await nextTick()
 
-  const images = imageContainer.value.querySelectorAll('img')
+  const images = container.querySelectorAll('img')
 
   images.forEach((img) => {
     if (!img.complete) return

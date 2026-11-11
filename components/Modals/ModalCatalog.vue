@@ -43,14 +43,16 @@ const modalStore = useModalStore()
 const categories = categoriesStore.categories
 const producers = categoriesStore.producers
 
-type Category = keyof typeof categories
-
-const selectedCategoryId = ref<Category>(Object.keys(categories)[0] as Category)
+const selectedCategoryId = ref<number | null>(null)
 const selectedProducerId = ref(0)
 
 const currentProducers = computed(() => {
   return producers.filter((p) => p.category_id === selectedCategoryId.value).map(({ name, id }) => ({ name, id }))
 })
+
+watch(categories, (items) => {
+  if (selectedCategoryId.value === null && items[0]) selectedCategoryId.value = items[0].id
+}, { immediate: true })
 
 function setCategory(id: number) {
   selectedCategoryId.value = id
