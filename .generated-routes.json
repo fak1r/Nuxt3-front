@@ -73,8 +73,6 @@
   "/laminat/classen/indiiskii-bantsheifer",
   "/laminat/classen/shifer-estrik-svetlyi",
   "/laminat/classen/shifer-seryi",
-  "/laminat/krono",
-  "/laminat/krono/dub-breton",
   "/laminat/pergo",
   "/laminat/pergo/belyi-izvestniak",
   "/laminat/pergo/dub-belostvolnyi",
@@ -170,10 +168,5 @@
   "/laminat/pergo/sovremennyi-datskii-dub",
   "/laminat/pergo/sovremennyi-datskii-dub-sp",
   "/laminat/pergo/temno-seryi-slanets",
-  "/linoleum",
-  "/linoleum/sinteros",
-  "/linoleum/sinteros/dub-edzhen",
-  "/linoleum/tarket",
-  "/linoleum/tarket/dub-fred",
   "/profile"
 ]

@@ -31,7 +31,9 @@ export function useProductListPage({
   const products = ref<Product[]>([...initialProducts])
   const page = ref(initialProducts.length > 0 ? Math.floor(initialProducts.length / initialLimit) + 1 : 1)
   const hasMore = ref(initialProducts.length >= initialLimit)
-  const firstLoading = ref(initialProducts.length === 0)
+  // `initialProducts` — уже полученная первая страница из useAsyncData.
+  // Пустой результат означает пустой каталог, а не ожидающий запрос.
+  const firstLoading = ref(false)
   const productsAreLoading = ref(false)
 
   const productsStore = useProductsStore()

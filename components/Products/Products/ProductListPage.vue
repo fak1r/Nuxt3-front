@@ -1,7 +1,7 @@
 <template>
   <div class="product-page">
     <h1 class="product-page__title">{{ state.titlePrefix }}: {{ state.title }}</h1>
-    <TheSort class="product-page__sort" :initial-order="state.order" @update:sort="onSortChange" />
+    <TheSort v-if="isFirstLoading || hasProducts" class="product-page__sort" :initial-order="state.order" @update:sort="onSortChange" />
     <ProductList :products="state.products ?? []" :is-skeleton-visible="isFirstLoading" />
 
     <div v-if="isFirstLoading" class="product-page__loader">
@@ -33,6 +33,7 @@ interface Emits {
 const emit = defineEmits<Emits>()
 
 const isFirstLoading = computed(() => props.state.firstLoading)
+const hasProducts = computed(() => (props.state.products?.length ?? 0) > 0)
 
 useInfiniteScroll(() => emit('loadMore'))
 useAutoloadUntilScrollable({

@@ -192,6 +192,20 @@
   </svg>
 
   <svg
+    v-else-if="icon === 'empty-catalog'"
+    class="icon"
+    :class="[color, size]"
+    xmlns="http://www.w3.org/2000/svg"
+    height="24px"
+    viewBox="0 0 64 64"
+    width="24px"
+  >
+    <path d="M14 23.5h36l-2.4 27.1a4 4 0 0 1-4 3.4H20.4a4 4 0 0 1-4-3.4L14 23.5Z" />
+    <path d="M23 25v-5a9 9 0 0 1 18 0v5" />
+    <path d="m27.5 40 3 3 6-7" />
+  </svg>
+
+  <svg
     v-else-if="icon === 'arrow-forward'"
     class="icon"
     :class="[color, size]"

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!isSkeletonVisible && safeProducts.length === 0" class="product-list__not-found">Товары не найдены</div>
+  <EmptyProductList v-if="!isSkeletonVisible && safeProducts.length === 0" />
   <ul v-else class="product-list">
     <template v-if="isSkeletonVisible && safeProducts.length === 0">
       <li v-for="n in 8" :key="n">
@@ -18,6 +18,7 @@
 <script setup lang="ts">
 import ProductCard from '~/components/Products/Products/ProductCard.vue'
 import ProductCardSkeleton from '~/components/Products/Products/ProductCardSkeleton.vue'
+import EmptyProductList from '~/components/Products/Products/EmptyProductList.vue'
 import type { Product } from '~/types/products.types'
 
 interface Props {
@@ -39,10 +40,6 @@ const safeProducts = computed(() => (Array.isArray(props.products) ? props.produ
 
   @include phone {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  }
-
-  &__not-found {
-    text-align: center;
   }
 }
 </style>
