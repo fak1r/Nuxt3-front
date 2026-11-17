@@ -40,7 +40,9 @@ const category = computed(() => categories.value.find((item) => item.slug === ca
 const producer = computed(() => {
   if (!category.value) return null
 
-  return producers.value.find((item) => item.slug === producerSlug && item.category_id === category.value.id) ?? null
+  return producers.value.find(
+    (item) => item.slug === producerSlug && item.category_id === category.value?.id,
+  ) ?? null
 })
 const producerName = computed(() => producer.value?.name ?? '')
 
