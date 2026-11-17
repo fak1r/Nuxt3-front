@@ -18,6 +18,7 @@ function normalizeSiteUrl(url: string): string {
 }
 
 const siteUrl = normalizeSiteUrl(rawSiteUrl)
+const metrikaId = process.env.NUXT_PUBLIC_METRIKA_ID || (siteUrl === 'https://zampol.ru' ? '114309154' : '')
 
 export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
@@ -62,6 +63,7 @@ export default defineNuxtConfig({
     public: {
       apiBaseUrl: apiBaseUrl,
       siteUrl: siteUrl,
+      metrikaId,
       isStatic: process.env.NUXT_IS_STATIC === 'true',
     },
   },
