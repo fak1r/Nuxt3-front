@@ -1,11 +1,14 @@
 import { $fetch } from 'ofetch'
-import type { Category, Producer } from '~/types/categories.types'
+import type { Category, Producer, ProducerCatalogItem, ProductLine } from '~/types/categories.types'
 
 let categoriesCache: Category[] | null = null
 let categoriesPromise: Promise<Category[]> | null = null
 
 let producersCache: Producer[] | null = null
 let producersPromise: Promise<Producer[]> | null = null
+
+let productLinesCache: ProductLine[] | null = null
+let productLinesPromise: Promise<ProductLine[]> | null = null
 
 export async function fetchCatalogCategories(baseURL: string): Promise<Category[]> {
   if (categoriesCache) {
@@ -43,4 +46,27 @@ export async function fetchCatalogProducers(baseURL: string): Promise<Producer[]
   } finally {
     producersPromise = null
   }
+}
+
+export async function fetchCatalogProductLines(baseURL: string): Promise<ProductLine[]> {
+  if (productLinesCache) {
+    return productLinesCache
+  }
+
+  if (!productLinesPromise) {
+    productLinesPromise = $fetch<ProductLine[]>('/products/product_lines', { baseURL }).then((data) => {
+      productLinesCache = data
+      return data
+    })
+  }
+
+  try {
+    return await productLinesPromise
+  } finally {
+    productLinesPromise = null
+  }
+}
+
+export function fetchCategoryCatalog(baseURL: string, categorySlug: string): Promise<ProducerCatalogItem[]> {
+  return $fetch<ProducerCatalogItem[]>(`/products/${categorySlug}/catalog`, { baseURL })
 }

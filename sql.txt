@@ -1,0 +1,75 @@
+DROP TABLE products CASCADE;
+DROP TABLE product_lines CASCADE;
+DROP TABLE producers CASCADE;
+DROP TABLE categories CASCADE;
+
+DELETE FROM products;
+
+SELECT * FROM categories;
+SELECT * FROM producers;
+SELECT * FROM product_lines;
+SELECT * FROM products;
+SELECT * FROM product_images;
+
+
+INSERT INTO categories (name, slug) VALUES
+('Ламинат', 'laminat'),
+('Линолеум', 'linoleum');
+
+
+INSERT INTO producers (name, category_id, slug) VALUES
+('CLASSEN', 1, 'classen'),
+('KRONO', 1, 'krono'),
+('TARKET', 2, 'tarket'),
+('SINTEROS', 2, 'sinteros');
+
+INSERT INTO product_lines (name, producer_id, slug) VALUES
+('Charm', 1, 'charm'),
+('Euphoria', 1, 'euphoria'),
+('Impression', 1, 'impression'),
+('VisioGrande', 1, 'visiogrande'),
+('Villa', 1, 'villa'),
+('Ambience', 1, 'ambience'),
+('Elite', 1, 'elite'),
+('832-4', 1, '832-4'),
+('Expedition', 1, 'expedition'),
+('Adventure', 1, 'adventure'),
+('Pride', 1, 'pride'),
+('Exclusive', 2, 'exclusive'),
+('Discovery', 3, 'discovery'),
+('Status', 4, 'status');
+
+
+INSERT INTO producers (name, category_id, slug) VALUES
+('PERGO', 1, 'pergo');
+
+INSERT INTO product_lines (name, producer_id, slug) VALUES
+('Kalmar', 5, 'kalmar'),
+('Goeteborg pro', 5, 'goeteborg-pro'),
+('Malmo pro', 5, 'malmo-pro'),
+('Uppsala pro', 5, 'uppsala-pro'),
+('Skara Pro', 5, 'skara-pro'),
+('Stavanger pro', 5, 'stavanger-pro'),
+('Unilin Skara Pro', 5, 'unilin-skara-pro'),
+('Skara 12 pro', 5, 'skara-12-pro'),
+('Unilin Skara 12 pro', 5, 'unilin-skara-12-pro'),
+('Ebeltoft 12 pro', 5, 'ebeltoft-12-pro'),
+('Elements 12 pro', 5, 'elements-12-pro'),
+('Chevron 12 pro', 5, 'chevron-12-pro');
+
+
+-- Catalog presentation data. On a clean database these columns are created by
+-- the SQLAlchemy models; for an existing database use backend/migrations/20261120_catalog_presentation.sql.
+UPDATE producers
+SET
+  country = CASE slug
+    WHEN 'classen' THEN 'Германия'
+    WHEN 'pergo' THEN 'Швеция'
+    ELSE country
+  END,
+  logo_url = CASE slug
+    WHEN 'classen' THEN 'catalog/producers/classen/logo.svg'
+    WHEN 'pergo' THEN 'catalog/producers/pergo/logo.webp'
+    ELSE logo_url
+  END
+WHERE slug IN ('classen', 'pergo');

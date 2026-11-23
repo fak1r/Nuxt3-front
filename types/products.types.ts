@@ -34,6 +34,7 @@ export interface PaginatedProducts {
 export interface ProductFilters {
   category_slug?: string
   producer_slug?: string
+  product_line_slug?: string
   product_slug?: string
   favorite?: boolean
   page?: number

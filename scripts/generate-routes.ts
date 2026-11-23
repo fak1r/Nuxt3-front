@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import axios from 'axios'
-import type { Producer } from '~/types/categories.types'
+import type { Producer, ProducerCatalogItem } from '~/types/categories.types'
 import {
   GENERATED_ROUTES_PATH,
   GENERATED_SITEMAP_IMAGES_PATH,
@@ -27,6 +27,11 @@ async function getProducers() {
   return data
 }
 
+async function getCategoryCatalog(categorySlug: string) {
+  const { data } = await api.get<ProducerCatalogItem[]>(`/products/${categorySlug}/catalog`)
+  return data
+}
+
 async function getProducts(categorySlug: string, producerSlug: string) {
   const { data } = await api.get(`/products/${categorySlug}/${producerSlug}`, {
     params: {
@@ -40,6 +45,15 @@ async function getProducts(categorySlug: string, producerSlug: string) {
 async function getProductImages(productRoute: string) {
   const { data } = await api.get(`/products${productRoute}`)
   return getOriginalImageUrls(data.images)
+}
+
+function getLegacyProductRoute(productRoute: string): string | null {
+  const segments = normalizePath(productRoute).split('/').filter(Boolean)
+
+  if (segments.length !== 4) return null
+
+  const [categorySlug, producerSlug, , productSlug] = segments
+  return `/${categorySlug}/${producerSlug}/${productSlug}`
 }
 
 function getOriginalImageUrls(images: unknown): string[] {
@@ -93,10 +107,22 @@ async function generateRoutes() {
     routes.push(`/${category.slug}`)
 
     const relatedProducers = producers.filter((p: Producer) => p.category_id === category.id)
+    let catalog: ProducerCatalogItem[] = []
+
+    try {
+      catalog = await getCategoryCatalog(category.slug)
+    } catch (err: any) {
+      console.warn(`Failed to load catalog for /${category.slug}: ${err.message}`)
+    }
 
     for (const producer of relatedProducers) {
       const baseRoute = `/${category.slug}/${producer.slug}`
       routes.push(baseRoute)
+
+      const producerCatalog = catalog.find((item) => item.slug === producer.slug)
+      producerCatalog?.product_lines.forEach((line) => {
+        routes.push(`${baseRoute}/${line.slug}`)
+      })
 
       try {
         const products = await getProducts(category.slug, producer.slug)
@@ -105,6 +131,9 @@ async function generateRoutes() {
             const productRoute = normalizePath(product.self)
             routes.push(productRoute)
             productRoutes.add(productRoute)
+
+            const legacyProductRoute = getLegacyProductRoute(productRoute)
+            if (legacyProductRoute) routes.push(legacyProductRoute)
           }
         }
       } catch (err: any) {

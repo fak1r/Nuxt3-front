@@ -24,16 +24,17 @@ const config = useRuntimeConfig()
 const pathParts = route.path.split('/').filter(Boolean)
 const category = pathParts[0]
 const producer = pathParts[1]
-const slug = pathParts[2]
+const collection = pathParts[2]
+const slug = pathParts[3]
 
-const { data: product, error } = await useAsyncData<Product>(`product-${category}-${producer}-${slug}`, () =>
-  $fetch(`/products/${category}/${producer}/${slug}`, {
+const { data: product, error } = await useAsyncData<Product>(`product-${category}-${producer}-${collection}-${slug}`, () =>
+  $fetch(`/products/${category}/${producer}/${collection}/${slug}`, {
     baseURL: config.public.apiBaseUrl,
   }),
 )
 
-const { data: related } = await useAsyncData<RelatedProductsResponse>(`related-${category}-${producer}-${slug}`, () =>
-  $fetch(`/products/${category}/${producer}/${slug}/related`, {
+const { data: related } = await useAsyncData<RelatedProductsResponse>(`related-${category}-${producer}-${collection}-${slug}`, () =>
+  $fetch(`/products/${category}/${producer}/${collection}/${slug}/related`, {
     baseURL: config.public.apiBaseUrl,
   }),
 )

@@ -17,3 +17,19 @@ export interface ProductLine {
   slug: string
   producer_id: number
 }
+
+export interface ProductLineCatalogItem {
+  id: number
+  name: string
+  slug: string
+  product_count: number
+  cover_image_url?: string | null
+}
+
+export interface ProducerCatalogItem extends Producer {
+  country?: string | null
+  description?: string | null
+  logo_url?: string | null
+  product_count: number
+  product_lines: ProductLineCatalogItem[]
+}
