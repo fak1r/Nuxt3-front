@@ -115,17 +115,53 @@ function pluralize(count: number, forms: [string, string, string]) {
     gap: 4px;
   }
 
-  @include phone {
+  @media screen and (min-width: 541px) and (max-width: 768px) {
+    &__header {
+      grid-template-columns: 180px minmax(0, 1fr);
+      gap: 16px;
+    }
+
+    &__logo {
+      grid-row: span 2;
+      box-sizing: border-box;
+      height: 100px;
+      padding: 8px;
+
+      img {
+        width: auto;
+        max-width: 100%;
+        min-width: 0;
+        min-height: 0;
+        height: 100%;
+        object-fit: contain;
+      }
+    }
+
+    &__summary {
+      grid-column: 2;
+      text-align: left;
+    }
+  }
+
+  @media screen and (max-width: 540px) {
     &__header {
       grid-template-columns: 1fr;
       gap: 12px;
     }
 
     &__logo {
-      height: 96px;
+      box-sizing: border-box;
+      width: 212px;
+      max-width: 100%;
+      height: 112px;
       padding: 12px;
 
       img {
+        width: auto;
+        max-width: 100%;
+        min-width: 0;
+        min-height: 0;
+        height: 100%;
         object-fit: contain;
       }
     }
