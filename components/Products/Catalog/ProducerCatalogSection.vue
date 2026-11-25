@@ -7,7 +7,7 @@
       </NuxtLink>
 
       <div class="producer-catalog__details">
-        <h2 class="producer-catalog__title">{{ producer.name }}</h2>
+        <component :is="headingTag" class="producer-catalog__title">{{ producer.name }}</component>
         <p v-if="producer.country">Производство: {{ producer.country }}</p>
         <NuxtLink :to="producerRoute">Подробнее о производителе</NuxtLink>
       </div>
@@ -39,9 +39,11 @@ import type { ProducerCatalogItem } from '~/types/categories.types'
 const props = defineProps<{
   categorySlug: string
   producer: ProducerCatalogItem
+  headingLevel?: 2 | 3
 }>()
 
 const producerRoute = computed(() => `/${props.categorySlug}/${props.producer.slug}`)
+const headingTag = computed(() => `h${props.headingLevel ?? 2}`)
 const productsLabel = computed(() => pluralize(props.producer.product_count, ['товар', 'товара', 'товаров']))
 const collectionsLabel = computed(() => pluralize(props.producer.product_lines.length, ['коллекции', 'коллекций', 'коллекциях']))
 
@@ -115,16 +117,20 @@ function pluralize(count: number, forms: [string, string, string]) {
 
   @include phone {
     &__header {
-      grid-template-columns: 120px 1fr;
+      grid-template-columns: 1fr;
       gap: 12px;
     }
 
     &__logo {
-      height: 88px;
+      height: 96px;
+      padding: 12px;
+
+      img {
+        object-fit: contain;
+      }
     }
 
     &__summary {
-      grid-column: 1 / -1;
       text-align: left;
     }
   }

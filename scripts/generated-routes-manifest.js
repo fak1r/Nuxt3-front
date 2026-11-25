@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 
 export const GENERATED_ROUTES_PATH = resolve('.generated-routes.json')
 export const GENERATED_SITEMAP_IMAGES_PATH = resolve('.generated-sitemap-images.json')
+export const GENERATED_LEGACY_PRODUCT_REDIRECTS_PATH = resolve('.generated-legacy-product-redirects.conf')
 
 export const STATIC_GENERATED_ROUTES = ['/', '/catalog', '/contacts', '/cart', '/404', '/profile', '/admin']
 

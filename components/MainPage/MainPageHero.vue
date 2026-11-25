@@ -15,8 +15,8 @@
       />
       <div v-if="!isHeroLoaded" class="main-page-hero__image-skeleton" aria-hidden="true" />
       <div class="main-page-hero__content">
-        <h2 class="main-page-hero__title">Ламинат и Паркет</h2>
-        <h3 class="main-page-hero__description">Большой выбор качественных напольных покрытий</h3>
+        <h2 class="main-page-hero__title">Ламинат в Коломне</h2>
+        <h3 class="main-page-hero__description">Качественные покрытия для дома и ремонта</h3>
       </div>
     </div>
 

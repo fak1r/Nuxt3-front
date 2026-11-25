@@ -1,43 +1,18 @@
 ﻿<template>
   <section class="main-page">
-    <h1>Магазин напольных покрытий «Зам Пол»</h1>
+    <h1>Напольные покрытия в Коломне</h1>
     <MainPageHero />
-    <h4>Популярные товары</h4>
-    <ProductList
-      class="main-page__products"
-      :products="popularProducts"
-      :is-skeleton-visible="isPopularProductsLoading"
-    />
-    <div class="main-page__catalog-btn">
-      <TheButton variant="Filled" size="lg" @click="goToCatalog">Смотреть каталог</TheButton>
-    </div>
+    <MainPagePromo />
+    <MainPageCategories />
+    <MainPageLocalSeo />
   </section>
 </template>
 
 <script setup lang="ts">
-import { useProductsStore } from '~/store/products'
-import ProductList from '~/components/Products/Products/ProductList.vue'
 import MainPageHero from '~/components/MainPage/MainPageHero.vue'
-import type { Product } from '~/types/products.types'
-import TheButton from '~/components/UI/TheButton.vue'
-import { normalizeInternalPath } from '~/utils/get-safe-route-redirect'
-
-const productsStore = useProductsStore()
-
-const { fetchPopularProducts } = productsStore
-
-const { data, status } = await useAsyncData<Product[]>('popular-products', () => fetchPopularProducts(), {
-  server: true,
-  lazy: false,
-  default: () => [],
-})
-
-const popularProducts = computed(() => data.value || [])
-const isPopularProductsLoading = computed(() => ['idle', 'pending'].includes(status.value))
-
-function goToCatalog() {
-  navigateTo(normalizeInternalPath('/catalog'))
-}
+import MainPagePromo from '~/components/MainPage/MainPagePromo.vue'
+import MainPageCategories from '~/components/MainPage/MainPageCategories.vue'
+import MainPageLocalSeo from '~/components/MainPage/MainPageLocalSeo.vue'
 </script>
 
 <style scoped lang="scss">
@@ -66,23 +41,5 @@ function goToCatalog() {
     }
   }
 
-  h4 {
-    font-size: 28px;
-    padding: 16px 0;
-
-    @include phone {
-      padding: 8px 0;
-      font-size: 24px;
-    }
-
-    @media screen and (max-width: 500px) {
-      padding: 4px 0;
-      font-size: 18px;
-    }
-  }
-
-  &__catalog-btn {
-    margin: 16px 0;
-  }
 }
 </style>

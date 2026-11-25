@@ -44,6 +44,11 @@
             <TheButton v-else variant="Secondary" @click="buyNow">Купить сейчас</TheButton>
           </div>
         </div>
+        <ProductCoverageCalculator
+          v-if="packageCoverage"
+          :package-coverage="packageCoverage"
+          :price="product.price"
+        />
       </div>
     </div>
 
@@ -71,6 +76,7 @@ import type { Product } from '~/types/products.types'
 import { useCartStore } from '~/store/cart'
 import { useModalStore } from '~/store/modal'
 import ImageSlider from '~/components/Products/Product/ImageSlider.vue'
+import ProductCoverageCalculator from '~/components/Products/Product/ProductCoverageCalculator.vue'
 import TheButton from '~/components/UI/TheButton.vue'
 import TheQuantityInput from '~/components/UI/TheQuantityInput.vue'
 import ModalPhone from '~/components/Modals/ModalPhone.vue'
@@ -107,6 +113,17 @@ const detailsWithoutDescription = computed(() => {
   return Object.fromEntries(Object.entries(product.details || {}).filter(([key]) => key !== 'Описание'))
 })
 const hasDetails = computed(() => Object.keys(detailsWithoutDescription.value).length > 0)
+const packageCoverage = computed(() => {
+  const packageEntry = Object.entries(product.details || {}).find(([key]) => {
+    const normalizedKey = key.toLowerCase()
+    return normalizedKey.includes('количество в упаковке') || normalizedKey.includes('площадь упаковки')
+  })
+
+  if (!packageEntry) return null
+
+  const value = Number(packageEntry[1].replace(',', '.').match(/\d+(?:\.\d+)?/)?.[0])
+  return Number.isFinite(value) && value > 0 ? value : null
+})
 
 watch(quantity, (val) => {
   if (val < 1 && isProductInCart.value) {
