@@ -34,7 +34,7 @@ import InteriorForeground from '~/assets/img/interior-visualizer-foreground-colo
 interface Props {
   productName: string
   textureUrl: string
-  forceRotateToAcross?: boolean
+  textureOrientation?: 'auto' | 'natural' | 'rotated'
 }
 
 const props = defineProps<Props>()
@@ -103,7 +103,11 @@ function createTextureTile(texture: HTMLImageElement) {
 
   if (!context) return tile
 
-  const shouldRotate = props.forceRotateToAcross || shouldRotateTextureAcross(texture)
+  const shouldRotate = props.textureOrientation === 'rotated'
+    ? true
+    : props.textureOrientation === 'natural'
+      ? false
+      : shouldRotateTextureAcross(texture)
   const imageWidth = Math.round(340 / density.value)
   const tileWidth = imageWidth
   const tileHeight = Math.max(120, Math.round(imageWidth * (shouldRotate ? texture.naturalWidth / texture.naturalHeight : texture.naturalHeight / texture.naturalWidth)))
