@@ -24,6 +24,12 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
   ssr: true,
   nitro: {
+    devProxy: {
+      '/__zampol-static/': {
+        target: 'https://zampol.ru/static/',
+        changeOrigin: true,
+      },
+    },
     prerender: {
       crawlLinks: false,
       routes: getPrerenderRoutes(),

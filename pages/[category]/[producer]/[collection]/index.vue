@@ -1,7 +1,7 @@
 <template>
   <section class="collection-page">
     <TheBreadcrumbs :breadcrumbs="breadcrumbs" />
-    <ProductListPage :state="productPageState" @load-more="loadMoreProducts" @update-sort="onSortUpdate" />
+    <ProductListPage :state="productPageState" :show-sort="false" @load-more="loadMoreProducts" />
   </section>
 </template>
 
@@ -25,12 +25,6 @@ const filters = ref<ProductFilters>({
   producer_slug: producerSlug,
   product_line_slug: collectionSlug,
 })
-
-const parsedSort = parseSortParam(route.query.sort as string)
-if (parsedSort) {
-  filters.value.sort_by = parsedSort.sort_by
-  filters.value.order = parsedSort.order
-}
 
 const [categoriesData, producersData, linesData] = await Promise.all([
   fetchCatalogCategories(config.public.apiBaseUrl),
@@ -91,12 +85,6 @@ const breadcrumbs = computed<BreadcrumbItem[]>(() => [
 ])
 
 useHead(() => ({ title: `${collection.name} | ${producer.name} | Зам Пол` }))
-
-function onSortUpdate(sort: { sort_by: string; order: 'asc' | 'desc' } | null) {
-  if (!sort) return
-  filters.value.sort_by = sort.sort_by
-  filters.value.order = sort.order
-}
 </script>
 
 <style scoped lang="scss">

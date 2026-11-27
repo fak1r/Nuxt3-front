@@ -1,7 +1,7 @@
 <template>
   <div class="product-page">
     <h1 class="product-page__title">{{ state.titlePrefix }}: {{ state.title }}</h1>
-    <TheSort v-if="isFirstLoading || hasProducts" class="product-page__sort" :initial-order="state.order" @update:sort="onSortChange" />
+    <TheSort v-if="props.showSort && (isFirstLoading || hasProducts)" class="product-page__sort" :initial-order="state.order" @update:sort="onSortChange" />
     <ProductList :products="state.products ?? []" :is-skeleton-visible="isFirstLoading" />
 
     <div v-if="isFirstLoading" class="product-page__loader">
@@ -21,9 +21,12 @@ import TheSort from '~/components/UI/TheSort.vue'
 
 interface Props {
   state: ProductListState
+  showSort?: boolean
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  showSort: true,
+})
 
 interface Emits {
   (e: 'loadMore'): void

@@ -52,6 +52,14 @@
       </div>
     </div>
 
+    <ProductInteriorVisualizer
+      v-if="textureUrl"
+      class="room-preview-wrap"
+      :product-name="product.name"
+      :texture-url="textureUrl"
+      :force-rotate-to-across="product.product_line?.slug === 'visiogrande'"
+    />
+
     <section v-if="product.details?.['Описание']" class="product-description" aria-labelledby="description-title">
       <h2 id="description-title">Описание</h2>
       <p v-html="product.details['Описание']" />
@@ -77,6 +85,7 @@ import { useCartStore } from '~/store/cart'
 import { useModalStore } from '~/store/modal'
 import ImageSlider from '~/components/Products/Product/ImageSlider.vue'
 import ProductCoverageCalculator from '~/components/Products/Product/ProductCoverageCalculator.vue'
+import ProductInteriorVisualizer from '~/components/Products/Product/ProductInteriorVisualizer.vue'
 import TheButton from '~/components/UI/TheButton.vue'
 import TheQuantityInput from '~/components/UI/TheQuantityInput.vue'
 import ModalPhone from '~/components/Modals/ModalPhone.vue'
@@ -124,6 +133,7 @@ const packageCoverage = computed(() => {
   const value = Number(packageEntry[1].replace(',', '.').match(/\d+(?:\.\d+)?/)?.[0])
   return Number.isFinite(value) && value > 0 ? value : null
 })
+const textureUrl = computed(() => product.images?.[0]?.image_url || product.img_mini?.[0] || null)
 
 watch(quantity, (val) => {
   if (val < 1 && isProductInCart.value) {
@@ -151,16 +161,19 @@ function goToCart() {
 .product-view {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr;
-  grid-template-areas:
-    'gallery info order'
-    'description description description';
+    grid-template-areas:
+      'gallery info order'
+      'room-preview room-preview room-preview'
+      'description description description';
   gap: 8px;
 
   &--no-gallery {
     grid-template-columns: 1fr;
     grid-template-areas:
       'info'
-      'order';
+      'order'
+      'room-preview'
+      'description';
   }
 
   @media screen and (max-width: 1200px) {
@@ -168,6 +181,7 @@ function goToCart() {
     grid-template-areas:
       'gallery info'
       'order order'
+      'room-preview room-preview'
       'description description';
 
     &--no-gallery {
@@ -175,6 +189,7 @@ function goToCart() {
       grid-template-areas:
         'info'
         'order'
+        'room-preview'
         'description';
     }
   }
@@ -185,6 +200,7 @@ function goToCart() {
       'gallery'
       'info'
       'order'
+      'room-preview'
       'description';
   }
 
@@ -249,6 +265,10 @@ function goToCart() {
     grid-area: order;
     display: flex;
     justify-content: center;
+  }
+
+  .room-preview-wrap {
+    grid-area: room-preview;
   }
 
   .order-card {
