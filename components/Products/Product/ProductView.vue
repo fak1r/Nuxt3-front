@@ -57,7 +57,7 @@
       class="room-preview-wrap"
       :product-name="product.name"
       :texture-url="textureUrl"
-      :texture-orientation="interiorTextureOrientation"
+      :invert-texture-auto-rotation="invertTextureAutoRotation"
     />
 
     <section v-if="product.details?.['Описание']" class="product-description" aria-labelledby="description-title">
@@ -90,7 +90,7 @@ import TheButton from '~/components/UI/TheButton.vue'
 import TheQuantityInput from '~/components/UI/TheQuantityInput.vue'
 import ModalPhone from '~/components/Modals/ModalPhone.vue'
 import ModalOrderFinal from '~/components/Modals/ModalOrderFinal.vue'
-import { getInteriorTextureOrientation } from '~/utils/interior-texture-orientation'
+import { shouldInvertInteriorTextureAutoRotation } from '~/utils/interior-texture-orientation'
 import { normalizeInternalPath } from '~/utils/get-safe-route-redirect'
 
 interface Props {
@@ -135,7 +135,7 @@ const packageCoverage = computed(() => {
   return Number.isFinite(value) && value > 0 ? value : null
 })
 const textureUrl = computed(() => product.images?.[0]?.image_url || product.img_mini?.[0] || null)
-const interiorTextureOrientation = getInteriorTextureOrientation(product.id, product.product_line_id)
+const invertTextureAutoRotation = computed(() => shouldInvertInteriorTextureAutoRotation(product.self))
 
 watch(quantity, (val) => {
   if (val < 1 && isProductInCart.value) {
