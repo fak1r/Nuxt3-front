@@ -7,6 +7,8 @@ const productOrientationOverrides: Record<number, InteriorTextureOrientation> = 
 const productLineOrientationOverrides: Record<number, InteriorTextureOrientation> = {
   // Classen VisioGrande panels are shown with their long side across the room.
   7: 'natural',
+  // Pergo Ebeltoft 12 Pro needs the inverse of the auto heuristic.
+  27: 'natural',
 }
 
 export function getInteriorTextureOrientation(productId: number, productLineId?: number): InteriorTextureOrientation {
